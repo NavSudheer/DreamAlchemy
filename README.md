@@ -1,50 +1,123 @@
-# Welcome to your Expo app 👋
+# Dream Alchemy - Jungian Dream Analysis App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Dream Alchemy is a mobile application that helps you analyze and interpret your dreams using principles from Jungian psychology and AI. The app allows you to record your dreams, receive detailed analyses of the symbols and archetypes present in your dreams, and save your dream interpretations for future reference.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **Dream Input**: Record your dreams through text input or voice-to-text
+- **Voice Recognition**: Speak your dreams aloud and have them transcribed automatically
+- **AI-Powered Analysis**: Get detailed interpretations of your dreams using OpenAI's GPT-4o model
+- **Jungian Psychology**: Analysis based on Carl Jung's theories of archetypes and the collective unconscious
+- **Symbol Identification**: Identifies key symbols in your dreams and their meanings
+- **Archetype Recognition**: Recognizes Jungian archetypes present in your dreams
+- **Dream History**: Save and review your past dreams and their analyses
+- **Dark Mode Support**: Comfortable viewing in any lighting condition
 
-   ```bash
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or later)
+- npm or yarn
+- Expo CLI
+- iOS or Android device/emulator
+
+### Installation
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/DreamAlchemy.git
+   cd DreamAlchemy
+   ```
+
+2. Install dependencies:
+   ```
    npm install
    ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
+   or
+   ```
+   yarn install
    ```
 
-In the output, you'll find options to open the app in a
+3. Create a `.env.local` file in the root directory with your OpenAI API key:
+   ```
+   EXPO_PUBLIC_OPENAI_API_KEY=your_openai_api_key_here
+   ```
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Running the App
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Then, scan the QR code with the Expo Go app on your mobile device or press 'a' to open in an Android emulator or 'i' for iOS simulator.
 
-## Learn more
+## Important Notes
 
-To learn more about developing your project with Expo, look at the following resources:
+### Voice Recognition in Expo Go
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+The voice recognition feature requires native modules that are not supported in Expo Go. When running the app in Expo Go, the voice recording button will not be displayed.
 
-## Join the community
+To use the voice recognition feature, you need to create a development build of the app:
 
-Join our community of developers creating universal apps.
+1. Install EAS CLI:
+   ```
+   npm install -g eas-cli
+   ```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+2. Log in to your Expo account:
+   ```
+   eas login
+   ```
+
+3. Configure the build:
+   ```
+   eas build:configure
+   ```
+
+4. Create a development build:
+   ```
+   eas build --profile development --platform android
+   ```
+   or
+   ```
+   eas build --profile development --platform ios
+   ```
+
+5. Install the development build on your device and run the app.
+
+## Usage
+
+1. **Record a Dream**: On the home screen, enter the details of your dream in the text input area or use the voice recording feature.
+2. **Voice Recording**: Tap the "Voice" button to start recording your dream description. Speak clearly and tap "Stop" when finished.
+3. **Analyze**: Tap the "Analyze" button to get an AI-powered Jungian interpretation of your dream.
+4. **Save**: After receiving the analysis, you can save it to your dream history.
+5. **Review**: Access your saved dreams and their analyses in the Dream History tab.
+
+## Voice Recognition
+
+The voice-to-text feature requires microphone permissions:
+- On iOS, you'll be prompted to allow microphone access when you first use the feature.
+- On Android, the app will request microphone permission when needed.
+
+Voice recognition works best in a quiet environment with clear speech. The transcribed text will appear in the input field and can be edited before analysis.
+
+## Technologies Used
+
+- React Native
+- Expo
+- TypeScript
+- OpenAI API
+- React Native Voice for speech recognition
+- AsyncStorage for local data persistence
+- React Navigation
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Carl Jung for his pioneering work in dream analysis and analytical psychology
+- OpenAI for providing the AI capabilities that power the dream interpretations
+- Expo team for the excellent React Native development platform

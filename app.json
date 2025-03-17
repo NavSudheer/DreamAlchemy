@@ -1,21 +1,26 @@
 {
   "expo": {
-    "name": "DreamAlchemy",
+    "name": "Dream Alchemy",
     "slug": "DreamAlchemy",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "dreamalchemy",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "description": "A Jungian dream analysis app that helps interpret your dreams using AI and Jungian psychology principles.",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Dream Alchemy needs access to your microphone to record your dream descriptions for analysis."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
       "bundler": "metro",
@@ -32,7 +37,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "@react-native-voice/voice"
     ],
     "experiments": {
       "typedRoutes": true
