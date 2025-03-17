@@ -226,87 +226,61 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
+      >
         <Card 
           variant="elevated" 
           style={styles.card}
         >
-          <LinearGradient
-            colors={[Colors.primary[50], Colors.neutral[50]]}
-            style={styles.cardGradient}
-          >
-            <View style={styles.cardHeader}>
-              <Ionicons 
-                name="moon" 
-                size={28} 
-                color={Colors.primary[500]} 
-                style={styles.headerIcon}
-              />
-              <Text variant="h3" color={Colors.primary[700]} style={styles.title}>
-                Record Your Dream
-              </Text>
-            </View>
-            
-            <Text variant="body1" style={styles.subtitle}>
-              Describe your dream in detail, including symbols, emotions, and significant events.
-            </Text>
-            
-            <View style={styles.inputContainer}>
-              <Input
-                variant="filled"
-                multiline
-                numberOfLines={8}
-                placeholder="Describe your dream in detail..."
-                value={dreamText}
-                onChangeText={setDreamText}
-                fullWidth
-                inputStyle={styles.textInput}
-                rightIcon={
-                  dreamText.length > 0 ? (
-                    <TouchableOpacity onPress={handleClear} disabled={isLoading}>
-                      <Ionicons name="close-circle" size={20} color={Colors.neutral[500]} />
-                    </TouchableOpacity>
-                  ) : undefined
-                }
-              />
-              
-              {isRecording && (
-                <View style={styles.recordingIndicator}>
-                  <ActivityIndicator size="small" color={Colors.error} style={styles.recordingIcon} />
-                  <Text variant="caption" color={Colors.error}>Recording your dream...</Text>
-                </View>
-              )}
-            </View>
+          <View style={styles.cardContent}>
+            <Input
+              multiline
+              placeholder="Describe your dream..."
+              value={dreamText}
+              onChangeText={setDreamText}
+              style={styles.input}
+              textAlignVertical="top"
+              numberOfLines={6}
+            />
 
             <View style={styles.buttonContainer}>
               {showVoiceFeature && (
-                <Button
-                  variant={isRecording ? "accent" : "outline"}
-                  size="md"
+                <TouchableOpacity
                   onPress={toggleRecording}
-                  isDisabled={isLoading}
-                  hapticFeedback
-                  style={styles.voiceButton}
-                  leftIcon={isRecording ? "mic" : "mic-outline"}
+                  style={[
+                    styles.voiceButton,
+                    isRecording && styles.voiceButtonRecording
+                  ]}
                 >
-                  {isRecording ? "Stop Recording" : "Record Dream"}
-                </Button>
+                  <Ionicons
+                    name={isRecording ? "mic" : "mic-outline"}
+                    size={24}
+                    color={isRecording ? Colors.primary[50] : Colors.primary[600]}
+                  />
+                </TouchableOpacity>
               )}
-              
-              <Button
-                variant="primary"
-                size="md"
-                onPress={handleSubmit}
-                isLoading={isLoading}
-                isDisabled={dreamText.trim().length < 10 || isLoading}
-                hapticFeedback
-                style={styles.analyzeButton}
-                leftIcon={!isLoading ? "sparkles-outline" : undefined}
-              >
-                Analyze Dream
-              </Button>
+
+              {dreamText.length > 0 && (
+                <TouchableOpacity
+                  onPress={handleClear}
+                  style={styles.clearButton}
+                >
+                  <Ionicons name="close-circle" size={24} color={Colors.neutral[400]} />
+                </TouchableOpacity>
+              )}
             </View>
-          </LinearGradient>
+
+            <Button
+              onPress={handleSubmit}
+              disabled={dreamText.trim().length < 10 || isLoading}
+              style={styles.analyzeButton}
+              isLoading={isLoading}
+            >
+              Analyze Dream
+            </Button>
+          </View>
         </Card>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -319,75 +293,64 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 100,
   },
   card: {
-    marginBottom: Spacing.lg,
-    borderRadius: BorderRadius.xl,
-    overflow: 'hidden',
-    ...Shadows.lg,
+    borderRadius: 20,
+    backgroundColor: '#fff',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
-  cardGradient: {
-    padding: Spacing.lg,
-    borderRadius: BorderRadius.xl,
+  cardContent: {
+    padding: 20,
   },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.md,
-  },
-  headerIcon: {
-    marginRight: Spacing.sm,
-  },
-  title: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  subtitle: {
-    marginBottom: Spacing.lg,
-    textAlign: 'center',
-    opacity: 0.8,
+  input: {
+    minHeight: 120,
+    backgroundColor: 'transparent',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 16,
+    fontSize: 16,
     color: Colors.neutral[700],
   },
-  inputContainer: {
-    marginBottom: Spacing.lg,
-  },
-  textInput: {
-    minHeight: 150,
-    textAlignVertical: 'top',
-    paddingTop: Spacing.sm,
-    fontSize: 16,
-    backgroundColor: Colors.neutral[100],
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    borderColor: Colors.neutral[200],
-  },
-  recordingIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: Spacing.sm,
-    backgroundColor: Colors.transparentRed,
-    padding: Spacing.sm,
-    borderRadius: BorderRadius.md,
-  },
-  recordingIcon: {
-    marginRight: Spacing.xs,
-  },
   buttonContainer: {
-    flexDirection: 'column',
-    gap: Spacing.md,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  clearButton: {
+    marginLeft: 12,
+    padding: 4,
   },
   voiceButton: {
-    width: '100%',
-    backgroundColor: Colors.accent[50],
-    borderColor: Colors.accent[500],
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.primary[50],
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 1,
+    borderColor: Colors.primary[200],
+  },
+  voiceButtonRecording: {
+    backgroundColor: Colors.primary[600],
   },
   analyzeButton: {
-    width: '100%',
+    borderRadius: 15,
+    height: 50,
     backgroundColor: Colors.primary[600],
-    ...Shadows.md,
   },
 });
 

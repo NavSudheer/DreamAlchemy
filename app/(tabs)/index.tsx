@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, ScrollView, View, SafeAreaView, StatusBar, Image, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import DreamInput from '../../src/components/DreamInput';
 import DreamAnalysis from '../../src/components/DreamAnalysis';
 import { analyzeDream } from '../../src/services/dreamAnalysis';
@@ -12,7 +13,8 @@ import { useTheme } from '../../src/providers/ThemeProvider';
 import { Colors, Spacing, BorderRadius, Shadows } from '../../src/utils/theme';
 import Text from '../../src/components/ui/Text';
 import Card from '../../src/components/ui/Card';
-import { Ionicons } from '@expo/vector-icons';
+import { Edge } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
@@ -23,6 +25,7 @@ export default function HomeScreen() {
   const [activeView, setActiveView] = useState<'input' | 'analysis'>('input');
   const { isDark } = useTheme();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const handleDreamSubmit = async (text: string) => {
     setDreamText(text);
@@ -94,36 +97,19 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={[
-      styles.container, 
-      { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }
-    ]}>
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+    <View style={styles.container}>
       <LinearGradient
-        colors={[Colors.primary[700], Colors.primary[600]]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.headerContainer}
+        colors={[Colors.primary[600], Colors.primary[700]]}
+        style={styles.header}
       >
-        <View style={styles.headerContent}>
-          <View style={styles.headerTextContainer}>
-            <Text variant="h2" color={Colors.neutral[50]} style={styles.headerTitle}>
-              Dream Alchemy
-            </Text>
-            <Text 
-              variant="subtitle1" 
-              color={Colors.neutral[100]}
-              style={styles.subtitle}
-            >
-              Jungian Dream Analysis
-            </Text>
-          </View>
-          
-          <View style={styles.iconContainer}>
-            <View style={styles.moonIcon}>
-              <View style={styles.moonInner} />
-            </View>
+        <View style={[styles.headerContent, { paddingTop: insets.top }]}>
+          <View style={styles.headerIconContainer}>
+            <Ionicons 
+              name="moon" 
+              size={32} 
+              color="#fff" 
+              style={styles.headerIcon}
+            />
             <View style={styles.starsContainer}>
               <View style={[styles.star, styles.star1]} />
               <View style={[styles.star, styles.star2]} />
@@ -153,97 +139,66 @@ export default function HomeScreen() {
           />
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.neutral[900],
   },
-  headerContainer: {
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.md,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    ...Shadows.lg,
+  header: {
+    height: 200,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
   headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
-  },
-  headerTextContainer: {
     flex: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    paddingRight: 30,
   },
-  headerTitle: {
-    fontWeight: 'bold',
-    fontSize: 28,
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    marginTop: Spacing.xs,
-    opacity: 0.9,
-    letterSpacing: 0.5,
-  },
-  iconContainer: {
-    width: 60,
-    height: 60,
+  headerIconContainer: {
+    width: 48,
+    height: 48,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
   },
-  moonIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: Colors.neutral[100],
-    shadowColor: Colors.neutral[100],
+  headerIcon: {
+    shadowColor: '#fff',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 8,
-    elevation: 5,
-  },
-  moonInner: {
-    position: 'absolute',
-    top: -3,
-    right: -3,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: Colors.primary[700],
-    transform: [{ translateX: 5 }],
   },
   starsContainer: {
     position: 'absolute',
-    width: 60,
-    height: 60,
+    width: '100%',
+    height: '100%',
   },
   star: {
     position: 'absolute',
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: Colors.neutral[100],
-    shadowColor: Colors.neutral[100],
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: '#fff',
+    shadowColor: '#fff',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 4,
   },
   star1: {
-    top: 10,
-    right: 10,
+    top: 8,
+    right: 8,
   },
   star2: {
-    top: 25,
-    right: 5,
+    top: 20,
+    right: 4,
   },
   star3: {
-    top: 40,
-    right: 15,
+    top: 32,
+    right: 12,
   },
   content: {
     flex: 1,

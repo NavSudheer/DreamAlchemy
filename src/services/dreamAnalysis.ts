@@ -1,11 +1,19 @@
 import OpenAI from 'openai';
 import { DreamAnalysis } from '../types';
 
-// Initialize OpenAI client - you'll need to set up API key securely
-// For development, you can use environment variables
-const openai = new OpenAI({
-  apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY,
-});
+// Initialize OpenAI client with error handling
+const getOpenAIClient = () => {
+  const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
+  
+  if (!apiKey) {
+    throw new Error('OpenAI API key is not configured. Please add EXPO_PUBLIC_OPENAI_API_KEY to your .env.local file');
+  }
+
+  return new OpenAI({
+    apiKey,
+    dangerouslyAllowBrowser: true // Required for Expo/React Native
+  });
+};
 
 /**
  * Analyzes a dream using OpenAI API
@@ -19,6 +27,9 @@ export const analyzeDream = async (
 ): Promise<DreamAnalysis> => {
   try {
     console.log("Starting dream analysis...");
+    
+    // Get OpenAI client
+    const openai = getOpenAIClient();
     
     // Prepare the prompt for Jungian dream analysis
     const prompt = `
@@ -42,22 +53,6 @@ export const analyzeDream = async (
       }
     `;
 
-    // Create a streaming response
-    const stream = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { 
-          role: "system", 
-          content: "You are a Jungian psychologist specializing in dream analysis. Provide insightful interpretations based on Carl Jung's theories of the collective unconscious, archetypes, and dream symbolism. Always respond with valid JSON." 
-        },
-        { role: "user", content: prompt }
-      ],
-      temperature: 0.7,
-      stream: true,
-    });
-    
-    console.log("OpenAI stream created successfully");
-    
     // Initialize the analysis object
     const initialAnalysis: DreamAnalysis = {
       symbols: [],
@@ -70,84 +65,69 @@ export const analyzeDream = async (
     if (onUpdate) {
       onUpdate(initialAnalysis);
     }
+
+    // Create a non-streaming response for React Native
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { 
+          role: "system", 
+          content: "You are a Jungian psychologist specializing in dream analysis. Provide insightful interpretations based on Carl Jung's theories of the collective unconscious, archetypes, and dream symbolism. Always respond with valid JSON." 
+        },
+        { role: "user", content: prompt }
+      ],
+      temperature: 0.7,
+      stream: false, // Disable streaming for React Native
+    });
     
-    let accumulatedJson = "";
-    let currentAnalysis = { ...initialAnalysis };
+    console.log("OpenAI response received");
     
-    // Process each chunk from OpenAI
-    for await (const chunk of stream) {
-      const content = chunk.choices[0]?.delta?.content || '';
-      if (content) {
-        // Accumulate the JSON string
-        accumulatedJson += content;
-        
-        // Try to extract interpretation text as it comes in
-        try {
-          // Look for interpretation field in the accumulated JSON
-          const interpretationMatch = accumulatedJson.match(/"interpretation"\s*:\s*"([^"]*)/);
-          if (interpretationMatch && interpretationMatch[1]) {
-            currentAnalysis.interpretation = interpretationMatch[1];
-            
-            // Send update if we have a callback
-            if (onUpdate) {
-              onUpdate({ interpretation: currentAnalysis.interpretation });
-            }
-          }
-          
-          // Try to parse complete JSON objects when possible
-          if (accumulatedJson.includes('}')) {
-            const jsonMatch = accumulatedJson.match(/({[\s\S]*})/);
-            if (jsonMatch) {
-              try {
-                const parsedJson = JSON.parse(jsonMatch[1]);
-                
-                // Update the current analysis with any new data
-                if (parsedJson.symbols) {
-                  currentAnalysis.symbols = parsedJson.symbols;
-                  if (onUpdate) onUpdate({ symbols: parsedJson.symbols });
-                }
-                if (parsedJson.archetypes) {
-                  currentAnalysis.archetypes = parsedJson.archetypes;
-                  if (onUpdate) onUpdate({ archetypes: parsedJson.archetypes });
-                }
-                if (parsedJson.interpretation) {
-                  currentAnalysis.interpretation = parsedJson.interpretation;
-                  if (onUpdate) onUpdate({ interpretation: parsedJson.interpretation });
-                }
-              } catch (e) {
-                // Ignore parsing errors for incomplete JSON
-              }
-            }
-          }
-        } catch (e) {
-          // Ignore parsing errors for partial data
-        }
-      }
+    if (!completion.choices[0]?.message?.content) {
+      throw new Error('No response content from OpenAI');
     }
+
+    const content = completion.choices[0].message.content;
     
-    // Try one final parse of the complete response
+    // Try to parse the JSON response
     try {
       // The response might be wrapped in markdown code blocks
-      const jsonMatch = accumulatedJson.match(/```json\n([\s\S]*?)\n```/) || 
-                       accumulatedJson.match(/```\n([\s\S]*?)\n```/) || 
-                       accumulatedJson.match(/({[\s\S]*})/);
+      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || 
+                       content.match(/```\n([\s\S]*?)\n```/) || 
+                       content.match(/({[\s\S]*})/);
       
       if (jsonMatch) {
         const jsonString = jsonMatch[1];
-        const finalAnalysis = JSON.parse(jsonString);
+        const analysis = JSON.parse(jsonString);
         
-        // Return the final complete analysis
+        // Send the final update
+        if (onUpdate) {
+          onUpdate(analysis);
+        }
+        
+        // Return the complete analysis
         return {
-          ...finalAnalysis,
+          ...analysis,
+          timestamp: initialAnalysis.timestamp
+        };
+      } else {
+        // Try to parse the entire content as JSON
+        const analysis = JSON.parse(content);
+        
+        // Send the final update
+        if (onUpdate) {
+          onUpdate(analysis);
+        }
+        
+        // Return the complete analysis
+        return {
+          ...analysis,
           timestamp: initialAnalysis.timestamp
         };
       }
     } catch (e) {
-      console.error("Error parsing final JSON:", e);
+      console.error("Error parsing JSON response:", e);
+      throw new Error('Failed to parse OpenAI response');
     }
-    
-    // If we couldn't parse the final JSON, return what we have
-    return currentAnalysis;
   } catch (error) {
     console.error("Error in analyzeDream:", error);
     
@@ -155,7 +135,7 @@ export const analyzeDream = async (
     return {
       symbols: [],
       archetypes: [],
-      interpretation: "Sorry, we encountered an error analyzing your dream. Please try again later.",
+      interpretation: `Sorry, we encountered an error analyzing your dream: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again later.`,
       timestamp: new Date()
     };
   }
