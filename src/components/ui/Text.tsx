@@ -1,148 +1,164 @@
 import React from 'react';
-import { Text as RNText, TextStyle, StyleSheet, TextProps as RNTextProps } from 'react-native';
-import { Colors, Typography } from '../../utils/theme';
+import { Text as RNText, TextProps, StyleSheet, TextStyle } from 'react-native';
+import { typography } from '../../utils/theme';
+import { useTheme } from '../../providers/ThemeProvider';
 
 export type TextVariant = 
-  | 'h1' 
-  | 'h2' 
-  | 'h3' 
-  | 'h4' 
-  | 'subtitle1' 
-  | 'subtitle2' 
-  | 'body1' 
-  | 'body2' 
-  | 'caption' 
-  | 'button' 
-  | 'overline';
+  | 'h1'     // Large titles
+  | 'h2'     // Section headers
+  | 'h3'     // Subsection headers
+  | 'h4'     // Small headers
+  | 'h5'     // Mini headers
+  | 'h6'     // Micro headers
+  | 'subtitle1' // Large subtitle
+  | 'subtitle2' // Small subtitle
+  | 'body1'   // Primary body text
+  | 'body2'   // Secondary body text
+  | 'caption' // Small caption text
+  | 'button'  // Button text
+  | 'overline' // Small all-caps text
+  | 'dreamText'; // Special variant for dream content
 
-// React Native fontWeight type
-type FontWeight = 'normal' | 'bold' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
-
-// Our custom weight names
-type WeightName = 'normal' | 'medium' | 'semibold' | 'bold' | 'extrabold';
-
-interface TextProps extends RNTextProps {
-  children: React.ReactNode;
+export interface CustomTextProps extends TextProps {
   variant?: TextVariant;
   color?: string;
-  align?: 'auto' | 'left' | 'right' | 'center' | 'justify';
-  weight?: WeightName;
-  style?: TextStyle;
 }
 
-const Text: React.FC<TextProps> = ({
+const Text: React.FC<CustomTextProps> = ({
   children,
   variant = 'body1',
-  color,
-  align,
-  weight,
   style,
+  color,
   ...props
 }) => {
+  const { isDark } = useTheme();
+  
   const getVariantStyle = (): TextStyle => {
     switch (variant) {
       case 'h1':
         return {
-          fontSize: Typography.fontSizes['4xl'],
-          fontWeight: '700',
-          lineHeight: Typography.lineHeights.tight,
+          fontSize: typography.fontSizes['4xl'],
+          fontFamily: typography.fonts.bold,
+          lineHeight: typography.lineHeights.tight * typography.fontSizes['4xl'],
+          letterSpacing: typography.letterSpacing.tight,
+          marginBottom: 8,
         };
       case 'h2':
         return {
-          fontSize: Typography.fontSizes['3xl'],
-          fontWeight: '700',
-          lineHeight: Typography.lineHeights.tight,
+          fontSize: typography.fontSizes['3xl'],
+          fontFamily: typography.fonts.bold,
+          lineHeight: typography.lineHeights.tight * typography.fontSizes['3xl'],
+          letterSpacing: typography.letterSpacing.tight,
+          marginBottom: 6,
         };
       case 'h3':
         return {
-          fontSize: Typography.fontSizes['2xl'],
-          fontWeight: '600',
-          lineHeight: Typography.lineHeights.tight,
+          fontSize: typography.fontSizes['2xl'],
+          fontFamily: typography.fonts.semibold,
+          lineHeight: typography.lineHeights.tight * typography.fontSizes['2xl'],
+          letterSpacing: typography.letterSpacing.normal,
+          marginBottom: 4,
         };
       case 'h4':
         return {
-          fontSize: Typography.fontSizes.xl,
-          fontWeight: '600',
-          lineHeight: Typography.lineHeights.tight,
+          fontSize: typography.fontSizes.xl,
+          fontFamily: typography.fonts.semibold,
+          lineHeight: typography.lineHeights.tight * typography.fontSizes.xl,
+          letterSpacing: typography.letterSpacing.normal,
+          marginBottom: 2,
+        };
+      case 'h5':
+        return {
+          fontSize: typography.fontSizes.lg,
+          fontFamily: typography.fonts.semibold,
+          lineHeight: typography.lineHeights.normal * typography.fontSizes.lg,
+          letterSpacing: typography.letterSpacing.normal,
+        };
+      case 'h6':
+        return {
+          fontSize: typography.fontSizes.md,
+          fontFamily: typography.fonts.semibold,
+          lineHeight: typography.lineHeights.normal * typography.fontSizes.md,
+          letterSpacing: typography.letterSpacing.normal,
         };
       case 'subtitle1':
         return {
-          fontSize: Typography.fontSizes.lg,
-          fontWeight: '500',
-          lineHeight: Typography.lineHeights.normal,
+          fontSize: typography.fontSizes.md,
+          fontFamily: typography.fonts.medium,
+          lineHeight: typography.lineHeights.normal * typography.fontSizes.md,
+          letterSpacing: typography.letterSpacing.wide,
+          opacity: 0.9,
         };
       case 'subtitle2':
         return {
-          fontSize: Typography.fontSizes.md,
-          fontWeight: '500',
-          lineHeight: Typography.lineHeights.normal,
+          fontSize: typography.fontSizes.sm,
+          fontFamily: typography.fonts.medium,
+          lineHeight: typography.lineHeights.normal * typography.fontSizes.sm,
+          letterSpacing: typography.letterSpacing.wide,
+          opacity: 0.9,
         };
       case 'body1':
         return {
-          fontSize: Typography.fontSizes.md,
-          fontWeight: '400',
-          lineHeight: Typography.lineHeights.normal,
+          fontSize: typography.fontSizes.md,
+          fontFamily: typography.fonts.regular,
+          lineHeight: typography.lineHeights.relaxed * typography.fontSizes.md,
+          letterSpacing: typography.letterSpacing.normal,
         };
       case 'body2':
         return {
-          fontSize: Typography.fontSizes.sm,
-          fontWeight: '400',
-          lineHeight: Typography.lineHeights.normal,
+          fontSize: typography.fontSizes.sm,
+          fontFamily: typography.fonts.regular,
+          lineHeight: typography.lineHeights.relaxed * typography.fontSizes.sm,
+          letterSpacing: typography.letterSpacing.normal,
         };
       case 'caption':
         return {
-          fontSize: Typography.fontSizes.xs,
-          fontWeight: '400',
-          lineHeight: Typography.lineHeights.normal,
+          fontSize: typography.fontSizes.xs,
+          fontFamily: typography.fonts.regular,
+          lineHeight: typography.lineHeights.normal * typography.fontSizes.xs,
+          letterSpacing: typography.letterSpacing.wide,
+          opacity: 0.8,
         };
       case 'button':
         return {
-          fontSize: Typography.fontSizes.md,
-          fontWeight: '600',
-          lineHeight: Typography.lineHeights.none,
-          textTransform: 'uppercase' as const,
+          fontSize: typography.fontSizes.xs,
+          fontFamily: typography.fonts.medium,
+          textTransform: 'uppercase',
+          letterSpacing: typography.letterSpacing.wide,
         };
       case 'overline':
         return {
-          fontSize: Typography.fontSizes.xs,
-          fontWeight: '500',
-          lineHeight: Typography.lineHeights.none,
-          textTransform: 'uppercase' as const,
-          letterSpacing: 1.5,
+          fontSize: typography.fontSizes.xs,
+          fontFamily: typography.fonts.medium,
+          textTransform: 'uppercase',
+          letterSpacing: typography.letterSpacing.widest,
+          opacity: 0.7,
+        };
+      case 'dreamText':
+        return {
+          fontSize: typography.fontSizes.md,
+          fontFamily: 'Georgia', // Using serif font for dream text
+          fontStyle: 'italic',
+          lineHeight: typography.lineHeights.loose * typography.fontSizes.md,
+          letterSpacing: typography.letterSpacing.normal,
+          paddingHorizontal: 4, // Add slight padding
+          paddingVertical: 2,
         };
       default:
         return {
-          fontSize: Typography.fontSizes.md,
-          fontWeight: '400',
-          lineHeight: Typography.lineHeights.normal,
+          fontSize: typography.fontSizes.md,
+          fontFamily: typography.fonts.regular,
+          lineHeight: typography.lineHeights.relaxed * typography.fontSizes.md,
+          letterSpacing: typography.letterSpacing.normal,
         };
     }
-  };
-
-  const getWeightStyle = (): TextStyle => {
-    if (!weight) return {};
-    
-    const weightMap: Record<WeightName, FontWeight> = {
-      normal: '400',
-      medium: '500',
-      semibold: '600',
-      bold: '700',
-      extrabold: '800',
-    };
-    
-    return {
-      fontWeight: weightMap[weight],
-    };
   };
 
   return (
     <RNText
       style={[
-        styles.text,
         getVariantStyle(),
-        getWeightStyle(),
-        color && { color },
-        align && { textAlign: align },
+        color ? { color } : {},
         style,
       ]}
       {...props}
@@ -151,11 +167,5 @@ const Text: React.FC<TextProps> = ({
     </RNText>
   );
 };
-
-const styles = StyleSheet.create({
-  text: {
-    color: Colors.neutral[900],
-  },
-});
 
 export default Text; 

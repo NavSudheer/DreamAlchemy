@@ -1,26 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, SafeAreaView, StatusBar } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import DreamHistory from '../../src/components/DreamHistory';
 import DreamAnalysis from '../../src/components/DreamAnalysis';
 import { getDreams, deleteDream, clearDreams } from '../../src/utils/storage';
 import { Dream } from '../../src/types';
 import { useTheme } from '../../src/providers/ThemeProvider';
-import { Colors, Spacing } from '../../src/utils/theme';
+import { Colors, spacing } from '../../src/utils/theme';
 import Text from '../../src/components/ui/Text';
 import Card from '../../src/components/ui/Card';
+import Header from '../../src/components/ui/Header';
 
-export default function HistoryScreen() {
+const HistoryScreen: React.FC = () => {
   const [dreams, setDreams] = useState<Dream[]>([]);
   const [selectedDream, setSelectedDream] = useState<Dream | null>(null);
   const [activeView, setActiveView] = useState<'history' | 'analysis'>('history');
   const { isDark } = useTheme();
   const router = useRouter();
 
-  // Load saved dreams from AsyncStorage on component mount
-  useEffect(() => {
-    loadDreams();
-  }, []);
+  // Load saved dreams whenever the screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      loadDreams();
+    }, [])
+  );
 
   const loadDreams = async () => {
     const loadedDreams = await getDreams();
@@ -58,7 +61,7 @@ export default function HistoryScreen() {
   };
 
   return (
-    <SafeAreaView style={[
+    <View style={[
       styles.container, 
       { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }
     ]}>
@@ -66,22 +69,7 @@ export default function HistoryScreen() {
       
       {activeView === 'history' ? (
         <View style={styles.content}>
-          <Card 
-            variant="elevated" 
-            style={styles.header}
-            backgroundColor={isDark ? Colors.primary[800] : Colors.primary[50]}
-          >
-            <Text variant="h2" color={isDark ? Colors.neutral[50] : Colors.primary[800]}>
-              Dream History
-            </Text>
-            <Text 
-              variant="subtitle1" 
-              color={isDark ? Colors.neutral[300] : Colors.primary[600]}
-              style={styles.subtitle}
-            >
-              Your Recorded Dreams
-            </Text>
-          </Card>
+          <Header title="Dream History" />
           
           <DreamHistory
             dreams={dreams}
@@ -90,18 +78,39 @@ export default function HistoryScreen() {
             onClearAllDreams={handleClearAllDreams}
           />
         </View>
+      ) : selectedDream?.analysis ? (
+        <View style={styles.analysisContent}>
+          <Header title="Dream Analysis" />
+          
+          <DreamAnalysis
+            analysis={{
+              interpretation: selectedDream.analysis.interpretation,
+              symbols: selectedDream.analysis.symbols.map(s => ({
+                name: s.symbol,
+                meaning: s.meaning,
+                frequency: 1
+              })),
+              archetypes: [],
+              timestamp: selectedDream.timestamp.toString(),
+            }}
+            dreamText={selectedDream.content}
+            isAnalyzing={false}
+            onSave={handleBackToHistory}
+            onNewDream={handleNewDream}
+            isViewingSavedDream={true}
+            onBackToHistory={handleBackToHistory}
+            onDelete={() => handleDeleteDream(selectedDream.id)}
+          />
+        </View>
       ) : (
-        <DreamAnalysis
-          analysis={selectedDream?.analysis || null}
-          dreamText={selectedDream?.content || ''}
-          isAnalyzing={false}
-          onSave={() => handleBackToHistory()}
-          onNewDream={handleNewDream}
-        />
+        <View style={styles.content}>
+          <Header title="Dream History" />
+          <Text>No dream selected</Text>
+        </View>
       )}
-    </SafeAreaView>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -109,15 +118,10 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: Spacing.md,
   },
-  header: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    marginBottom: Spacing.md,
-    alignItems: 'center',
+  analysisContent: {
+    flex: 1,
   },
-  subtitle: {
-    marginTop: Spacing.xs,
-  },
-}); 
+});
+
+export default HistoryScreen; 

@@ -1,82 +1,87 @@
 import { DefaultTheme as NavigationDefaultTheme, DarkTheme as NavigationDarkTheme } from '@react-navigation/native';
+import { fontFamily } from './fonts';
 
 // Define our custom color palette
 export const Colors = {
-  // Primary colors
+  // Primary colors - switching to soft gray-blue palette
   primary: {
-    50: '#f0e7ff',
-    100: '#d8c2ff',
-    200: '#b69dff',
-    300: '#9678ff',
-    400: '#8b5cf6', // Main primary color
-    500: '#7c3aed',
-    600: '#6d28d9',
-    700: '#5b21b6',
-    800: '#4c1d95',
-    900: '#3c1773',
+    50: '#F0F4F8',
+    100: '#D9E2EC',
+    200: '#BCCCDC',
+    300: '#9FB3C8',
+    400: '#829AB1', // Main primary color
+    500: '#627D98',
+    600: '#486581',
+    700: '#334E68',
+    800: '#243B53',
+    900: '#102A43',
   },
-  // Secondary colors
+  // Secondary colors - subtle teal
   secondary: {
-    50: '#eef2ff',
-    100: '#e0e7ff',
-    200: '#c7d2fe',
-    300: '#a5b4fc',
-    400: '#818cf8',
-    500: '#6366f1', // Main secondary color
-    600: '#4f46e5',
-    700: '#4338ca',
-    800: '#3730a3',
-    900: '#312e81',
+    50: '#E6FFFA',
+    100: '#B2F5EA',
+    200: '#81E6D9',
+    300: '#4FD1C5',
+    400: '#38B2AC', // Main secondary color
+    500: '#319795',
+    600: '#2C7A7B',
+    700: '#285E61',
+    800: '#234E52',
+    900: '#1D4044',
   },
-  // Accent colors
+  // Accent colors - soft amber
   accent: {
-    50: '#fdf2f8',
-    100: '#fce7f3',
-    200: '#fbcfe8',
-    300: '#f9a8d4',
-    400: '#f472b6',
-    500: '#ec4899', // Main accent color
-    600: '#db2777',
-    700: '#be185d',
-    800: '#9d174d',
-    900: '#831843',
+    50: '#FFFBEB',
+    100: '#FEF3C7',
+    200: '#FDE68A',
+    300: '#FCD34D',
+    400: '#FBBF24',
+    500: '#F59E0B', // Main accent color
+    600: '#D97706',
+    700: '#B45309',
+    800: '#92400E',
+    900: '#78350F',
   },
-  // Neutral colors
+  // Neutral colors - enhanced with softer tones
   neutral: {
-    50: '#f9fafb',
-    100: '#f3f4f6',
-    200: '#e5e7eb',
-    300: '#d1d5db',
-    400: '#9ca3af',
-    500: '#6b7280',
-    600: '#4b5563',
-    700: '#374151',
-    800: '#1f2937',
-    900: '#111827',
+    50: '#F7FAFC', // Light mode background
+    100: '#EDF2F7',
+    200: '#E2E8F0',
+    300: '#CBD5E0',
+    400: '#A0AEC0',
+    500: '#718096',
+    600: '#4A5568',
+    700: '#2D3748',
+    800: '#1A202C', // Dark mode background
+    900: '#171923',
   },
-  // Semantic colors
-  success: '#10b981',
-  warning: '#f59e0b',
-  error: '#ef4444',
-  info: '#3b82f6',
-  // Special colors
-  dreamPurple: '#8b5cf6',
-  dreamIndigo: '#6366f1',
-  dreamPink: '#ec4899',
-  dreamBlue: '#3b82f6',
-  dreamTeal: '#14b8a6',
-  dreamGreen: '#10b981',
-  dreamYellow: '#f59e0b',
-  dreamRed: '#ef4444',
-  // Transparent colors
-  transparentPurple: 'rgba(139, 92, 246, 0.1)',
-  transparentIndigo: 'rgba(99, 102, 241, 0.1)',
-  transparentPink: 'rgba(236, 72, 153, 0.1)',
-  transparentRed: 'rgba(239, 68, 68, 0.1)',
+  // Semantic colors - softer tones
+  success: '#48BB78',
+  warning: '#F6AD55',
+  error: '#F56565',
+  info: '#63B3ED',
+  // Dream theme colors
+  dreamBlue: '#4299E1',
+  dreamTeal: '#38B2AC',
+  dreamAmber: '#F6AD55',
+  dreamGray: '#A0AEC0',
+  // Transparent colors for overlays
+  transparentLight: 'rgba(247, 250, 252, 0.1)',
+  transparentDark: 'rgba(26, 32, 44, 0.1)',
+  transparentTeal: 'rgba(56, 178, 172, 0.1)',
+  transparentAmber: 'rgba(246, 173, 85, 0.1)',
+  // Gradient colors
+  gradients: {
+    primary: ['#334E68', '#486581'],
+    secondary: ['#285E61', '#38B2AC'],
+    accent: ['#B45309', '#F59E0B'],
+    dark: ['#171923', '#1A202C'],
+    light: ['#F7FAFC', '#EDF2F7'],
+  }
 };
 
 // Define typography
-export const Typography = {
+export const typography = {
   fontSizes: {
     xs: 12,
     sm: 14,
@@ -89,44 +94,80 @@ export const Typography = {
     '5xl': 48,
   },
   fontWeights: {
-    normal: '400',
+    regular: '400',
     medium: '500',
     semibold: '600',
     bold: '700',
     extrabold: '800',
   },
+  fonts: {
+    regular: fontFamily.regular,
+    medium: fontFamily.medium,
+    semibold: fontFamily.semibold,
+    bold: fontFamily.bold,
+    extrabold: fontFamily.extrabold,
+  },
   lineHeights: {
-    none: 1,
     tight: 1.25,
     normal: 1.5,
     relaxed: 1.75,
-    loose: 2,
+    loose: 2.0,
+  },
+  letterSpacing: {
+    tighter: -0.5,
+    tight: -0.25,
+    normal: 0,
+    wide: 0.5,
+    wider: 1.0,
+    widest: 1.5,
   },
 };
 
 // Define spacing
-export const Spacing = {
-  xs: 4,
-  sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
-  '2xl': 48,
-  '3xl': 64,
-};
+export type SpacingKey = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16 | 20 | 24 | 32 | 40 | 48 | 56 | 64;
 
-// Define border radius
+export const spacing = {
+  0: 0,
+  1: 4,
+  2: 8,
+  3: 12,
+  4: 16,
+  5: 20,
+  6: 24,
+  8: 32,
+  10: 40,
+  12: 48,
+  16: 64,
+  20: 80,
+  24: 96,
+  32: 128,
+  40: 160,
+  48: 192,
+  56: 224,
+  64: 256,
+  // String-based keys for backward compatibility
+  xs: 4,    // maps to [1]
+  sm: 8,    // maps to [2]
+  md: 16,   // maps to [4]
+  lg: 24,   // maps to [6]
+  xl: 32,   // maps to [8]
+  '2xl': 48 // maps to [12]
+} as const;
+
+export type SpacingType = typeof spacing;
+
+// Define border radius - Updated with more modern values
 export const BorderRadius = {
   none: 0,
   sm: 4,
   md: 8,
-  lg: 12,
-  xl: 16,
-  '2xl': 24,
-  full: 9999,
+  lg: 16,
+  xl: 24,
+  '2xl': 32,
+  pill: 9999,
 };
 
-// Define shadows
+// Define shadows with more modern, subtle effects
 export const Shadows = {
   none: {
     shadowColor: 'transparent',
@@ -138,31 +179,38 @@ export const Shadows = {
   sm: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.18,
-    shadowRadius: 1.0,
+    shadowOpacity: 0.06,
+    shadowRadius: 3,
     elevation: 1,
   },
   md: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
   },
   lg: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 4,
   },
   xl: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.37,
-    shadowRadius: 7.49,
-    elevation: 12,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 6,
   },
+};
+
+// Animation durations
+export const Animation = {
+  fast: 150,
+  normal: 300,
+  slow: 500,
 };
 
 // Define light theme
@@ -172,8 +220,8 @@ export const LightTheme = {
     ...NavigationDefaultTheme.colors,
     primary: Colors.primary[500],
     background: Colors.neutral[50],
-    card: Colors.neutral[50],
-    text: Colors.neutral[900],
+    card: Colors.neutral[100],
+    text: Colors.neutral[800],
     border: Colors.neutral[200],
     notification: Colors.accent[500],
   },
@@ -186,9 +234,9 @@ export const DarkTheme = {
   colors: {
     ...NavigationDarkTheme.colors,
     primary: Colors.primary[400],
-    background: Colors.neutral[900],
+    background: Colors.neutral[900], // Darker background for more contrast
     card: Colors.neutral[800],
-    text: Colors.neutral[50],
+    text: Colors.neutral[100],
     border: Colors.neutral[700],
     notification: Colors.accent[400],
   },
@@ -198,10 +246,11 @@ export const DarkTheme = {
 // Export theme object
 export const theme = {
   colors: Colors,
-  typography: Typography,
-  spacing: Spacing,
+  typography: typography,
+  spacing: spacing,
   borderRadius: BorderRadius,
   shadows: Shadows,
+  animation: Animation,
   lightTheme: LightTheme,
   darkTheme: DarkTheme,
 }; 
