@@ -1,15 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { useTheme } from '../../src/providers/ThemeProvider';
 import { Colors, spacing, BorderRadius, Shadows } from '../../src/utils/theme';
 import Text from '../../src/components/ui/Text';
 import Card from '../../src/components/ui/Card';
 import Header from '../../src/components/ui/Header';
 import { Ionicons } from '@expo/vector-icons';
+import PatternsScreen from './patterns';
 
 export default function ExploreScreen() {
   const { isDark } = useTheme();
+  const router = useRouter();
+  const [activeScreen, setActiveScreen] = useState<'explore' | 'patterns'>('explore');
+
+  if (activeScreen === 'patterns') {
+    return <PatternsScreen onBack={() => setActiveScreen('explore')} />;
+  }
 
   return (
     <View style={[
@@ -64,7 +72,7 @@ export default function ExploreScreen() {
             ['#234E52', '#1D4044'] : 
             ['#E6FFFA', '#B2F5EA']}
           style={styles.card}
-          onPress={() => {}}
+          onPress={() => setActiveScreen('patterns')}
         >
           <View style={styles.cardHeader}>
             <Ionicons 
