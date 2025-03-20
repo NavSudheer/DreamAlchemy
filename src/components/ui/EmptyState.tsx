@@ -1,22 +1,42 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Pressable, AccessibilityInfo } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Pressable, AccessibilityInfo } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { theme } from '../../utils/theme';
-import { fontFamily } from '../../utils/fonts';
+import { useTheme } from '../../providers/ThemeProvider';
+import { Colors, spacing, BorderRadius, typography, Shadows } from '../../utils/theme';
+import Text from './Text';
 
 interface StepProps {
   number: number;
   text: string;
 }
 
-const Step: React.FC<StepProps> = ({ number, text }) => (
-  <View style={styles.stepContainer}>
-    <View style={styles.stepNumber}>
-      <Text style={styles.stepNumberText}>{number}</Text>
+const Step: React.FC<StepProps> = ({ number, text }) => {
+  const { isDark } = useTheme();
+  
+  return (
+    <View style={styles.stepContainer}>
+      <View style={[
+        styles.stepNumber,
+        { backgroundColor: isDark ? Colors.primary[900] : Colors.primary[100] }
+      ]}>
+        <Text 
+          variant="caption" 
+          color={isDark ? Colors.primary[300] : Colors.primary[700]}
+          style={styles.stepNumberText}
+        >
+          {number}
+        </Text>
+      </View>
+      <Text 
+        variant="body1"
+        color={isDark ? Colors.neutral[300] : Colors.neutral[800]}
+        style={styles.stepText}
+      >
+        {text}
+      </Text>
     </View>
-    <Text style={styles.stepText}>{text}</Text>
-  </View>
-);
+  );
+};
 
 interface EmptyStateProps {
   icon?: keyof typeof Ionicons.glyphMap;
@@ -35,6 +55,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   actionLabel,
   onAction,
 }) => {
+  const { isDark } = useTheme();
   const [isPressed, setIsPressed] = React.useState(false);
 
   React.useEffect(() => {
@@ -44,18 +65,24 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
   return (
     <View 
-      style={styles.container}
+      style={[
+        styles.container,
+        { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }
+      ]}
       accessible={true}
       accessibilityRole="none"
       accessibilityLabel={`${title}. ${description}`}
     >
       <View style={styles.content}>
         {icon && (
-          <View style={styles.iconContainer}>
+          <View style={[
+            styles.iconContainer,
+            { backgroundColor: isDark ? Colors.primary[900] : Colors.primary[50] }
+          ]}>
             <Ionicons
               name={icon}
               size={64}
-              color={theme.colors.primary[400]}
+              color={isDark ? Colors.primary[300] : Colors.primary[500]}
               style={styles.icon}
               accessibilityRole="image"
               accessibilityLabel={`${icon} icon`}
@@ -64,15 +91,17 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         )}
         
         <Text 
+          variant="h1"
+          color={isDark ? Colors.neutral[100] : Colors.neutral[900]}
           style={styles.title}
-          accessibilityRole="header"
         >
           {title}
         </Text>
         
         <Text 
+          variant="body1"
+          color={isDark ? Colors.neutral[300] : Colors.neutral[700]}
           style={styles.description}
-          accessibilityRole="text"
         >
           {description}
         </Text>
@@ -103,7 +132,12 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
             accessibilityLabel={actionLabel}
             accessibilityHint="Tap to get started"
           >
-            <Text style={styles.buttonText}>{actionLabel}</Text>
+            <Text 
+              variant="button"
+              color={Colors.neutral[50]}
+            >
+              {actionLabel}
+            </Text>
           </Pressable>
         )}
       </View>
@@ -116,8 +150,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: theme.spacing[4],
-    backgroundColor: theme.colors.neutral[50],
+    padding: spacing[4],
   },
   content: {
     maxWidth: 400,
@@ -127,79 +160,60 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 96,
     height: 96,
-    borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.transparentPurple,
+    borderRadius: BorderRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: theme.spacing[6],
+    marginBottom: spacing[6],
   },
   icon: {
     marginBottom: 0,
   },
   title: {
-    fontSize: theme.typography.fontSizes['2xl'],
-    fontFamily: fontFamily.bold,
-    color: theme.colors.neutral[900],
     textAlign: 'center',
-    marginBottom: theme.spacing[3],
+    marginBottom: spacing[3],
   },
   description: {
-    fontSize: theme.typography.fontSizes.lg,
-    fontFamily: fontFamily.regular,
-    color: theme.colors.neutral[700],
     textAlign: 'center',
-    marginBottom: theme.spacing[6],
-    lineHeight: theme.typography.lineHeights.relaxed * theme.typography.fontSizes.lg,
+    marginBottom: spacing[6],
+    lineHeight: typography.lineHeights.relaxed * typography.fontSizes.lg,
   },
   stepsContainer: {
     width: '100%',
-    marginBottom: theme.spacing[8],
+    marginBottom: spacing[8],
   },
   stepContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: theme.spacing[4],
-    paddingHorizontal: theme.spacing[4],
+    marginBottom: spacing[4],
+    paddingHorizontal: spacing[4],
   },
   stepNumber: {
     width: 28,
     height: 28,
-    borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.primary[100],
+    borderRadius: BorderRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: theme.spacing[3],
+    marginRight: spacing[3],
   },
   stepNumberText: {
-    fontSize: theme.typography.fontSizes.sm,
-    fontFamily: fontFamily.semibold,
-    color: theme.colors.primary[700],
+    fontSize: typography.fontSizes.sm,
   },
   stepText: {
     flex: 1,
-    fontSize: theme.typography.fontSizes.md,
-    fontFamily: fontFamily.medium,
-    color: theme.colors.neutral[800],
-    lineHeight: theme.typography.lineHeights.relaxed * theme.typography.fontSizes.md,
+    lineHeight: typography.lineHeights.relaxed * typography.fontSizes.md,
   },
   button: {
-    backgroundColor: theme.colors.primary[500],
-    paddingHorizontal: theme.spacing[8],
-    paddingVertical: theme.spacing[4],
-    borderRadius: theme.borderRadius.lg,
+    backgroundColor: Colors.primary[500],
+    paddingHorizontal: spacing[8],
+    paddingVertical: spacing[4],
+    borderRadius: BorderRadius.pill,
     minWidth: 200,
     alignItems: 'center',
     justifyContent: 'center',
-    ...theme.shadows.md,
+    ...Shadows.md,
   },
   buttonPressed: {
-    backgroundColor: theme.colors.primary[600],
+    backgroundColor: Colors.primary[600],
     transform: [{ scale: 0.98 }],
-  },
-  buttonText: {
-    color: theme.colors.neutral[50],
-    fontSize: theme.typography.fontSizes.lg,
-    fontFamily: fontFamily.semibold,
-    textAlign: 'center',
   },
 }); 

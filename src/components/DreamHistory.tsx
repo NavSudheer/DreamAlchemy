@@ -7,7 +7,8 @@ import {
   Dimensions,
   AccessibilityInfo,
   ViewStyle,
-  TextStyle
+  TextStyle,
+  ScrollView
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -27,6 +28,7 @@ import Button from './ui/Button';
 import Card from './ui/Card';
 import { EmptyState } from './ui/EmptyState';
 import AlertDialog from './ui/AlertDialog';
+import { useRouter } from 'expo-router';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_MARGIN = spacing[4];
@@ -56,6 +58,7 @@ const DreamHistory: React.FC<DreamHistoryProps> = ({
   const [clearAllAlertVisible, setClearAllAlertVisible] = useState(false);
   const [selectedDreamId, setSelectedDreamId] = useState<string | null>(null);
   const { isDark } = useTheme();
+  const router = useRouter();
 
   const handleSelectDream = (dream: Dream) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -219,22 +222,31 @@ const DreamHistory: React.FC<DreamHistoryProps> = ({
 
   if (dreams.length === 0) {
     return (
-      <EmptyState
-        icon="moon-outline"
-        title="Begin Your Dream Journey"
-        description="Transform your dreams into meaningful insights with our guided dream journaling experience."
-        steps={[
-          "Record your dreams as soon as you wake up for best recall",
-          "Add emotions, symbols, and themes to enrich your entries",
-          "Get AI-powered analysis to uncover patterns and meanings",
-          "Track your dream patterns over time for deeper insights"
+      <ScrollView 
+        contentContainerStyle={[
+          styles.emptyStateScrollContent,
+          { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }
         ]}
-        actionLabel="Record Your First Dream"
-        onAction={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          AccessibilityInfo.announceForAccessibility('Navigating to record your first dream');
-        }}
-      />
+        showsVerticalScrollIndicator={true}
+      >
+        <EmptyState
+          icon="moon-outline"
+          title="Begin Your Dream Journey"
+          description="Transform your dreams into meaningful insights with our guided dream journaling experience."
+          steps={[
+            "Record your dreams as soon as you wake up for best recall",
+            "Add emotions, symbols, and themes to enrich your entries",
+            "Get AI-powered analysis to uncover patterns and meanings",
+            "Track your dream patterns over time for deeper insights"
+          ]}
+          actionLabel="Record Your First Dream"
+          onAction={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            AccessibilityInfo.announceForAccessibility('Navigating to record your first dream');
+            router.push('/');
+          }}
+        />
+      </ScrollView>
     );
   }
 
@@ -374,7 +386,11 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   deleteButton: {
     flex: 1,
-  } as ViewStyle
+  } as ViewStyle,
+  emptyStateScrollContent: {
+    flexGrow: 1,
+    paddingBottom: 100, // Extra padding to ensure content isn't hidden by tab bar
+  } as ViewStyle,
 });
 
 export default DreamHistory; 
