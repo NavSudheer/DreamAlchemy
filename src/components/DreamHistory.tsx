@@ -261,13 +261,7 @@ const DreamHistory: React.FC<DreamHistoryProps> = ({
         ListHeaderComponent={
           dreams.length > 0 ? (
             <View style={styles.header}>
-              <Text 
-                variant="h2" 
-                color={isDark ? Colors.neutral[200] : Colors.neutral[700]}
-                style={styles.headerTitle}
-              >
-                Dream History
-              </Text>
+              <View style={styles.headerPlaceholder} />
               <Button
                 variant="outline"
                 size="sm"
@@ -320,10 +314,9 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[2],
     marginBottom: spacing[2],
   } as ViewStyle,
-  headerTitle: {
-    fontSize: typography.fontSizes.xl,
-    fontWeight: typography.fontWeights.semibold,
-  } as TextStyle,
+  headerPlaceholder: {
+    flex: 1,
+  } as ViewStyle,
   clearButton: {
     minWidth: 100,
   } as ViewStyle,

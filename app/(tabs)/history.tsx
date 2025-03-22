@@ -69,7 +69,7 @@ const HistoryScreen: React.FC = () => {
       
       {activeView === 'history' ? (
         <View style={styles.content}>
-          <Header title="Dream History" />
+          <Header title="Dream History" showMoon={true} />
           
           <DreamHistory
             dreams={dreams}
