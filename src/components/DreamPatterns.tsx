@@ -9,14 +9,14 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { getDreams } from '../../src/utils/storage';
-import { Dream } from '../../src/types';
-import { useTheme } from '../../src/providers/ThemeProvider';
-import { Colors, spacing, BorderRadius, Shadows } from '../../src/utils/theme';
-import Text from '../../src/components/ui/Text';
-import Card from '../../src/components/ui/Card';
-import Header from '../../src/components/ui/Header';
-import { EmptyState } from '../../src/components/ui/EmptyState';
+import { getDreams } from '../utils/storage';
+import { Dream } from '../types';
+import { useTheme } from '../providers/ThemeProvider';
+import { Colors, spacing, BorderRadius, Shadows } from '../utils/theme';
+import Text from '../components/ui/Text';
+import Card from '../components/ui/Card';
+import Header from '../components/ui/Header';
+import { EmptyState } from '../components/ui/EmptyState';
 import { LineChart, PieChart } from 'react-native-chart-kit';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -286,12 +286,11 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
             </View>
           </View>
           
-          {/* Timeline chart */}
-          {patternMetrics?.dreamsByMonth && patternMetrics.dreamsByMonth.datasets && 
-           patternMetrics.dreamsByMonth.datasets[0]?.data?.length > 0 ? (
+          {/* Dream timeline chart */}
+          {patternMetrics?.dreamsByMonth && patternMetrics.dreamsByMonth.labels.length > 1 ? (
             <LineChart
               data={patternMetrics.dreamsByMonth}
-              width={SCREEN_WIDTH - spacing[8] * 2}
+              width={SCREEN_WIDTH - 2 * spacing[4] - 2 * spacing[4]}
               height={220}
               chartConfig={chartConfig}
               bezier
@@ -302,12 +301,18 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
               styles.chartPlaceholder,
               { backgroundColor: isDark ? Colors.neutral[700] : Colors.neutral[200] }
             ]}>
-              <Text style={styles.placeholderText}>Not enough time data</Text>
+              <Text 
+                variant="body2" 
+                color={isDark ? Colors.neutral[400] : Colors.neutral[600]}
+                style={styles.placeholderText}
+              >
+                Not enough data for timeline chart
+              </Text>
             </View>
           )}
         </Card>
-        
-        {/* Top Recurring Symbols */}
+
+        {/* Top Recurring Symbols Card */}
         <Card
           variant="elevated"
           style={styles.card}
@@ -381,8 +386,8 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
             )}
           </View>
         </Card>
-        
-        {/* Theme Analysis */}
+
+        {/* Dream Themes Card */}
         <Card
           variant="elevated"
           style={styles.card}
@@ -390,7 +395,7 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
         >
           <View style={styles.cardHeader}>
             <Ionicons 
-              name="albums-outline" 
+              name="color-palette-outline" 
               size={28} 
               color={isDark ? Colors.neutral[100] : Colors.primary[700]} 
             />
@@ -399,23 +404,21 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
               color={isDark ? Colors.neutral[100] : Colors.neutral[800]}
               style={styles.cardTitle}
             >
-              Theme Analysis
+              Dream Themes
             </Text>
           </View>
           
-          {/* Theme pie chart */}
-          {patternMetrics?.themeData && patternMetrics.themeData.length > 0 ? (
+          {patternMetrics?.themeData && patternMetrics.themeData.length > 1 ? (
             <View style={styles.pieChartContainer}>
               <PieChart
                 data={patternMetrics.themeData}
-                width={SCREEN_WIDTH - spacing[8] * 2}
-                height={200}
+                width={SCREEN_WIDTH - 2 * spacing[4] - 2 * spacing[4]}
+                height={180}
                 chartConfig={chartConfig}
                 accessor="count"
                 backgroundColor="transparent"
                 paddingLeft="15"
-                hasLegend={true}
-                center={[SCREEN_WIDTH / 6, 0]}
+                absolute
               />
             </View>
           ) : (
@@ -423,7 +426,13 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
               styles.chartPlaceholder,
               { backgroundColor: isDark ? Colors.neutral[700] : Colors.neutral[200] }
             ]}>
-              <Text style={styles.placeholderText}>No theme data available</Text>
+              <Text 
+                variant="body2" 
+                color={isDark ? Colors.neutral[400] : Colors.neutral[600]}
+                style={styles.placeholderText}
+              >
+                Not enough data for theme chart
+              </Text>
             </View>
           )}
           

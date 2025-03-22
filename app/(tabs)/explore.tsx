@@ -8,7 +8,7 @@ import Text from '../../src/components/ui/Text';
 import Card from '../../src/components/ui/Card';
 import Header from '../../src/components/ui/Header';
 import { Ionicons } from '@expo/vector-icons';
-import PatternsScreen from './patterns';
+import PatternsScreen from '../../src/components/DreamPatterns';
 
 export default function ExploreScreen() {
   const { isDark } = useTheme();
