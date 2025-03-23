@@ -117,6 +117,16 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="dictionary"
+        options={{
+          title: 'Dictionary',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="book" size={size} color={color} />
+          ),
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamAlchemy - Jungian Dream Analysis App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            background-image: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.03) 50%, rgba(249, 115, 22, 0.02) 100%);
+        }
+        
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            border: 12px solid #1e293b;
+            border-radius: 45px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .phone-frame:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.25), 0 15px 15px -5px rgba(0, 0, 0, 0.15);
+        }
+        
+        .screen {
+            width: 100%;
+            height: 100%;
+            background-color: #0f172a;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 70%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 70%);
+        }
+        
+        .gradient-blue {
+            background: linear-gradient(135deg, #334e68 0%, #486581 100%);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .gradient-teal {
+            background: linear-gradient(135deg, #1d4044 0%, #234e52 100%);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .gradient-amber {
+            background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .gradient-purple {
+            background: linear-gradient(135deg, #322659 0%, #44337a 100%);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .moon-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #94a3b8;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            transition: all 0.5s ease;
+        }
+        
+        .moon-icon:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            transform: rotate(15deg);
+        }
+        
+        .moon-icon::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #0f172a;
+            transform: translate(7px, -7px);
+        }
+        
+        .tab-indicator {
+            width: 48px;
+            height: 5px;
+            background-color: #64748b;
+            border-radius: 2.5px;
+            margin: 0 auto;
+        }
+        
+        .glass-effect {
+            background: rgba(31, 41, 55, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .shimmer {
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0) 0%, 
+                rgba(255, 255, 255, 0.05) 50%, 
+                rgba(255, 255, 255, 0) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% {background-position: -200% 0;}
+            100% {background-position: 200% 0;}
+        }
+        
+        .pulse {
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {opacity: 0.8;}
+            50% {opacity: 1;}
+            100% {opacity: 0.8;}
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% {transform: translateY(0px);}
+            50% {transform: translateY(-10px);}
+            100% {transform: translateY(0px);}
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, #4338ca, #3b82f6);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, #0d9488, #0ea5e9);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(20, 184, 166, 0.4);
+        }
+        
+        .animated-border {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .animated-border::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, 
+                #3b82f6, #8b5cf6, #ec4899, #f97316, 
+                #eab308, #22c55e, #06b6d4, #3b82f6);
+            background-size: 400% 400%;
+            z-index: -1;
+            border-radius: 18px;
+            animation: gradient-border 10s ease infinite;
+        }
+        
+        @keyframes gradient-border {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dreamDark: '#0f172a',
+                        dreamDarkSurface: '#1e293b',
+                        dreamLight: '#f1f5f9',
+                        dreamBlue: {
+                            50: '#f0f4f8',
+                            700: '#334e68'
+                        },
+                        dreamTeal: {
+                            700: '#285e61'
+                        },
+                        dreamAmber: {
+                            700: '#b45309'
+                        },
+                        dreamPurple: {
+                            700: '#44337a'
+                        }
+                    },
+                    animation: {
+                        'float': 'floating 3s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'shimmer': 'shimmer 2s infinite',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen py-10 px-4 sm:px-8 flex flex-col items-center bg-gradient-to-br from-gray-50 to-gray-100">
+    <h1 class="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">DreamAlchemy</h1>
+    <p class="text-gray-600 text-center mb-12 max-w-2xl">A Jungian dream analysis app for exploring the depths of your unconscious mind</p>
+    
+    <div class="flex gap-10 overflow-x-auto pb-8 w-full justify-center items-start px-4">
+        <!-- New Dream Screen -->
+        <div class="phone-frame flex-shrink-0 animate__animated animate__fadeIn">
+            <div class="screen flex flex-col">
+                <!-- Header -->
+                <div class="px-6 pt-6 flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-white">New Dream</h2>
+                    <div class="moon-icon pulse"></div>
+                </div>
+                
+                <!-- Content -->
+                <div class="flex-1 px-6 py-8 overflow-y-auto">
+                    <div class="space-y-8">
+                        <div class="animate__animated animate__fadeInUp">
+                            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 mb-4">Begin Your Dream Journey</h1>
+                            <p class="text-gray-400 text-lg">Transform your dreams into meaningful insights with our guided dream journaling experience.</p>
+                        </div>
+                        
+                        <div class="space-y-6 mt-8">
+                            <div class="flex items-start gap-4 hover:translate-x-1 transition-all duration-300">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 animate__animated animate__fadeInLeft" style="animation-delay: 0.1s">
+                                    <span class="text-white font-medium">1</span>
+                                </div>
+                                <div class="animate__animated animate__fadeInRight" style="animation-delay: 0.1s">
+                                    <p class="text-gray-300 text-lg">Record your dreams as soon as you wake up for best recall</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-4 hover:translate-x-1 transition-all duration-300">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 animate__animated animate__fadeInLeft" style="animation-delay: 0.2s">
+                                    <span class="text-white font-medium">2</span>
+                                </div>
+                                <div class="animate__animated animate__fadeInRight" style="animation-delay: 0.2s">
+                                    <p class="text-gray-300 text-lg">Add emotions, symbols, and themes to enrich your entries</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-4 hover:translate-x-1 transition-all duration-300">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 animate__animated animate__fadeInLeft" style="animation-delay: 0.3s">
+                                    <span class="text-white font-medium">3</span>
+                                </div>
+                                <div class="animate__animated animate__fadeInRight" style="animation-delay: 0.3s">
+                                    <p class="text-gray-300 text-lg">Get AI-powered analysis to uncover patterns and meanings</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-4 hover:translate-x-1 transition-all duration-300">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 animate__animated animate__fadeInLeft" style="animation-delay: 0.4s">
+                                    <span class="text-white font-medium">4</span>
+                                </div>
+                                <div class="animate__animated animate__fadeInRight" style="animation-delay: 0.4s">
+                                    <p class="text-gray-300 text-lg">Track your dream patterns over time for deeper insights</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-effect p-5 animate__animated animate__fadeInUp animate__delay-1s">
+                            <textarea class="w-full h-36 bg-transparent border-none text-gray-300 text-lg resize-none focus:outline-none" placeholder="Describe your dream..."></textarea>
+                            <div class="flex justify-end mt-3">
+                                <button class="btn-primary text-white font-semibold py-2 px-6 rounded-full text-md flex items-center gap-2">
+                                    <span>Analyze Dream</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab Bar -->
+                <div class="h-20 bg-gray-900/90 backdrop-blur-lg border-t border-gray-800 flex items-center justify-around px-6">
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center shadow-lg shadow-teal-600/30">
+                            <i class="fas fa-plus text-white text-xl"></i>
+                        </div>
+                        <span class="text-teal-500 text-xs mt-1 font-medium">New Dream</span>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-all duration-300">
+                            <i class="fas fa-history text-gray-400 text-xl"></i>
+                        </div>
+                        <span class="text-gray-400 text-xs mt-1">History</span>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-all duration-300">
+                            <i class="fas fa-compass text-gray-400 text-xl"></i>
+                        </div>
+                        <span class="text-gray-400 text-xs mt-1">Explore</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dream History Screen -->
+        <div class="phone-frame flex-shrink-0 animate__animated animate__fadeIn">
+            <div class="screen flex flex-col">
+                <!-- Header -->
+                <div class="px-6 pt-6 flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-white">Dream History</h2>
+                    <div class="moon-icon pulse"></div>
+                </div>
+                
+                <!-- Content -->
+                <div class="flex-1 px-6 py-8 overflow-y-auto">
+                    <div class="space-y-8">
+                        <div class="animate__animated animate__fadeInUp">
+                            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 mb-4">Begin Your Dream Journey</h1>
+                            <p class="text-gray-400 text-lg">Transform your dreams into meaningful insights with our guided dream journaling experience.</p>
+                        </div>
+                        
+                        <div class="space-y-6 mt-8">
+                            <div class="flex items-start gap-4 hover:translate-x-1 transition-all duration-300">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 animate__animated animate__fadeInLeft" style="animation-delay: 0.1s">
+                                    <span class="text-white font-medium">1</span>
+                                </div>
+                                <div class="animate__animated animate__fadeInRight" style="animation-delay: 0.1s">
+                                    <p class="text-gray-300 text-lg">Record your dreams as soon as you wake up for best recall</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-4 hover:translate-x-1 transition-all duration-300">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 animate__animated animate__fadeInLeft" style="animation-delay: 0.2s">
+                                    <span class="text-white font-medium">2</span>
+                                </div>
+                                <div class="animate__animated animate__fadeInRight" style="animation-delay: 0.2s">
+                                    <p class="text-gray-300 text-lg">Add emotions, symbols, and themes to enrich your entries</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-4 hover:translate-x-1 transition-all duration-300">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 animate__animated animate__fadeInLeft" style="animation-delay: 0.3s">
+                                    <span class="text-white font-medium">3</span>
+                                </div>
+                                <div class="animate__animated animate__fadeInRight" style="animation-delay: 0.3s">
+                                    <p class="text-gray-300 text-lg">Get AI-powered analysis to uncover patterns and meanings</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-4 hover:translate-x-1 transition-all duration-300">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 animate__animated animate__fadeInLeft" style="animation-delay: 0.4s">
+                                    <span class="text-white font-medium">4</span>
+                                </div>
+                                <div class="animate__animated animate__fadeInRight" style="animation-delay: 0.4s">
+                                    <p class="text-gray-300 text-lg">Track your dream patterns over time for deeper insights</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="w-full flex justify-center mt-8 animate__animated animate__fadeInUp animate__delay-1s">
+                            <button class="btn-primary text-white font-semibold py-4 px-10 rounded-full text-lg shadow-md transition-all flex items-center gap-2">
+                                <i class="fas fa-plus"></i>
+                                <span>RECORD YOUR FIRST DREAM</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab Bar -->
+                <div class="h-20 bg-gray-900/90 backdrop-blur-lg border-t border-gray-800 flex items-center justify-around px-6">
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-all duration-300">
+                            <i class="fas fa-plus text-gray-400 text-xl"></i>
+                        </div>
+                        <span class="text-gray-400 text-xs mt-1">New Dream</span>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30">
+                            <i class="fas fa-history text-white text-xl"></i>
+                        </div>
+                        <span class="text-cyan-500 text-xs mt-1 font-medium">History</span>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-all duration-300">
+                            <i class="fas fa-compass text-gray-400 text-xl"></i>
+                        </div>
+                        <span class="text-gray-400 text-xs mt-1">Explore</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Explore Screen -->
+        <div class="phone-frame flex-shrink-0 animate__animated animate__fadeIn">
+            <div class="screen flex flex-col">
+                <!-- Header -->
+                <div class="px-6 pt-6 flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-white">Explore Dreams</h2>
+                    <div class="moon-icon pulse"></div>
+                </div>
+                
+                <!-- Content -->
+                <div class="flex-1 px-6 py-8 overflow-y-auto">
+                    <div class="space-y-8">
+                        <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500 text-center animate__animated animate__fadeInUp">Discover the meaning behind your dreams</h1>
+                        
+                        <div class="space-y-6 mt-8">
+                            <!-- Dream Dictionary Card -->
+                            <div class="gradient-blue rounded-2xl p-6 shadow-lg card-hover animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+                                <div class="flex items-center mb-3">
+                                    <div class="bg-blue-500/20 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-book text-white text-xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-semibold text-white">Dream Dictionary</h3>
+                                </div>
+                                <p class="text-gray-300 text-lg ml-16">Explore common dream symbols and their meanings</p>
+                                <div class="flex justify-end mt-3">
+                                    <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full transition-all">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Dream Patterns Card -->
+                            <div class="gradient-teal rounded-2xl p-6 shadow-lg card-hover animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+                                <div class="flex items-center mb-3">
+                                    <div class="bg-teal-500/20 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-chart-line text-white text-xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-semibold text-white">Dream Patterns</h3>
+                                </div>
+                                <p class="text-gray-300 text-lg ml-16">Analyze patterns and recurring themes in your dreams</p>
+                                <div class="flex justify-end mt-3">
+                                    <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full transition-all">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Dream Techniques Card -->
+                            <div class="gradient-amber rounded-2xl p-6 shadow-lg card-hover animate__animated animate__fadeInUp" style="animation-delay: 0.3s">
+                                <div class="flex items-center mb-3">
+                                    <div class="bg-amber-500/20 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-palette text-white text-xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-semibold text-white">Dream Techniques</h3>
+                                </div>
+                                <p class="text-gray-300 text-lg ml-16">Learn techniques for lucid dreaming and dream recall</p>
+                                <div class="flex justify-end mt-3">
+                                    <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full transition-all">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Dream Psychology Card -->
+                            <div class="gradient-purple rounded-2xl p-6 shadow-lg card-hover animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
+                                <div class="flex items-center mb-3">
+                                    <div class="bg-purple-500/20 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-graduation-cap text-white text-xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-semibold text-white">Dream Psychology</h3>
+                                </div>
+                                <p class="text-gray-300 text-lg ml-16">Understand the science and psychology behind dreams</p>
+                                <div class="flex justify-end mt-3">
+                                    <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full transition-all">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab Bar -->
+                <div class="h-20 bg-gray-900/90 backdrop-blur-lg border-t border-gray-800 flex items-center justify-around px-6">
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-all duration-300">
+                            <i class="fas fa-plus text-gray-400 text-xl"></i>
+                        </div>
+                        <span class="text-gray-400 text-xs mt-1">New Dream</span>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-all duration-300">
+                            <i class="fas fa-history text-gray-400 text-xl"></i>
+                        </div>
+                        <span class="text-gray-400 text-xs mt-1">History</span>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-400 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-600/30">
+                            <i class="fas fa-compass text-white text-xl"></i>
+                        </div>
+                        <span class="text-indigo-500 text-xs mt-1 font-medium">Explore</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dream Analysis Screen -->
+        <div class="phone-frame flex-shrink-0 animate__animated animate__fadeIn">
+            <div class="screen flex flex-col">
+                <!-- Header -->
+                <div class="px-6 pt-6 flex justify-between items-center">
+                    <div class="flex items-center">
+                        <i class="fas fa-arrow-left text-gray-400 text-lg mr-4"></i>
+                        <h2 class="text-2xl font-bold text-white">Dream Analysis</h2>
+                    </div>
+                    <div class="moon-icon pulse"></div>
+                </div>
+                
+                <!-- Content -->
+                <div class="flex-1 px-6 py-6 overflow-y-auto">
+                    <div class="space-y-8">
+                        <div class="glass-effect p-4 animate__animated animate__fadeInUp">
+                            <p class="text-gray-300 text-lg">I dreamt I was walking through a dense forest at night. The moon was full and bright. I came upon a clearing with a small lake, where I saw my reflection, but it didn't look exactly like me...</p>
+                        </div>
+                        
+                        <div class="space-y-4 animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+                            <div class="flex items-center">
+                                <i class="fas fa-brain text-blue-400 mr-3"></i>
+                                <h3 class="text-2xl font-semibold text-white">Interpretation</h3>
+                            </div>
+                            <div class="glass-effect p-5 border-l-4 border-blue-500">
+                                <p class="text-gray-300 text-lg">This dream suggests a journey of self-discovery and potential transformation. The forest represents your unconscious mind, and the night setting indicates you're exploring hidden aspects of yourself. The full moon symbolizes illumination and intuitive wisdom guiding you.</p>
+                                <p class="text-gray-300 text-lg mt-3">The lake serves as a mirror for self-reflection, and your altered reflection suggests you're becoming aware of aspects of yourself that you haven't fully recognized or integrated - perhaps your shadow self in Jungian terms.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4 animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+                            <div class="flex items-center">
+                                <i class="fas fa-key text-indigo-400 mr-3"></i>
+                                <h3 class="text-2xl font-semibold text-white">Key Symbols</h3>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="bg-gradient-to-r from-blue-900/30 to-blue-800/30 border-l-4 border-blue-600 rounded-xl p-4 card-hover">
+                                    <h4 class="text-blue-400 font-medium text-lg flex items-center">
+                                        <i class="fas fa-tree text-xs mr-2"></i>
+                                        Forest
+                                    </h4>
+                                    <p class="text-gray-300 text-base mt-1">Represents the unconscious mind and unknown territories of the self. Dense forests often symbolize confusion or being lost in life's journey.</p>
+                                </div>
+                                
+                                <div class="bg-gradient-to-r from-blue-900/30 to-blue-800/30 border-l-4 border-blue-600 rounded-xl p-4 card-hover">
+                                    <h4 class="text-blue-400 font-medium text-lg flex items-center">
+                                        <i class="fas fa-moon text-xs mr-2"></i>
+                                        Moon
+                                    </h4>
+                                    <p class="text-gray-300 text-base mt-1">Symbolizes intuition, the feminine principle, and cyclical changes. The full moon specifically represents culmination and revelation.</p>
+                                </div>
+                                
+                                <div class="bg-gradient-to-r from-blue-900/30 to-blue-800/30 border-l-4 border-blue-600 rounded-xl p-4 card-hover">
+                                    <h4 class="text-blue-400 font-medium text-lg flex items-center">
+                                        <i class="fas fa-water text-xs mr-2"></i>
+                                        Reflection
+                                    </h4>
+                                    <p class="text-gray-300 text-base mt-1">Represents self-perception and identity. A distorted reflection suggests a disconnect between how you see yourself and your true nature.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4 animate__animated animate__fadeInUp" style="animation-delay: 0.3s">
+                            <div class="flex items-center">
+                                <i class="fas fa-mask text-purple-400 mr-3"></i>
+                                <h3 class="text-2xl font-semibold text-white">Jungian Archetypes</h3>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="bg-gradient-to-r from-purple-900/30 to-purple-800/30 border-l-4 border-purple-600 rounded-xl p-4 card-hover">
+                                    <h4 class="text-purple-400 font-medium text-lg flex items-center">
+                                        <i class="fas fa-theater-masks text-xs mr-2"></i>
+                                        The Shadow
+                                    </h4>
+                                    <p class="text-gray-300 text-base mt-1">The altered reflection represents aspects of yourself you may not fully acknowledge or accept.</p>
+                                </div>
+                                
+                                <div class="bg-gradient-to-r from-purple-900/30 to-purple-800/30 border-l-4 border-purple-600 rounded-xl p-4 card-hover">
+                                    <h4 class="text-purple-400 font-medium text-lg flex items-center">
+                                        <i class="fas fa-circle text-xs mr-2"></i>
+                                        The Self
+                                    </h4>
+                                    <p class="text-gray-300 text-base mt-1">The journey through the forest toward self-reflection represents movement toward wholeness and integration.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3 animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
+                            <button class="w-1/2 bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-white font-semibold py-3 rounded-xl transition-all flex justify-center items-center gap-2 shadow-lg">
+                                <i class="fas fa-save"></i>
+                                <span>Save Analysis</span>
+                            </button>
+                            <button class="w-1/2 bg-gradient-to-r from-teal-700 to-teal-600 hover:from-teal-600 hover:to-teal-500 text-white font-semibold py-3 rounded-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-teal-700/20">
+                                <i class="fas fa-plus"></i>
+                                <span>New Dream</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dream Dictionary Screen -->
+        <div class="phone-frame flex-shrink-0 animate__animated animate__fadeIn">
+            <div class="screen flex flex-col">
+                <!-- Header -->
+                <div class="px-6 pt-6 flex items-center">
+                    <i class="fas fa-arrow-left text-gray-400 text-xl mr-4 hover:text-white transition-colors"></i>
+                    <h2 class="text-2xl font-bold text-white">Dream Dictionary</h2>
+                </div>
+                
+                <!-- Content -->
+                <div class="flex-1 px-6 py-6 overflow-y-auto">
+                    <div class="relative flex items-center mb-6 animate__animated animate__fadeInDown">
+                        <i class="fas fa-search absolute left-4 text-gray-500 text-lg"></i>
+                        <input type="text" placeholder="Search symbols..." class="w-full bg-gray-800/80 text-white py-3 pl-12 pr-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-r from-blue-900/30 to-blue-800/20 rounded-xl p-5 border-l-4 border-blue-500 animate__animated animate__fadeInUp card-hover" style="animation-delay: 0.1s">
+                            <h3 class="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-blue-500 mb-2 flex items-center">
+                                <i class="fas fa-water text-blue-400 mr-3"></i>
+                                Water
+                            </h3>
+                            <p class="text-gray-300 text-lg">Symbolizes the unconscious mind, emotions, and the collective unconscious. The state of the water (calm, turbulent, clear, murky) reflects your emotional state.</p>
+                            <div class="flex flex-wrap gap-2 mt-3">
+                                <span class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm border border-blue-500/30 hover:bg-blue-500/30 transition-colors cursor-pointer">Emotions</span>
+                                <span class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm border border-blue-500/30 hover:bg-blue-500/30 transition-colors cursor-pointer">Unconscious</span>
+                                <span class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm border border-blue-500/30 hover:bg-blue-500/30 transition-colors cursor-pointer">Purification</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-green-900/30 to-green-800/20 rounded-xl p-5 border-l-4 border-green-500 animate__animated animate__fadeInUp card-hover" style="animation-delay: 0.2s">
+                            <h3 class="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-green-500 mb-2 flex items-center">
+                                <i class="fas fa-snake text-green-400 mr-3"></i>
+                                Snake
+                            </h3>
+                            <p class="text-gray-300 text-lg">Represents transformation, rebirth, wisdom, healing, and sometimes hidden fears. In Jungian psychology, snakes can symbolize the process of individuation and integration.</p>
+                            <div class="flex flex-wrap gap-2 mt-3">
+                                <span class="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm border border-green-500/30 hover:bg-green-500/30 transition-colors cursor-pointer">Transformation</span>
+                                <span class="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm border border-green-500/30 hover:bg-green-500/30 transition-colors cursor-pointer">Wisdom</span>
+                                <span class="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm border border-green-500/30 hover:bg-green-500/30 transition-colors cursor-pointer">Shadow</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-amber-900/30 to-amber-800/20 rounded-xl p-5 border-l-4 border-amber-500 animate__animated animate__fadeInUp card-hover" style="animation-delay: 0.3s">
+                            <h3 class="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500 mb-2 flex items-center">
+                                <i class="fas fa-home text-amber-400 mr-3"></i>
+                                House
+                            </h3>
+                            <p class="text-gray-300 text-lg">Represents the self and different aspects of your personality. Different rooms may symbolize different parts of your psyche. The condition of the house reflects your self-image.</p>
+                            <div class="flex flex-wrap gap-2 mt-3">
+                                <span class="bg-amber-500/20 text-amber-300 px-3 py-1 rounded-full text-sm border border-amber-500/30 hover:bg-amber-500/30 transition-colors cursor-pointer">Self</span>
+                                <span class="bg-amber-500/20 text-amber-300 px-3 py-1 rounded-full text-sm border border-amber-500/30 hover:bg-amber-500/30 transition-colors cursor-pointer">Psyche</span>
+                                <span class="bg-amber-500/20 text-amber-300 px-3 py-1 rounded-full text-sm border border-amber-500/30 hover:bg-amber-500/30 transition-colors cursor-pointer">Security</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-purple-900/30 to-purple-800/20 rounded-xl p-5 border-l-4 border-purple-500 animate__animated animate__fadeInUp card-hover" style="animation-delay: 0.4s">
+                            <h3 class="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-purple-500 mb-2 flex items-center">
+                                <i class="fas fa-archway text-purple-400 mr-3"></i>
+                                Bridge
+                            </h3>
+                            <p class="text-gray-300 text-lg">Symbolizes transition, change, and connections between different aspects of life or consciousness. Crossing a bridge represents making an important life decision or transformation.</p>
+                            <div class="flex flex-wrap gap-2 mt-3">
+                                <span class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm border border-purple-500/30 hover:bg-purple-500/30 transition-colors cursor-pointer">Transition</span>
+                                <span class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm border border-purple-500/30 hover:bg-purple-500/30 transition-colors cursor-pointer">Connection</span>
+                                <span class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm border border-purple-500/30 hover:bg-purple-500/30 transition-colors cursor-pointer">Decision</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add simple animations for elements that could be interactive
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects for cards
+            const cards = document.querySelectorAll('.card-hover');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-5px) scale(1.01)';
+                    card.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = '';
+                    card.style.boxShadow = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -45,7 +45,6 @@ export default function ExploreScreen() {
             ['#1A365D', '#2A4365'] : 
             ['#EBF8FF', '#BEE3F8']}
           style={styles.card}
-          onPress={() => {}}
         >
           <View style={styles.cardHeader}>
             <Ionicons 
@@ -64,6 +63,27 @@ export default function ExploreScreen() {
           <Text variant="body1" style={styles.cardDescription}>
             Explore common dream symbols and their meanings
           </Text>
+          <TouchableOpacity 
+            style={[
+              styles.cardButton,
+              { backgroundColor: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.4)' }
+            ]}
+            activeOpacity={0.7}
+            onPress={() => router.push('/(tabs)/dictionary')}
+          >
+            <Text 
+              variant="button"
+              color={isDark ? Colors.neutral[200] : Colors.primary[700]}
+            >
+              Open Dictionary
+            </Text>
+            <Ionicons 
+              name="chevron-forward" 
+              size={18} 
+              color={isDark ? Colors.neutral[200] : Colors.primary[700]} 
+              style={styles.cardButtonIcon}
+            />
+          </TouchableOpacity>
         </Card>
 
         <Card
@@ -183,4 +203,17 @@ const styles = StyleSheet.create({
     marginLeft: spacing[6],
     opacity: 0.9,
   },
+  cardButton: {
+    marginTop: spacing[3],
+    marginLeft: spacing[6],
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[3],
+    borderRadius: BorderRadius.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+  },
+  cardButtonIcon: {
+    marginLeft: spacing[1],
+  }
 });

@@ -33,6 +33,8 @@ export default function RootLayout() {
         <View style={{ flex: 1, backgroundColor: Colors.primary[600] }}>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="symbol/[id]" options={{ headerShown: false }} />
+            <Stack.Screen name="category/[id]" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" options={{ headerShown: false }} />
           </Stack>
           <StatusBar style="light" />
