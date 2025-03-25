@@ -13,6 +13,8 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSMicrophoneUsageDescription": "Dream Alchemy needs access to your microphone to record your dream descriptions for analysis.",
+        "NSSpeechRecognitionUsageDescription": "Dream Alchemy uses speech recognition to transcribe your spoken dream descriptions into text for analysis.",
+        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized dream analysis and improve your experience with the app.",
         "ITSAppUsesNonExemptEncryption": false
       },
       "bundleIdentifier": "com.navford.DreamAlchemy"
