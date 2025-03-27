@@ -9,14 +9,31 @@ import Card from '../../src/components/ui/Card';
 import Header from '../../src/components/ui/Header';
 import { Ionicons } from '@expo/vector-icons';
 import PatternsScreen from '../../src/components/DreamPatterns';
+import { DreamTechniques } from '../components/dream-techniques/DreamTechniques';
 
 export default function ExploreScreen() {
   const { isDark } = useTheme();
   const router = useRouter();
-  const [activeScreen, setActiveScreen] = useState<'explore' | 'patterns'>('explore');
+  const [activeScreen, setActiveScreen] = useState<'explore' | 'patterns' | 'techniques'>('explore');
 
   if (activeScreen === 'patterns') {
     return <PatternsScreen onBack={() => setActiveScreen('explore')} />;
+  }
+
+  if (activeScreen === 'techniques') {
+    return (
+      <View style={[
+        styles.container,
+        { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }
+      ]}>
+        <Header 
+          title="Dream Techniques" 
+          leftIcon="arrow-back"
+          onLeftPress={() => setActiveScreen('explore')}
+        />
+        <DreamTechniques />
+      </View>
+    );
   }
 
   return (
@@ -119,7 +136,7 @@ export default function ExploreScreen() {
             ['#744210', '#975A16'] : 
             ['#FFFBEB', '#FEF3C7']}
           style={styles.card}
-          onPress={() => {}}
+          onPress={() => setActiveScreen('techniques')}
         >
           <View style={styles.cardHeader}>
             <Ionicons 
@@ -146,7 +163,7 @@ export default function ExploreScreen() {
             ['#322659', '#44337A'] : 
             ['#FAF5FF', '#E9D8FD']}
           style={styles.card}
-          onPress={() => {}}
+          onPress={() => router.push('/(tabs)/explore/psychology')}
         >
           <View style={styles.cardHeader}>
             <Ionicons 

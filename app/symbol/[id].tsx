@@ -44,7 +44,7 @@ export default function SymbolDetailScreen() {
       <Header 
         title={symbol.name}
         leftIcon="arrow-back"
-        onLeftPress={() => router.back()}
+        onLeftPress={() => router.navigate("/(tabs)/dictionary")}
       />
       
       <ScrollView 

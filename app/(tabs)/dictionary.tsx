@@ -76,7 +76,7 @@ export default function DictionaryScreen() {
       <Header 
         title="Dream Dictionary" 
         leftIcon="arrow-back"
-        onLeftPress={() => router.back()}
+        onLeftPress={() => router.navigate("/(tabs)/explore")}
       />
       
       <ScrollView 

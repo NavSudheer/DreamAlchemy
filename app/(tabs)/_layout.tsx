@@ -127,6 +127,18 @@ export default function TabLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="technique"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="explore/psychology"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
