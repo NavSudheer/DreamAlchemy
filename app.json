@@ -12,15 +12,23 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "Dream Alchemy needs access to your microphone to record your dream descriptions for analysis."
-      }
+        "NSMicrophoneUsageDescription": "Dream Alchemy needs access to your microphone to record your dream descriptions for analysis.",
+        "NSSpeechRecognitionUsageDescription": "Dream Alchemy uses speech recognition to transcribe your spoken dream descriptions into text for analysis.",
+        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized dream analysis and improve your experience with the app.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.navford.DreamAlchemy"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["android.permission.RECORD_AUDIO"]
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.navford.DreamAlchemy"
     },
     "web": {
       "bundler": "metro",
@@ -42,6 +50,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "5f2707bf-d898-46f8-8828-04d06912dd09"
+      }
     }
   }
 }

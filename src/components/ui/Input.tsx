@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   TextInput,
@@ -8,10 +8,12 @@ import {
   ViewStyle,
   TextStyle,
   StyleProp,
+  Animated,
 } from 'react-native';
-import { Colors, Spacing, BorderRadius } from '../../utils/theme';
+import { Colors, spacing, BorderRadius, Shadows, Animation } from '../../utils/theme';
 import Text from './Text';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../providers/ThemeProvider';
 
 export type InputVariant = 'outlined' | 'filled' | 'underlined';
 export type InputSize = 'small' | 'medium' | 'large';
@@ -31,6 +33,7 @@ interface InputProps extends TextInputProps {
   errorStyle?: StyleProp<TextStyle>;
   secureTextEntry?: boolean;
   fullWidth?: boolean;
+  style?: StyleProp<ViewStyle>;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -51,8 +54,28 @@ const Input: React.FC<InputProps> = ({
   style,
   ...props
 }) => {
+  const { isDark } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(!secureTextEntry);
+  const focusAnim = useRef(new Animated.Value(0)).current;
+  
+  const handleFocus = () => {
+    setIsFocused(true);
+    Animated.timing(focusAnim, {
+      toValue: 1,
+      duration: Animation.normal,
+      useNativeDriver: false,
+    }).start();
+  };
+  
+  const handleBlur = () => {
+    setIsFocused(false);
+    Animated.timing(focusAnim, {
+      toValue: 0,
+      duration: Animation.normal,
+      useNativeDriver: false,
+    }).start();
+  };
 
   const getVariantStyle = (): ViewStyle => {
     switch (variant) {
@@ -62,20 +85,22 @@ const Input: React.FC<InputProps> = ({
           borderColor: error 
             ? Colors.error
             : isFocused 
-              ? Colors.primary[500] 
-              : Colors.neutral[300],
-          backgroundColor: 'transparent',
-          borderRadius: BorderRadius.md,
+              ? isDark ? Colors.primary[400] : Colors.primary[500]
+              : isDark ? Colors.neutral[600] : Colors.neutral[300],
+          backgroundColor: isDark ? 'rgba(45, 55, 72, 0.3)' : 'transparent',
+          borderRadius: BorderRadius.lg,
+          ...Shadows.sm,
         };
       case 'filled':
         return {
           borderWidth: 0,
           backgroundColor: error 
-            ? Colors.transparentRed
+            ? isDark ? 'rgba(245, 101, 101, 0.1)' : Colors.transparentAmber
             : isFocused 
-              ? Colors.primary[50] 
-              : Colors.neutral[100],
-          borderRadius: BorderRadius.md,
+              ? isDark ? 'rgba(66, 153, 225, 0.1)' : Colors.primary[50]
+              : isDark ? 'rgba(45, 55, 72, 0.5)' : Colors.neutral[100],
+          borderRadius: BorderRadius.lg,
+          ...Shadows.sm,
         };
       case 'underlined':
         return {
@@ -84,8 +109,8 @@ const Input: React.FC<InputProps> = ({
           borderColor: error 
             ? Colors.error
             : isFocused 
-              ? Colors.primary[500] 
-              : Colors.neutral[300],
+              ? isDark ? Colors.primary[400] : Colors.primary[500]
+              : isDark ? Colors.neutral[600] : Colors.neutral[300],
           backgroundColor: 'transparent',
           borderRadius: 0,
         };
@@ -98,19 +123,21 @@ const Input: React.FC<InputProps> = ({
     switch (size) {
       case 'small':
         return {
-          paddingVertical: Spacing.xs,
-          paddingHorizontal: Spacing.sm,
+          paddingVertical: spacing[1],
+          paddingHorizontal: spacing[2],
+          minHeight: 36,
         };
       case 'large':
         return {
-          paddingVertical: Spacing.md,
-          paddingHorizontal: Spacing.lg,
+          paddingVertical: spacing[3],
+          paddingHorizontal: spacing[4],
+          minHeight: 56,
         };
-      case 'medium':
-      default:
+      default: // medium
         return {
-          paddingVertical: Spacing.sm,
-          paddingHorizontal: Spacing.md,
+          paddingVertical: spacing[2],
+          paddingHorizontal: spacing[3],
+          minHeight: 46,
         };
     }
   };
@@ -125,89 +152,99 @@ const Input: React.FC<InputProps> = ({
         return {
           fontSize: 18,
         };
-      case 'medium':
-      default:
+      default: // medium
         return {
           fontSize: 16,
         };
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
-  };
-
-  const renderPasswordIcon = () => {
-    if (!secureTextEntry) return rightIcon;
-
-    return (
-      <TouchableOpacity onPress={togglePasswordVisibility}>
-        <Ionicons
-          name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
-          size={24}
-          color={Colors.neutral[500]}
-        />
-      </TouchableOpacity>
-    );
-  };
-
-  // Helper function to handle conditional styles
-  const getConditionalStyle = (condition: boolean | undefined | null, styleToApply: StyleProp<any>): StyleProp<any> => {
-    return condition ? styleToApply : undefined;
+  const textColor = isDark ? Colors.neutral[200] : Colors.neutral[800];
+  const placeholderColor = isDark ? Colors.neutral[500] : Colors.neutral[400];
+  
+  // Animated inner shadow for better focus state
+  const innerShadow = {
+    shadowColor: Colors.primary[400],
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: focusAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 0.2]
+    }),
+    shadowRadius: focusAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 4]
+    }),
   };
 
   return (
-    <View style={[styles.container, getConditionalStyle(fullWidth, styles.fullWidth), containerStyle]}>
+    <View style={[styles.container, fullWidth && styles.fullWidth, containerStyle]}>
       {label && (
         <Text
           variant="subtitle2"
           style={[
             styles.label,
-            getConditionalStyle(!!error, styles.errorLabel),
+            error ? styles.errorText : {},
             labelStyle,
           ]}
         >
           {label}
         </Text>
       )}
-      
-      <View style={[
-        styles.inputContainer,
-        getVariantStyle(),
-        getSizeStyle(),
-        getConditionalStyle(fullWidth, styles.fullWidth),
-        style as StyleProp<ViewStyle>,
-      ]}>
+
+      <Animated.View
+        style={[
+          styles.inputContainer,
+          getVariantStyle(),
+          getSizeStyle(),
+          innerShadow,
+          style as any,
+        ]}
+      >
         {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
-        
+
         <TextInput
           style={[
             styles.input,
             getInputSizeStyle(),
-            getConditionalStyle(!!leftIcon, styles.inputWithLeftIcon),
-            getConditionalStyle(!!(rightIcon || secureTextEntry), styles.inputWithRightIcon),
+            { color: textColor },
+            leftIcon ? { paddingLeft: 0 } : {},
+            rightIcon || secureTextEntry ? { paddingRight: 0 } : {},
             inputStyle,
           ]}
-          placeholderTextColor={Colors.neutral[400]}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          placeholderTextColor={placeholderColor}
           secureTextEntry={secureTextEntry && !isPasswordVisible}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          selectionColor={isDark ? Colors.primary[400] : Colors.primary[300]}
           {...props}
         />
-        
+
         {(rightIcon || secureTextEntry) && (
           <View style={styles.rightIcon}>
-            {renderPasswordIcon()}
+            {rightIcon}
+            
+            {secureTextEntry && (
+              <TouchableOpacity
+                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                style={styles.passwordToggle}
+              >
+                <Ionicons
+                  name={isPasswordVisible ? 'eye-off' : 'eye'}
+                  size={18}
+                  color={isDark ? Colors.neutral[400] : Colors.neutral[500]}
+                />
+              </TouchableOpacity>
+            )}
           </View>
         )}
-      </View>
-      
+      </Animated.View>
+
       {(error || helper) && (
         <Text
           variant="caption"
           style={[
             styles.helper,
-            getConditionalStyle(!!error, styles.error),
+            error ? styles.errorText : {},
             error ? errorStyle : helperStyle,
           ]}
         >
@@ -220,46 +257,40 @@ const Input: React.FC<InputProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: Spacing.md,
+    marginBottom: spacing[3],
   },
   fullWidth: {
     width: '100%',
   },
   label: {
-    marginBottom: Spacing.xs,
-    color: Colors.neutral[700],
-  },
-  errorLabel: {
-    color: Colors.error,
+    marginBottom: spacing[1],
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
   },
   input: {
     flex: 1,
-    color: Colors.neutral[900],
-    paddingVertical: 0,
-  },
-  inputWithLeftIcon: {
-    paddingLeft: Spacing.xs,
-  },
-  inputWithRightIcon: {
-    paddingRight: Spacing.xs,
-  },
-  leftIcon: {
-    marginRight: Spacing.sm,
-  },
-  rightIcon: {
-    marginLeft: Spacing.sm,
+    paddingVertical: 0, // Remove default padding
+    fontFamily: 'Inter-Regular',
+    letterSpacing: 0.3,
   },
   helper: {
-    marginTop: Spacing.xs,
-    color: Colors.neutral[500],
+    marginTop: spacing[1],
   },
-  error: {
+  errorText: {
     color: Colors.error,
+  },
+  leftIcon: {
+    marginRight: spacing[2],
+  },
+  rightIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: spacing[2],
+  },
+  passwordToggle: {
+    padding: spacing[1],
   },
 });
 
