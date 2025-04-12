@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { DreamAnalysis as DreamAnalysisType, Symbol, Archetype } from '../types';
+import { DreamAnalysis as DreamAnalysisType, Symbol, Archetype, DREAM_THEMES } from '../types';
 import { formatDate } from '../utils/helpers';
 import { useTheme } from '../providers/ThemeProvider';
 import { Colors, spacing, BorderRadius, Shadows, typography } from '../utils/theme';
@@ -195,6 +195,27 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
     },
     interpretationText: {
       lineHeight: 22,
+    },
+    themeContainer: {
+      backgroundColor: isDark ? 'rgba(45, 55, 72, 0.3)' : 'rgba(247, 250, 252, 0.5)',
+      borderRadius: BorderRadius.lg,
+      padding: spacing[4],
+      marginBottom: spacing[6],
+      borderLeftWidth: 3,
+      borderLeftColor: isDark ? Colors.accent[500] : Colors.accent[500],
+    },
+    themeItem: {
+      marginBottom: spacing[3],
+    },
+    themeName: {
+      marginBottom: spacing[1],
+    },
+    themeValue: {
+      paddingLeft: spacing[2],
+    },
+    confidenceContainer: {
+      marginTop: spacing[2],
+      alignItems: 'flex-end',
     },
   });
   
@@ -406,6 +427,76 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
               </Text>
             </View>
           </View>
+          
+          {analysis.theme && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Ionicons 
+                  name="pricetag-outline" 
+                  size={24} 
+                  color={isDark ? Colors.accent[400] : Colors.accent[500]} 
+                  style={styles.sectionIcon}
+                />
+                <Text 
+                  variant="h3" 
+                  color={isDark ? Colors.neutral[200] : Colors.neutral[700]}
+                >
+                  Dream Themes
+                </Text>
+              </View>
+              <View style={styles.themeContainer}>
+                <View style={styles.themeItem}>
+                  <Text 
+                    variant="subtitle1" 
+                    color={isDark ? Colors.accent[300] : Colors.accent[600]}
+                    style={styles.themeName}
+                  >
+                    Primary Theme:
+                  </Text>
+                  <Text 
+                    variant="body1" 
+                    color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
+                    style={styles.themeValue}
+                  >
+                    {analysis.theme.primary}
+                  </Text>
+                </View>
+                
+                {analysis.theme.secondary && analysis.theme.secondary.length > 0 && (
+                  <View style={styles.themeItem}>
+                    <Text 
+                      variant="subtitle1" 
+                      color={isDark ? Colors.accent[300] : Colors.accent[600]}
+                      style={styles.themeName}
+                    >
+                      Secondary Themes:
+                    </Text>
+                    {analysis.theme.secondary.map((theme, index) => (
+                      <Text 
+                        key={index}
+                        variant="body1" 
+                        color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
+                        style={styles.themeValue}
+                      >
+                        {theme}
+                      </Text>
+                    ))}
+                  </View>
+                )}
+                
+                {analysis.theme.confidence && (
+                  <View style={styles.confidenceContainer}>
+                    <Text 
+                      variant="caption" 
+                      color={isDark ? Colors.neutral[400] : Colors.neutral[500]}
+                    >
+                      Theme Confidence: {Math.round(analysis.theme.confidence * 100)}%
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          )}
           
           <View style={styles.section}>
             <View style={styles.sectionHeader}>

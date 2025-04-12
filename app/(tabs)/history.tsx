@@ -96,6 +96,11 @@ const HistoryScreen: React.FC = () => {
                 significance: a.significance
               })) || [],
               timestamp: selectedDream.timestamp.toString(),
+              theme: {
+                primary: selectedDream.analysis.theme,
+                secondary: selectedDream.analysis.secondaryThemes || [],
+                confidence: selectedDream.analysis.themeConfidence || 0
+              }
             }}
             dreamText={selectedDream.content}
             isAnalyzing={false}

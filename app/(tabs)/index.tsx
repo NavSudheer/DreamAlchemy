@@ -84,8 +84,10 @@ function Index() {
             description: a.description,
             significance: a.significance
           })),
-          mood: 'neutral', // Default value
-          theme: 'general', // Default value
+          mood: 'neutral',
+          theme: analysis.theme?.primary || 'general',
+          secondaryThemes: analysis.theme?.secondary || [],
+          themeConfidence: analysis.theme?.confidence || 0
         },
       };
       

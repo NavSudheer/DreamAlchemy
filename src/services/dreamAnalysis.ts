@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { DreamAnalysis } from '../types';
+import { DreamAnalysis, DREAM_THEMES } from '../types';
 
 // Initialize OpenAI client with error handling
 const getOpenAIClient = () => {
@@ -13,6 +13,15 @@ const getOpenAIClient = () => {
     apiKey,
     dangerouslyAllowBrowser: true // Required for Expo/React Native
   });
+};
+
+// Format theme list for the prompt
+const formatThemeList = () => {
+  return Object.entries(DREAM_THEMES)
+    .map(([key, theme]) => 
+      `${theme.name} (${theme.subtypes.join(', ')})`
+    )
+    .join('\n     - ');
 };
 
 /**
@@ -31,7 +40,7 @@ export const analyzeDream = async (
     // Get OpenAI client
     const openai = getOpenAIClient();
     
-    // Prepare the prompt for Jungian dream analysis
+    // Prepare the prompt for Jungian dream analysis with theme categorization
     const prompt = `
       Analyze the following dream using Jungian psychology principles:
       
@@ -41,7 +50,10 @@ export const analyzeDream = async (
       1. Identification of key symbols in the dream and their Jungian interpretations
       2. Identification of archetypes present in the dream
       3. A comprehensive interpretation of the dream based on Jungian psychology
-      4. Format the response as a JSON object with the following structure:
+      4. Categorize the dream with a primary theme and up to two secondary themes from this list:
+         - ${formatThemeList()}
+      
+      Format the response as a JSON object with the following structure:
       {
         "symbols": [
           { "name": "symbol name", "meaning": "symbol meaning", "frequency": number of occurrences }
@@ -49,7 +61,12 @@ export const analyzeDream = async (
         "archetypes": [
           { "type": "archetype name", "description": "brief description", "significance": "significance in the dream" }
         ],
-        "interpretation": "comprehensive interpretation text"
+        "interpretation": "comprehensive interpretation text",
+        "theme": {
+          "primary": "primary theme name",
+          "secondary": ["secondary theme 1", "secondary theme 2"],
+          "confidence": confidence score between 0 and 1
+        }
       }
     `;
 
@@ -58,7 +75,12 @@ export const analyzeDream = async (
       symbols: [],
       archetypes: [],
       interpretation: "",
-      timestamp: new Date()
+      timestamp: new Date(),
+      theme: {
+        primary: "",
+        secondary: [],
+        confidence: 0
+      }
     };
     
     // If there's an update callback, send the initial state
@@ -72,7 +94,7 @@ export const analyzeDream = async (
       messages: [
         { 
           role: "system", 
-          content: "You are a Jungian psychologist specializing in dream analysis. Provide insightful interpretations based on Carl Jung's theories of the collective unconscious, archetypes, and dream symbolism. Always respond with valid JSON." 
+          content: "You are a Jungian psychologist specializing in dream analysis. Provide insightful interpretations based on Carl Jung's theories of the collective unconscious, archetypes, and dream symbolism. Always respond with valid JSON and categorize dreams according to their primary psychological themes." 
         },
         { role: "user", content: prompt }
       ],
@@ -136,7 +158,12 @@ export const analyzeDream = async (
       symbols: [],
       archetypes: [],
       interpretation: `Sorry, we encountered an error analyzing your dream: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again later.`,
-      timestamp: new Date()
+      timestamp: new Date(),
+      theme: {
+        primary: "error",
+        secondary: [],
+        confidence: 0
+      }
     };
   }
 }; 
