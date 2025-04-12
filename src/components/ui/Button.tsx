@@ -139,7 +139,7 @@ const Button: React.FC<ButtonProps> = ({
       case 'outline':
         return isDisabled 
           ? isDark ? Colors.neutral[500] : Colors.neutral[400]
-          : isDark ? Colors.primary[400] : Colors.primary[500];
+          : isDark ? Colors.primary[400] : Colors.neutral[900];
       case 'ghost':
         return isDark ? Colors.neutral[300] : Colors.primary[600];
       case 'error':

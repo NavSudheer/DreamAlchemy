@@ -63,18 +63,38 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
     const symbolCounts: Record<string, number> = {};
     let totalSymbols = 0;
 
+    // Track which symbols have been counted for each dream
+    const dreamSymbolTracker: Record<string, Set<string>> = {};
+
     dreams.forEach(dream => {
       if (dream.analysis?.symbols) {
+        // Initialize tracker for this dream
+        const dreamId = dream.id;
+        if (!dreamSymbolTracker[dreamId]) {
+          dreamSymbolTracker[dreamId] = new Set<string>();
+        }
+
         dream.analysis.symbols.forEach(symbol => {
-          symbolCounts[symbol.symbol] = (symbolCounts[symbol.symbol] || 0) + 1;
-          totalSymbols++;
+          // Normalize symbol name to lowercase for case-insensitive matching
+          const normalizedSymbol = symbol.symbol.toLowerCase();
+          
+          // Only count each symbol once per dream
+          if (!dreamSymbolTracker[dreamId].has(normalizedSymbol)) {
+            dreamSymbolTracker[dreamId].add(normalizedSymbol);
+            symbolCounts[normalizedSymbol] = (symbolCounts[normalizedSymbol] || 0) + 1;
+            totalSymbols++;
+          }
         });
       }
     });
 
     // Sort symbols by frequency
     const topSymbols = Object.entries(symbolCounts)
-      .map(([name, count]) => ({ name, count }))
+      .map(([name, count]) => ({ 
+        // Capitalize first letter for display
+        name: name.charAt(0).toUpperCase() + name.slice(1), 
+        count 
+      }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
@@ -111,15 +131,21 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
     const themeCounts: Record<string, number> = {};
     dreams.forEach(dream => {
       if (dream.analysis?.theme) {
-        themeCounts[dream.analysis.theme] = (themeCounts[dream.analysis.theme] || 0) + 1;
+        // Normalize theme name to lowercase
+        const normalizedTheme = dream.analysis.theme.toLowerCase();
+        themeCounts[normalizedTheme] = (themeCounts[normalizedTheme] || 0) + 1;
       } else {
-        themeCounts['Other'] = (themeCounts['Other'] || 0) + 1;
+        themeCounts['other'] = (themeCounts['other'] || 0) + 1;
       }
     });
 
     // Sort themes by frequency
     const topThemes = Object.entries(themeCounts)
-      .map(([name, count]) => ({ name, count }))
+      .map(([name, count]) => ({ 
+        // Capitalize first letter for display
+        name: name.charAt(0).toUpperCase() + name.slice(1), 
+        count 
+      }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
@@ -287,7 +313,7 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
           </View>
           
           {/* Dream timeline chart */}
-          {patternMetrics?.dreamsByMonth && patternMetrics.dreamsByMonth.labels.length > 1 ? (
+          {patternMetrics?.dreamsByMonth && patternMetrics.dreamsByMonth.labels.length > 0 ? (
             <LineChart
               data={patternMetrics.dreamsByMonth}
               width={SCREEN_WIDTH - 2 * spacing[4] - 2 * spacing[4]}
@@ -408,7 +434,7 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
             </Text>
           </View>
           
-          {patternMetrics?.themeData && patternMetrics.themeData.length > 1 ? (
+          {patternMetrics?.themeData && patternMetrics.themeData.length > 0 ? (
             <View style={styles.pieChartContainer}>
               <PieChart
                 data={patternMetrics.themeData}

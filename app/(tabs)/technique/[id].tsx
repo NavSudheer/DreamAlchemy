@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, ScrollView, StyleSheet, TouchableOpacity, Platform, Animated } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from '../../../src/providers/ThemeProvider';
 import { Colors, spacing, Shadows, BorderRadius } from '../../../src/utils/theme';
@@ -125,13 +125,13 @@ export default function TechniqueDetail() {
   const insets = useSafeAreaInsets();
   const technique = TECHNIQUE_DATA[id as keyof typeof TECHNIQUE_DATA];
 
-  // New enhanced colors for better readability
-  const bgColor = isDark ? '#151934' : '#F5F8FF';
-  const textColor = isDark ? '#E1E6FF' : '#2A3060';
-  const cardColor = isDark ? '#1E2249' : '#FFFFFF';
-  const accentColor = isDark ? '#9AA5FF' : '#4A56A6';
-  const highlightColor = '#FFD700'; // Gold for both themes
-  const buttonColor = '#4A56A6'; // Primary indigo color
+  // Enhanced theme colors
+  const bgColor = isDark ? Colors.neutral[900] : Colors.neutral[50];
+  const cardColor = isDark ? Colors.neutral[800] : Colors.neutral[100];
+  const textColor = isDark ? Colors.neutral[100] : Colors.neutral[800];
+  const accentColor = isDark ? Colors.dreamTeal : Colors.dreamBlue;
+  const highlightColor = Colors.dreamAmber;
+  const buttonGradient = isDark ? Colors.gradients.dark : Colors.gradients.primary;
   
   // Calculate bottom padding based on tab bar height and safe area
   const TAB_BAR_HEIGHT = Platform.OS === 'ios' ? 80 : 60;
@@ -139,7 +139,6 @@ export default function TechniqueDetail() {
   
   // Handle back button navigation
   const handleBackPress = () => {
-    // Navigate directly to the explore tab instead of using router.back()
     router.push('/(tabs)/explore');
   };
   
@@ -169,10 +168,10 @@ export default function TechniqueDetail() {
       <ScrollView 
         style={styles.content} 
         contentContainerStyle={{ paddingBottom: bottomPadding }}
-        showsVerticalScrollIndicator={true}
+        showsVerticalScrollIndicator={false}
         alwaysBounceVertical={true}
       >
-        <View style={[styles.iconContainer, { backgroundColor: cardColor, ...Shadows.md }]}>
+        <View style={[styles.iconContainer, { backgroundColor: cardColor, ...Shadows.lg }]}>
           <MaterialCommunityIcons
             name={technique.icon as any}
             size={64}
@@ -180,11 +179,15 @@ export default function TechniqueDetail() {
           />
         </View>
 
+        <Text variant="h3" style={[styles.title, {color: accentColor}]}>
+          {technique.title}
+        </Text>
+
         <Text variant="body1" style={[styles.description, {color: textColor}]}>
           {technique.description}
         </Text>
 
-        <View style={[styles.infoContainer, { backgroundColor: cardColor, ...Shadows.sm }]}>
+        <View style={[styles.infoContainer, { backgroundColor: cardColor, ...Shadows.md }]}>
           <View style={styles.infoItem}>
             <MaterialCommunityIcons
               name="clock-outline"
@@ -203,7 +206,7 @@ export default function TechniqueDetail() {
                   key={index}
                   name="star"
                   size={24}
-                  color={index < technique.difficulty ? highlightColor : isDark ? '#364073' : '#D9DFF9'}
+                  color={index < technique.difficulty ? highlightColor : isDark ? Colors.neutral[700] : Colors.neutral[200]}
                 />
               ))}
             </View>
@@ -213,17 +216,19 @@ export default function TechniqueDetail() {
           </View>
         </View>
 
-        <View style={[styles.section, { backgroundColor: cardColor, ...Shadows.sm }]}>
+        <View style={[styles.section, { backgroundColor: cardColor, ...Shadows.md }]}>
           <Text variant="h4" style={[styles.sectionTitle, {color: accentColor}]}>Steps</Text>
           {technique.steps.map((step, index) => (
             <View key={index} style={styles.stepItem}>
-              <Text variant="body1" style={[styles.stepNumber, {color: accentColor}]}>{index + 1}.</Text>
+              <View style={[styles.stepNumber, { backgroundColor: isDark ? Colors.neutral[700] : Colors.neutral[200] }]}>
+                <Text variant="body2" style={[styles.stepNumberText, {color: accentColor}]}>{index + 1}</Text>
+              </View>
               <Text variant="body1" style={[styles.stepText, {color: textColor}]}>{step}</Text>
             </View>
           ))}
         </View>
 
-        <View style={[styles.section, { backgroundColor: cardColor, ...Shadows.sm }]}>
+        <View style={[styles.section, { backgroundColor: cardColor, ...Shadows.md }]}>
           <Text variant="h4" style={[styles.sectionTitle, {color: accentColor}]}>Tips</Text>
           {technique.tips.map((tip, index) => (
             <View key={index} style={styles.tipItem}>
@@ -238,7 +243,7 @@ export default function TechniqueDetail() {
           ))}
         </View>
 
-        <View style={[styles.section, { backgroundColor: cardColor, ...Shadows.sm }]}>
+        <View style={[styles.section, { backgroundColor: cardColor, ...Shadows.md }]}>
           <Text variant="h4" style={[styles.sectionTitle, {color: accentColor}]}>Expected Results</Text>
           <Text variant="body1" style={[styles.expectedResults, {color: textColor}]}>
             {technique.expectedResults}
@@ -246,20 +251,10 @@ export default function TechniqueDetail() {
         </View>
 
         <TouchableOpacity
-          style={[
-            styles.startButton,
-            { backgroundColor: buttonColor }
-          ]}
-          activeOpacity={0.7}
-          onPress={() => console.log(`Starting practice: ${technique.title}`)}
+          style={[styles.startButton, { backgroundColor: accentColor }]}
+          activeOpacity={0.8}
         >
-          <MaterialCommunityIcons
-            name="play-circle-outline"
-            size={24}
-            color="#FFFFFF"
-            style={{ marginRight: spacing[2] }}
-          />
-          <Text variant="button" color="#FFFFFF">
+          <Text variant="button" style={styles.startButtonText}>
             Start Practice
           </Text>
         </TouchableOpacity>
@@ -274,88 +269,98 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: spacing[4],
+    paddingHorizontal: spacing[4],
   },
   iconContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: BorderRadius.xl,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    marginVertical: spacing[6],
     alignSelf: 'center',
-    marginBottom: spacing[6],
-    padding: spacing[4],
+  },
+  title: {
+    textAlign: 'center',
+    marginBottom: spacing[2],
   },
   description: {
     textAlign: 'center',
     marginBottom: spacing[6],
     lineHeight: 24,
-    fontSize: 16,
-    paddingHorizontal: spacing[2],
   },
   infoContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: spacing[6],
     borderRadius: BorderRadius.lg,
     padding: spacing[4],
+    marginBottom: spacing[6],
   },
   infoItem: {
     alignItems: 'center',
   },
   infoText: {
-    marginTop: spacing[1],
-    fontWeight: '500',
+    marginTop: spacing[2],
   },
   difficultyContainer: {
     flexDirection: 'row',
-    gap: 4,
   },
   section: {
-    marginBottom: spacing[6],
     borderRadius: BorderRadius.lg,
     padding: spacing[4],
-    paddingBottom: spacing[5],
+    marginBottom: spacing[4],
   },
   sectionTitle: {
     marginBottom: spacing[4],
-    fontWeight: '600',
   },
   stepItem: {
     flexDirection: 'row',
-    marginBottom: spacing[3],
+    alignItems: 'flex-start',
+    marginBottom: spacing[4],
   },
   stepNumber: {
-    width: 24,
-    marginRight: spacing[2],
-    fontWeight: '600',
+    width: 28,
+    height: 28,
+    borderRadius: BorderRadius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing[3],
+  },
+  stepNumberText: {
+    fontWeight: 'bold',
   },
   stepText: {
     flex: 1,
+    lineHeight: 24,
   },
   tipItem: {
     flexDirection: 'row',
-    marginBottom: spacing[3],
     alignItems: 'flex-start',
+    marginBottom: spacing[3],
   },
   tipIcon: {
-    marginRight: spacing[2],
-    marginTop: 2,
+    marginRight: spacing[3],
+    marginTop: spacing[1],
   },
   tipText: {
     flex: 1,
+    lineHeight: 24,
   },
   expectedResults: {
     lineHeight: 24,
   },
   startButton: {
-    flexDirection: 'row',
-    padding: spacing[4],
+    marginTop: spacing[4],
+    marginBottom: spacing[6],
+    paddingVertical: spacing[4],
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: spacing[4],
-    marginBottom: spacing[4],
     ...Shadows.md,
+  },
+  startButtonText: {
+    color: Colors.neutral[50],
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 }); 

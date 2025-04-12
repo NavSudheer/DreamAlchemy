@@ -90,7 +90,11 @@ const HistoryScreen: React.FC = () => {
                 meaning: s.meaning,
                 frequency: 1
               })),
-              archetypes: [],
+              archetypes: selectedDream.analysis.archetypes?.map(a => ({
+                type: a.type,
+                description: a.description,
+                significance: a.significance
+              })) || [],
               timestamp: selectedDream.timestamp.toString(),
             }}
             dreamText={selectedDream.content}

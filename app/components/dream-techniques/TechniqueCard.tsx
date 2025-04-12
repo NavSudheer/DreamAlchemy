@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTheme } from '../../../src/providers/ThemeProvider';
+import { Colors } from '../../../src/utils/theme';
 
 interface TechniqueCardProps {
   title: string;
@@ -24,13 +26,18 @@ export const TechniqueCard: React.FC<TechniqueCardProps> = ({
   isCompleted,
   onPress,
 }) => {
-  // New indigo and gold color scheme
-  const gradientStart = '#242852';  // Darker indigo
-  const gradientEnd = '#343b7c';    // Lighter indigo
-  const iconColor = '#FFD700';      // Gold
-  const titleColor = '#FFFFFF';     // White
-  const descriptionColor = '#E1E6FF'; // Light lavender
-  const progressColor = '#FFD700';  // Gold
+  const { isDark } = useTheme();
+
+  // Use app theme colors
+  const gradientStart = isDark ? Colors.primary[800] : Colors.primary[100];
+  const gradientEnd = isDark ? Colors.primary[700] : Colors.primary[200];
+  
+  const iconColor = isDark ? Colors.accent[400] : Colors.accent[500];
+  const titleColor = isDark ? Colors.neutral[100] : Colors.neutral[800];
+  const descriptionColor = isDark ? Colors.neutral[300] : Colors.neutral[600];
+  const progressColor = isDark ? Colors.accent[400] : Colors.accent[500];
+  const starActiveColor = isDark ? Colors.accent[400] : Colors.accent[500];
+  const starInactiveColor = isDark ? 'rgba(225, 230, 255, 0.3)' : 'rgba(0, 0, 0, 0.1)';
 
   return (
     <Pressable
@@ -46,7 +53,10 @@ export const TechniqueCard: React.FC<TechniqueCardProps> = ({
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <View style={styles.iconContainer}>
+        <View style={[
+          styles.iconContainer, 
+          { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)' }
+        ]}>
           <MaterialCommunityIcons name={icon} size={40} color={iconColor} />
         </View>
         
@@ -63,7 +73,7 @@ export const TechniqueCard: React.FC<TechniqueCardProps> = ({
                   key={index}
                   name="star"
                   size={16}
-                  color={index < difficulty ? iconColor : 'rgba(225, 230, 255, 0.3)'}
+                  color={index < difficulty ? starActiveColor : starInactiveColor}
                 />
               ))}
             </View>
@@ -75,14 +85,24 @@ export const TechniqueCard: React.FC<TechniqueCardProps> = ({
           </View>
 
           {progress !== undefined && !isCompleted && (
-            <View style={styles.progressContainer}>
+            <View style={[
+              styles.progressContainer, 
+              { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)' }
+            ]}>
               <View style={[styles.progressBar, { width: `${progress}%`, backgroundColor: progressColor }]} />
             </View>
           )}
 
           {isCompleted && (
-            <View style={styles.completedBadge}>
-              <MaterialCommunityIcons name="check-circle" size={24} color="#4CAF50" />
+            <View style={[
+              styles.completedBadge, 
+              { backgroundColor: isDark ? Colors.primary[700] : Colors.primary[100] }
+            ]}>
+              <MaterialCommunityIcons 
+                name="check-circle" 
+                size={24} 
+                color={Colors.success} 
+              />
             </View>
           )}
         </View>
@@ -115,7 +135,6 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -153,7 +172,6 @@ const styles = StyleSheet.create({
   },
   progressContainer: {
     height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 2,
     marginTop: 12,
     overflow: 'hidden',
@@ -166,7 +184,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -8,
     right: -8,
-    backgroundColor: 'rgba(36, 40, 82, 0.9)',
     borderRadius: 12,
     padding: 2,
   },

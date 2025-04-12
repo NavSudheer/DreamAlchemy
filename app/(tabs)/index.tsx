@@ -79,6 +79,11 @@ function Index() {
             symbol: s.name,
             meaning: s.meaning
           })),
+          archetypes: analysis.archetypes.map(a => ({
+            type: a.type,
+            description: a.description,
+            significance: a.significance
+          })),
           mood: 'neutral', // Default value
           theme: 'general', // Default value
         },

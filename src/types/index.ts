@@ -10,6 +10,11 @@ export interface Dream {
       symbol: string;
       meaning: string;
     }>;
+    archetypes: Array<{
+      type: string;
+      description: string;
+      significance: string;
+    }>;
     mood: string;
     theme: string;
   };
