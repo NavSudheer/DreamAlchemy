@@ -1,31 +1,7 @@
-import OpenAI from 'openai';
-import { DreamAnalysis, DREAM_THEMES } from '../types';
-
-// Initialize OpenAI client with error handling
-const getOpenAIClient = () => {
-  const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
-  
-  if (!apiKey) {
-    throw new Error('OpenAI API key is not configured. Please add EXPO_PUBLIC_OPENAI_API_KEY to your .env.local file');
-  }
-
-  return new OpenAI({
-    apiKey,
-    dangerouslyAllowBrowser: true // Required for Expo/React Native
-  });
-};
-
-// Format theme list for the prompt
-const formatThemeList = () => {
-  return Object.entries(DREAM_THEMES)
-    .map(([key, theme]) => 
-      `${theme.name} (${theme.subtypes.join(', ')})`
-    )
-    .join('\n     - ');
-};
+import { DreamAnalysis } from '../types';
 
 /**
- * Analyzes a dream using OpenAI API
+ * Analyzes a dream using Vercel Edge Function
  * @param dreamText The text of the dream to analyze
  * @param onUpdate Optional callback for streaming updates
  * @returns Promise resolving to the dream analysis
@@ -37,50 +13,12 @@ export const analyzeDream = async (
   try {
     console.log("Starting dream analysis...");
     
-    // Get OpenAI client
-    const openai = getOpenAIClient();
-    
-    // Prepare the prompt for Jungian dream analysis with theme categorization
-    const prompt = `
-      Analyze the following dream using Jungian psychology principles:
-      
-      Dream: "${dreamText}"
-      
-      Please provide a detailed analysis that includes:
-      1. Identification of key symbols in the dream and their Jungian interpretations
-      2. Identification of archetypes present in the dream
-      3. A comprehensive interpretation of the dream based on Jungian psychology
-      4. Categorize the dream with a primary theme and up to two secondary themes from this list:
-         - ${formatThemeList()}
-      
-      Format the response as a JSON object with the following structure:
-      {
-        "symbols": [
-          { "name": "symbol name", "meaning": "symbol meaning", "frequency": number of occurrences }
-        ],
-        "archetypes": [
-          { "type": "archetype name", "description": "brief description", "significance": "significance in the dream" }
-        ],
-        "interpretation": "comprehensive interpretation text",
-        "theme": {
-          "primary": "primary theme name",
-          "secondary": ["secondary theme 1", "secondary theme 2"],
-          "confidence": confidence score between 0 and 1
-        }
-      }
-    `;
-
     // Initialize the analysis object
     const initialAnalysis: DreamAnalysis = {
       symbols: [],
       archetypes: [],
       interpretation: "",
-      timestamp: new Date(),
-      theme: {
-        primary: "",
-        secondary: [],
-        confidence: 0
-      }
+      timestamp: new Date()
     };
     
     // If there's an update callback, send the initial state
@@ -88,68 +26,35 @@ export const analyzeDream = async (
       onUpdate(initialAnalysis);
     }
 
-    // Create a non-streaming response for React Native
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        { 
-          role: "system", 
-          content: "You are a Jungian psychologist specializing in dream analysis. Provide insightful interpretations based on Carl Jung's theories of the collective unconscious, archetypes, and dream symbolism. Always respond with valid JSON and categorize dreams according to their primary psychological themes." 
-        },
-        { role: "user", content: prompt }
-      ],
-      temperature: 0.7,
-      stream: false, // Disable streaming for React Native
+    // Call the Vercel Edge Function with the correct URL
+    const response = await fetch('https://dream-analysis-navneethsudheer-gmailcoms-projects.vercel.app/api/analyze-dream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dreamText })
     });
     
-    console.log("OpenAI response received");
-    
-    if (!completion.choices[0]?.message?.content) {
-      throw new Error('No response content from OpenAI');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to analyze dream');
     }
 
-    const content = completion.choices[0].message.content;
+    // Parse the response
+    const analysisData = await response.json();
     
-    // Try to parse the JSON response
-    try {
-      // The response might be wrapped in markdown code blocks
-      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || 
-                       content.match(/```\n([\s\S]*?)\n```/) || 
-                       content.match(/({[\s\S]*})/);
-      
-      if (jsonMatch) {
-        const jsonString = jsonMatch[1];
-        const analysis = JSON.parse(jsonString);
-        
-        // Send the final update
-        if (onUpdate) {
-          onUpdate(analysis);
-        }
-        
-        // Return the complete analysis
-        return {
-          ...analysis,
-          timestamp: initialAnalysis.timestamp
-        };
-      } else {
-        // Try to parse the entire content as JSON
-        const analysis = JSON.parse(content);
-        
-        // Send the final update
-        if (onUpdate) {
-          onUpdate(analysis);
-        }
-        
-        // Return the complete analysis
-        return {
-          ...analysis,
-          timestamp: initialAnalysis.timestamp
-        };
-      }
-    } catch (e) {
-      console.error("Error parsing JSON response:", e);
-      throw new Error('Failed to parse OpenAI response');
+    // Convert ISO timestamp string to Date object if needed
+    if (typeof analysisData.timestamp === 'string') {
+      analysisData.timestamp = new Date(analysisData.timestamp);
+    } else if (!analysisData.timestamp) {
+      analysisData.timestamp = initialAnalysis.timestamp;
     }
+    
+    // Send the final update
+    if (onUpdate) {
+      onUpdate(analysisData);
+    }
+    
+    return analysisData;
+    
   } catch (error) {
     console.error("Error in analyzeDream:", error);
     
@@ -158,12 +63,7 @@ export const analyzeDream = async (
       symbols: [],
       archetypes: [],
       interpretation: `Sorry, we encountered an error analyzing your dream: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again later.`,
-      timestamp: new Date(),
-      theme: {
-        primary: "error",
-        secondary: [],
-        confidence: 0
-      }
+      timestamp: new Date()
     };
   }
 }; 

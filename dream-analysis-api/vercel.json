@@ -1,0 +1,14 @@
+{
+    "routes": [
+      {
+        "src": "/api/analyze-dream",
+        "dest": "/api/analyze-dream.js"
+      }
+    ],
+    "functions": {
+      "api/analyze-dream.js": {
+        "memory": 128,
+        "maxDuration": 10
+      }
+    }
+  }

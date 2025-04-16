@@ -1,0 +1,14 @@
+{
+    "name": "dream-analysis-api",
+    "version": "1.0.0",
+    "description": "OpenAI Proxy API for Dream Alchemy",
+    "main": "index.js",
+    "scripts": {
+      "dev": "vercel dev",
+      "deploy": "vercel deploy --prod"
+    },
+    "dependencies": {
+      "openai": "^4.87.3",
+      "@vercel/edge": "^1.1.1"
+    }
+  }
