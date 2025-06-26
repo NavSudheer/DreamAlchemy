@@ -42,11 +42,16 @@ export interface SpeechErrorEvent {
 
 // Try to import the Voice module safely
 let Voice: any = null;
+let isVoiceAvailable = false;
+
 try {
   // This will throw an error in Expo Go but work in development builds
-  Voice = require('@react-native-voice/voice').default;
+  const VoiceModule = require('@react-native-voice/voice');
+  Voice = VoiceModule.default;
+  isVoiceAvailable = true;
 } catch (error) {
-  console.log('Voice recognition module not available:', error);
+  // Silently fail - this is expected in Expo Go
+  isVoiceAvailable = false;
 }
 
 // Voice recognition service class
@@ -59,26 +64,31 @@ class VoiceRecognitionService {
   private onSpeechPartialResults?: (e: SpeechResultsEvent) => void;
 
   constructor() {
-    // Set up event handlers if the module is available
-    if (Voice) {
-      Voice.onSpeechStart = () => {
-        this.onSpeechStart?.();
-      };
-      Voice.onSpeechRecognized = (e: SpeechRecognizedEvent) => {
-        this.onSpeechRecognized?.(e);
-      };
-      Voice.onSpeechEnd = () => {
-        this.onSpeechEnd?.();
-      };
-      Voice.onSpeechError = (e: SpeechErrorEvent) => {
-        this.onSpeechError?.(e);
-      };
-      Voice.onSpeechResults = (e: SpeechResultsEvent) => {
-        this.onSpeechResults?.(e);
-      };
-      Voice.onSpeechPartialResults = (e: SpeechResultsEvent) => {
-        this.onSpeechPartialResults?.(e);
-      };
+    // Only set up event handlers if the module is available and properly loaded
+    if (isVoiceAvailable && Voice) {
+      try {
+        Voice.onSpeechStart = () => {
+          this.onSpeechStart?.();
+        };
+        Voice.onSpeechRecognized = (e: SpeechRecognizedEvent) => {
+          this.onSpeechRecognized?.(e);
+        };
+        Voice.onSpeechEnd = () => {
+          this.onSpeechEnd?.();
+        };
+        Voice.onSpeechError = (e: SpeechErrorEvent) => {
+          this.onSpeechError?.(e);
+        };
+        Voice.onSpeechResults = (e: SpeechResultsEvent) => {
+          this.onSpeechResults?.(e);
+        };
+        Voice.onSpeechPartialResults = (e: SpeechResultsEvent) => {
+          this.onSpeechPartialResults?.(e);
+        };
+      } catch (error) {
+        console.log('Voice recognition setup failed - running in Expo Go or unsupported environment');
+        isVoiceAvailable = false;
+      }
     }
   }
 
@@ -108,7 +118,7 @@ class VoiceRecognitionService {
 
   // Start voice recognition
   public async startRecognizing(locale?: string): Promise<void> {
-    if (!Voice) {
+    if (!isVoiceAvailable || !Voice) {
       this.handleModuleNotAvailable();
       return;
     }
@@ -123,7 +133,7 @@ class VoiceRecognitionService {
 
   // Stop voice recognition
   public async stopRecognizing(): Promise<void> {
-    if (!Voice) {
+    if (!isVoiceAvailable || !Voice) {
       this.handleModuleNotAvailable();
       return;
     }
@@ -137,7 +147,7 @@ class VoiceRecognitionService {
 
   // Cancel voice recognition
   public async cancelRecognizing(): Promise<void> {
-    if (!Voice) {
+    if (!isVoiceAvailable || !Voice) {
       return;
     }
     
@@ -150,7 +160,7 @@ class VoiceRecognitionService {
 
   // Destroy voice recognition instance
   public async destroyRecognizer(): Promise<void> {
-    if (!Voice) {
+    if (!isVoiceAvailable || !Voice) {
       return;
     }
     
@@ -163,7 +173,7 @@ class VoiceRecognitionService {
 
   // Get available speech recognition services
   public async getSpeechRecognitionServices(): Promise<string[]> {
-    if (!Voice) {
+    if (!isVoiceAvailable || !Voice) {
       return [];
     }
     
@@ -183,7 +193,7 @@ class VoiceRecognitionService {
 
   // Check if voice recognition is available
   public async isAvailable(): Promise<boolean> {
-    if (!Voice) {
+    if (!isVoiceAvailable || !Voice) {
       return false;
     }
     
@@ -198,11 +208,12 @@ class VoiceRecognitionService {
 
   // Handle the case when the module is not available
   private handleModuleNotAvailable() {
-    this.onSpeechError?.({
-      error: {
-        message: 'Voice recognition is not available in Expo Go. Please use a development build.',
-        code: 'module_unavailable'
-      }
+    console.log('Voice recognition not available - running in Expo Go or unsupported environment');
+    this.onSpeechError?.({ 
+      error: { 
+        message: 'Voice recognition requires a development build. Please use EAS Build to create a development build.', 
+        code: 'module_not_available' 
+      } 
     });
   }
 }

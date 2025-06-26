@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { View, StyleSheet, StatusBar } from 'react-native';
 import { TechniqueList, Technique } from './TechniqueList';
 import { useRouter } from 'expo-router';
-import { useTheme } from '../../../src/providers/ThemeProvider';
-import { createNavigation } from '../../../src/navigation/routes';
+import { useTheme } from '../../providers/ThemeProvider';
+import { createNavigation } from '../../navigation/routes';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors } from '../../../src/utils/theme';
 
 // Sample data - In a real app, this would come from an API or database
 const SAMPLE_TECHNIQUES: Technique[] = [
@@ -53,13 +52,14 @@ const SAMPLE_TECHNIQUES: Technique[] = [
   },
 ];
 
-export const DreamTechniques: React.FC = () => {
+const DreamTechniques: React.FC = () => {
   const router = useRouter();
   const { isDark } = useTheme();
   const [techniques] = useState<Technique[]>(SAMPLE_TECHNIQUES);
 
-  const gradientTop = isDark ? Colors.neutral[900] : Colors.neutral[50];
-  const gradientBottom = isDark ? Colors.neutral[800] : Colors.neutral[100];
+  // New colors for better readability
+  const gradientTop = '#151934';    // Darker indigo for background gradient
+  const gradientBottom = '#2A305F'; // Lighter indigo for background gradient
 
   const handleTechniquePress = (technique: Technique) => {
     router.push(
@@ -69,7 +69,7 @@ export const DreamTechniques: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
+      <StatusBar barStyle="light-content" />
       <LinearGradient
         colors={[gradientTop, gradientBottom]}
         style={styles.background}
@@ -94,4 +94,7 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 20,
   },
-}); 
+});
+
+export { DreamTechniques };
+export default DreamTechniques; 

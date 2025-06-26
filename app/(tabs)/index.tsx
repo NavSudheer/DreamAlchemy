@@ -79,8 +79,15 @@ function Index() {
             symbol: s.name,
             meaning: s.meaning
           })),
-          mood: 'neutral', // Default value
-          theme: 'general', // Default value
+          archetypes: analysis.archetypes.map(a => ({
+            type: a.type,
+            description: a.description,
+            significance: a.significance
+          })),
+          mood: 'neutral',
+          theme: analysis.theme?.primary || 'general',
+          secondaryThemes: analysis.theme?.secondary || [],
+          themeConfidence: analysis.theme?.confidence || 0
         },
       };
       

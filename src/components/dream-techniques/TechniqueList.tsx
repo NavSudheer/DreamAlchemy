@@ -39,7 +39,7 @@ export const TechniqueList: React.FC<TechniqueListProps> = ({
         />
       )}
       contentContainerStyle={styles.container}
-      showsVerticalScrollIndicator={true}
+      showsVerticalScrollIndicator={false}
     />
   );
 };
@@ -47,6 +47,7 @@ export const TechniqueList: React.FC<TechniqueListProps> = ({
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 8,
-    paddingBottom: 100, // Add extra padding at the bottom to ensure all content is visible
   },
-}); 
+});
+
+export default TechniqueList; 

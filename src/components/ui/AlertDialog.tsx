@@ -6,7 +6,8 @@ import {
   StyleSheet, 
   Dimensions,
   TouchableWithoutFeedback,
-  Platform
+  Platform,
+  ViewStyle
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -48,6 +49,11 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
   const handleCancel = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onCancel();
+  };
+
+  const cancelButtonStyle: ViewStyle = {
+    minWidth: 100,
+    backgroundColor: isDark ? Colors.neutral[700] : Colors.neutral[100],
   };
 
   if (!visible) {
@@ -116,23 +122,36 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
                 </Text>
                 
                 <View style={styles.actions}>
-                  {cancelText ? (
+                  {cancelText && (
                     <Button
                       variant="outline"
                       size="md"
                       onPress={handleCancel}
-                      style={styles.cancelButton}
+                      style={{
+                        minWidth: 100,
+                        backgroundColor: 'transparent',
+                        borderWidth: 1,
+                        borderColor: isDark ? Colors.neutral[400] : Colors.neutral[400],
+                      }}
                       hapticFeedback
                     >
                       {cancelText}
                     </Button>
-                  ) : null}
+                  )}
                   
                   <Button
-                    variant={destructive ? "error" : "primary"}
+                    variant="outline"
                     size="md"
                     onPress={handleConfirm}
-                    style={styles.confirmButton}
+                    style={{
+                      minWidth: 100,
+                      backgroundColor: 'transparent',
+                      borderWidth: 1,
+                      borderColor: destructive ? Colors.error[500] : (isDark ? Colors.primary[400] : Colors.primary[500]),
+                    }}
+                    textStyle={{
+                      color: destructive ? Colors.error[500] : (isDark ? Colors.primary[400] : Colors.primary[500])
+                    }}
                     hapticFeedback
                   >
                     {confirmText}
@@ -192,13 +211,8 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    alignItems: 'center',
     gap: spacing[3],
-  },
-  cancelButton: {
-    minWidth: 100,
-  },
-  confirmButton: {
-    minWidth: 100,
   }
 });
 
