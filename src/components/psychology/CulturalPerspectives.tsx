@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { Text, Card, Divider } from 'react-native-paper';
+import { Divider } from 'react-native-paper';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../hooks/useTheme';
+import Text from '../ui/Text';
+import Card from '../ui/Card';
 
 const CulturalPerspectives = () => {
   const { colors, isDark } = useTheme();
@@ -86,24 +88,24 @@ const CulturalPerspectives = () => {
         ]}
       >
         <View style={styles.header}>
-          <Text variant="headlineMedium" style={[styles.title, { color: textColor }]}>
+          <Text variant="h2" style={[styles.title, { color: textColor }]}>
             Cultural Perspectives
           </Text>
-          <Text variant="bodyLarge" style={[styles.subtitle, { color: subtitleColor }]}>
+          <Text variant="body1" style={[styles.subtitle, { color: subtitleColor }]}>
             How different cultures understand dreams
           </Text>
         </View>
 
         {cultures.map((culture, index) => (
-          <Card key={index} style={[styles.section, { backgroundColor: cardBackgroundColor }]}>
-            <Card.Content>
+          <Card key={index} style={StyleSheet.flatten([styles.section, { backgroundColor: cardBackgroundColor }])}>
+            <View style={styles.content}>
               <View style={styles.cultureHeader}>
-                <Text style={styles.cultureIcon}>{culture.icon}</Text>
+                <Text variant="h2" style={styles.cultureIcon}>{culture.icon}</Text>
                 <View style={styles.cultureTitleContainer}>
-                  <Text variant="titleLarge" style={[styles.cultureTitle, { color: textColor }]}>
+                  <Text variant="h3" style={[styles.cultureTitle, { color: textColor }]}>
                     {culture.name}
                   </Text>
-                  <Text variant="bodyMedium" style={[styles.period, { color: subtitleColor }]}>
+                  <Text variant="body2" style={[styles.period, { color: subtitleColor }]}>
                     {culture.period}
                   </Text>
                 </View>
@@ -111,29 +113,29 @@ const CulturalPerspectives = () => {
 
               <Divider style={[styles.divider, { backgroundColor: dividerColor }]} />
 
-              <Text variant="titleMedium" style={[styles.sectionTitle, { color: textColor }]}>
+              <Text variant="h4" style={[styles.sectionTitle, { color: textColor }]}>
                 Key Beliefs
               </Text>
               {culture.beliefs.map((belief, idx) => (
-                <Text key={idx} style={[styles.belief, { color: textColor }]}>
+                <Text key={idx} variant="body2" style={[styles.belief, { color: textColor }]}>
                   • {belief}
                 </Text>
               ))}
 
-              <Text variant="titleMedium" style={[styles.sectionTitle, styles.significanceTitle, { color: textColor }]}>
+              <Text variant="h4" style={[styles.sectionTitle, styles.significanceTitle, { color: textColor }]}>
                 Cultural Significance
               </Text>
-              <Text variant="bodyMedium" style={[styles.significance, { color: subtitleColor }]}>
+              <Text variant="body2" style={[styles.significance, { color: subtitleColor }]}>
                 {culture.significance}
               </Text>
 
-              <Text variant="titleMedium" style={[styles.sectionTitle, styles.practicesTitle, { color: textColor }]}>
+              <Text variant="h4" style={[styles.sectionTitle, styles.practicesTitle, { color: textColor }]}>
                 Traditional Practices
               </Text>
-              <Text variant="bodyMedium" style={[styles.practices, { color: subtitleColor }]}>
+              <Text variant="body2" style={[styles.practices, { color: subtitleColor }]}>
                 {culture.practices}
               </Text>
-            </Card.Content>
+            </View>
           </Card>
         ))}
       </ScrollView>
@@ -167,6 +169,9 @@ const styles = StyleSheet.create({
     margin: 16,
     marginBottom: 8,
     elevation: 2,
+  },
+  content: {
+    padding: 16,
   },
   cultureHeader: {
     flexDirection: 'row',

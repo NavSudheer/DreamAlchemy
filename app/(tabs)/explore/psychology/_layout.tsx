@@ -1,8 +1,8 @@
 import { Stack, useRouter } from 'expo-router';
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../../../src/providers/ThemeProvider';
-import { Colors } from '../../../../src/utils/theme';
+import { useTheme } from '@/providers/ThemeProvider';
+import { Colors } from '@/utils/theme';
 import { TouchableOpacity } from 'react-native';
 
 export default function PsychologyLayout() {

@@ -6,8 +6,9 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View } from 'react-native';
-import ThemeProvider from '../src/providers/ThemeProvider';
-import { Colors } from '../src/utils/theme';
+import ThemeProvider from '@/providers/ThemeProvider';
+import { Colors } from '@/utils/theme';
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -28,18 +29,20 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider>
-      <SafeAreaProvider>
-        <View style={{ flex: 1, backgroundColor: Colors.primary[600] }}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="symbol/[id]" options={{ headerShown: false }} />
-            <Stack.Screen name="category/[id]" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" options={{ headerShown: false }} />
-          </Stack>
-          <StatusBar style="light" />
-        </View>
-      </SafeAreaProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <SafeAreaProvider>
+          <View style={{ flex: 1, backgroundColor: Colors.primary[600] }}>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="symbol/[id]" options={{ headerShown: false }} />
+              <Stack.Screen name="category/[id]" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" options={{ headerShown: false }} />
+            </Stack>
+            <StatusBar style="light" />
+          </View>
+        </SafeAreaProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }

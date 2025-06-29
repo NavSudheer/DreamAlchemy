@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useTheme } from '../../src/providers/ThemeProvider';
-import { Colors, spacing, BorderRadius, Shadows } from '../../src/utils/theme';
-import Text from '../../src/components/ui/Text';
-import Card from '../../src/components/ui/Card';
-import Header from '../../src/components/ui/Header';
+import { useTheme } from '@/providers/ThemeProvider';
+import { Colors, spacing, BorderRadius, Shadows } from '@/utils/theme';
+import Text from '@/components/ui/Text';
+import Card from '@/components/ui/Card';
+import Header from '@/components/ui/Header';
 import { Ionicons } from '@expo/vector-icons';
-import PatternsScreen from '../../src/components/DreamPatterns';
-import { DreamTechniques } from '../components/dream-techniques/DreamTechniques';
+import PatternsScreen from '@/components/DreamPatterns';
+import { DreamTechniques } from '@/components/dream-techniques/DreamTechniques';
 
 export default function ExploreScreen() {
   const { isDark } = useTheme();

@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { Text, Card, List, Divider } from 'react-native-paper';
+import { List, Divider } from 'react-native-paper';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../hooks/useTheme';
+import Text from '../ui/Text';
+import Card from '../ui/Card';
 
 const PsychologicalTheories = () => {
   const { colors, isDark } = useTheme();
@@ -70,47 +72,44 @@ const PsychologicalTheories = () => {
         ]}
       >
         <View style={styles.header}>
-          <Text variant="headlineMedium" style={[styles.title, { color: textColor }]}>
+          <Text variant="h2" style={[styles.title, { color: textColor }]}>
             Psychological Theories
           </Text>
-          <Text variant="bodyLarge" style={[styles.subtitle, { color: subtitleColor }]}>
+          <Text variant="body1" style={[styles.subtitle, { color: subtitleColor }]}>
             Different approaches to understanding dreams
           </Text>
         </View>
 
         {theories.map((theory, index) => (
-          <Card key={index} style={[styles.section, { backgroundColor: cardBackgroundColor }]}>
-            <Card.Content>
+          <Card key={index} style={StyleSheet.flatten([styles.section, { backgroundColor: cardBackgroundColor }])}>
+            <View style={styles.content}>
               <View style={styles.theoryHeader}>
-                <Text style={styles.theoryIcon}>{theory.icon}</Text>
-                <View style={styles.theoryTitleContainer}>
-                  <Text variant="titleLarge" style={[styles.theoryTitle, { color: textColor }]}>
-                    {theory.name}
-                  </Text>
-                  <Text variant="bodyMedium" style={[styles.founder, { color: subtitleColor }]}>
-                    Developed by {theory.founder}
-                  </Text>
-                </View>
+                <Text variant="h3" style={[styles.theoryTitle, { color: textColor }]}>
+                  {theory.name}
+                </Text>
+                <Text variant="body2" style={[styles.founder, { color: subtitleColor }]}>
+                  Developed by {theory.founder}
+                </Text>
               </View>
 
               <Divider style={[styles.divider, { backgroundColor: dividerColor }]} />
 
-              <Text variant="titleMedium" style={[styles.sectionTitle, { color: textColor }]}>
+              <Text variant="h4" style={[styles.sectionTitle, { color: textColor }]}>
                 Key Principles
               </Text>
               {theory.keyPrinciples.map((principle, idx) => (
-                <Text key={idx} style={[styles.principle, { color: textColor }]}>
+                <Text key={idx} variant="body2" style={[styles.principle, { color: textColor }]}>
                   • {principle}
                 </Text>
               ))}
 
-              <Text variant="titleMedium" style={[styles.sectionTitle, styles.conceptsTitle, { color: textColor }]}>
+              <Text variant="h4" style={[styles.sectionTitle, styles.conceptsTitle, { color: textColor }]}>
                 Main Concepts
               </Text>
-              <Text variant="bodyMedium" style={[styles.concepts, { color: subtitleColor }]}>
+              <Text variant="body2" style={[styles.concepts, { color: subtitleColor }]}>
                 {theory.mainConcepts}
               </Text>
-            </Card.Content>
+            </View>
           </Card>
         ))}
       </ScrollView>
@@ -145,17 +144,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     elevation: 2,
   },
+  content: {
+    padding: 16,
+  },
   theoryHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginBottom: 16,
-  },
-  theoryIcon: {
-    fontSize: 32,
-    marginRight: 16,
-  },
-  theoryTitleContainer: {
-    flex: 1,
   },
   theoryTitle: {
     marginBottom: 4,

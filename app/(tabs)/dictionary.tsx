@@ -8,13 +8,13 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../src/providers/ThemeProvider';
-import { BorderRadius, Colors, spacing } from '../../src/utils/theme';
-import Text from '../../src/components/ui/Text';
-import Header from '../../src/components/ui/Header';
-import SearchBar from '../../src/components/dictionary/SearchBar';
-import SymbolCard from '../../src/components/dictionary/SymbolCard';
-import CategoryCard from '../../src/components/dictionary/CategoryCard';
+import { useTheme } from '@/providers/ThemeProvider';
+import { BorderRadius, Colors, spacing } from '@/utils/theme';
+import Text from '@/components/ui/Text';
+import Header from '@/components/ui/Header';
+import SearchBar from '@/components/dictionary/SearchBar';
+import SymbolCard from '@/components/dictionary/SymbolCard';
+import CategoryCard from '@/components/dictionary/CategoryCard';
 import { 
   CATEGORIES, 
   CategoryInfo, 

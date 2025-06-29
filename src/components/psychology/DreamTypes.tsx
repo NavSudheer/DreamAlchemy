@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { Text, Card, Chip } from 'react-native-paper';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../hooks/useTheme';
+import Text from '../ui/Text';
+import Card from '../ui/Card';
 
 const DreamTypes = () => {
   const { colors, isDark } = useTheme();
@@ -54,8 +55,6 @@ const DreamTypes = () => {
   const cardBackgroundColor = isDark ? '#1E1E1E' : colors.surface;
   const textColor = isDark ? '#FFFFFF' : colors.onSurface;
   const subtitleColor = isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)';
-  const chipBackgroundColor = isDark ? 'rgba(255, 255, 255, 0.15)' : colors.surfaceVariant;
-  const chipTextColor = isDark ? '#FFFFFF' : colors.onSurfaceVariant;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -67,58 +66,49 @@ const DreamTypes = () => {
         ]}
       >
         <View style={styles.header}>
-          <Text variant="headlineMedium" style={[styles.title, { color: textColor }]}>
+          <Text variant="h2" style={[styles.title, { color: textColor }]}>
             Dream Types
           </Text>
-          <Text variant="bodyLarge" style={[styles.subtitle, { color: subtitleColor }]}>
+          <Text variant="body1" style={[styles.subtitle, { color: subtitleColor }]}>
             Understanding different categories of dreams
           </Text>
         </View>
 
         {dreamTypes.map((type, index) => (
-          <Card key={index} style={[styles.section, { backgroundColor: cardBackgroundColor }]}>
-            <Card.Content>
+          <Card key={index} style={StyleSheet.flatten([styles.section, { backgroundColor: cardBackgroundColor }])}>
+            <View style={styles.content}>
               <View style={styles.typeHeader}>
-                <Text style={styles.typeIcon}>{type.icon}</Text>
-                <Text variant="titleLarge" style={[styles.typeTitle, { color: textColor }]}>
-                  {type.name}
-                </Text>
+                <Text variant="h2" style={styles.typeIcon}>{type.icon}</Text>
+                <View style={styles.typeTitleContainer}>
+                  <Text variant="h3" style={[styles.typeTitle, { color: textColor }]}>
+                    {type.name}
+                  </Text>
+                  <Text variant="body2" style={[styles.frequency, { color: subtitleColor }]}>
+                    {type.frequency}
+                  </Text>
+                </View>
               </View>
 
-              <Text variant="bodyMedium" style={[styles.description, { color: subtitleColor }]}>
+              <Text variant="body1" style={[styles.description, { color: subtitleColor }]}>
                 {type.description}
               </Text>
 
-              <View style={styles.characteristicsContainer}>
-                {type.characteristics.map((char, idx) => (
-                  <Chip
-                    key={idx}
-                    style={[styles.chip, { backgroundColor: chipBackgroundColor }]}
-                    textStyle={[styles.chipText, { color: chipTextColor }]}
-                  >
-                    {char}
-                  </Chip>
-                ))}
-              </View>
+              <Text variant="h4" style={[styles.sectionTitle, { color: textColor }]}>
+                Characteristics
+              </Text>
+              {type.characteristics.map((characteristic, idx) => (
+                <Text key={idx} variant="body2" style={[styles.characteristic, { color: textColor }]}>
+                  • {characteristic}
+                </Text>
+              ))}
 
-              <View style={styles.infoSection}>
-                <Text variant="titleMedium" style={[styles.infoTitle, { color: textColor }]}>
-                  Psychological Significance
-                </Text>
-                <Text variant="bodyMedium" style={[styles.infoText, { color: subtitleColor }]}>
-                  {type.significance}
-                </Text>
-              </View>
-
-              <View style={styles.infoSection}>
-                <Text variant="titleMedium" style={[styles.infoTitle, { color: textColor }]}>
-                  Frequency
-                </Text>
-                <Text variant="bodyMedium" style={[styles.infoText, { color: subtitleColor }]}>
-                  {type.frequency}
-                </Text>
-              </View>
-            </Card.Content>
+              <Text variant="h4" style={[styles.sectionTitle, styles.significanceTitle, { color: textColor }]}>
+                Psychological Significance
+              </Text>
+              <Text variant="body2" style={[styles.significance, { color: subtitleColor }]}>
+                {type.significance}
+              </Text>
+            </View>
           </Card>
         ))}
       </ScrollView>
@@ -153,41 +143,42 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     elevation: 2,
   },
+  content: {
+    padding: 16,
+  },
   typeHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   typeIcon: {
     fontSize: 32,
-    marginRight: 12,
+    marginRight: 16,
+  },
+  typeTitleContainer: {
+    flex: 1,
   },
   typeTitle: {
-    flex: 1,
+    marginBottom: 4,
+  },
+  frequency: {
+    marginBottom: 4,
   },
   description: {
     marginBottom: 16,
   },
-  characteristicsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 16,
+  sectionTitle: {
+    marginBottom: 8,
   },
-  chip: {
+  characteristic: {
+    marginLeft: 16,
     marginBottom: 4,
   },
-  chipText: {
-    fontSize: 12,
+  significanceTitle: {
+    marginTop: 16,
   },
-  infoSection: {
-    marginBottom: 12,
-  },
-  infoTitle: {
-    marginBottom: 4,
-  },
-  infoText: {
-    marginBottom: 4,
+  significance: {
+    marginBottom: 8,
   },
 });
 

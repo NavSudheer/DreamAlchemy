@@ -44,8 +44,8 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
   const { isDark } = useTheme();
   const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
   
-  // Define getStyles function to create theme-aware styles
-  const getStyles = () => StyleSheet.create({
+  // Define static styles
+  const styles = StyleSheet.create({
     container: {
       paddingHorizontal: spacing[4],
       paddingTop: spacing[2],
@@ -96,25 +96,22 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
     sectionIcon: {
       marginRight: spacing[2],
     },
-    dreamCard: {
-      backgroundColor: isDark ? 'rgba(26, 32, 44, 0.5)' : 'rgba(247, 250, 252, 0.5)',
+    dreamCardBase: {
       borderRadius: BorderRadius.lg,
       padding: spacing[4],
       marginBottom: spacing[4],
       borderLeftWidth: 4,
-      borderLeftColor: isDark ? Colors.accent[400] : Colors.accent[500],
     },
     dreamText: {
       marginBottom: spacing[2],
       paddingLeft: spacing[2],
     },
-    symbolItem: {
-      backgroundColor: isDark ? 'rgba(45, 55, 72, 0.3)' : 'rgba(247, 250, 252, 0.5)',
+    symbolItemBase: {
       borderRadius: BorderRadius.lg,
       padding: spacing[4],
       marginBottom: spacing[3],
       borderLeftWidth: 3,
-      borderLeftColor: isDark ? Colors.secondary[500] : Colors.secondary[500],
+      borderLeftColor: Colors.secondary[500],
     },
     symbolHeader: {
       flexDirection: 'row',
@@ -129,7 +126,7 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
     frequencyContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: isDark ? 'rgba(56, 178, 172, 0.1)' : 'rgba(56, 178, 172, 0.1)',
+      backgroundColor: 'rgba(56, 178, 172, 0.1)',
       borderRadius: BorderRadius.pill,
       paddingHorizontal: spacing[2],
       paddingVertical: 4,
@@ -159,13 +156,11 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
     archetypesContainer: {
       width: '100%',
     },
-    archetypeItem: {
-      backgroundColor: isDark ? 'rgba(45, 55, 72, 0.3)' : 'rgba(247, 250, 252, 0.5)',
+    archetypeItemBase: {
       padding: spacing[4],
       borderRadius: BorderRadius.lg,
       marginBottom: spacing[3],
       borderLeftWidth: 3,
-      borderLeftColor: isDark ? Colors.accent[500] : Colors.accent[500],
     },
     archetypeName: {
       fontWeight: 'bold',
@@ -185,24 +180,20 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
       textAlign: 'center',
       paddingVertical: spacing[3],
     },
-    interpretationContainer: {
-      backgroundColor: isDark ? 'rgba(45, 55, 72, 0.3)' : 'rgba(247, 250, 252, 0.5)',
+    interpretationContainerBase: {
       borderRadius: BorderRadius.lg,
       padding: spacing[4],
       marginBottom: spacing[6],
       borderLeftWidth: 3,
-      borderLeftColor: isDark ? Colors.primary[500] : Colors.primary[500],
     },
     interpretationText: {
       lineHeight: 22,
     },
-    themeContainer: {
-      backgroundColor: isDark ? 'rgba(45, 55, 72, 0.3)' : 'rgba(247, 250, 252, 0.5)',
+    themeContainerBase: {
       borderRadius: BorderRadius.lg,
       padding: spacing[4],
       marginBottom: spacing[6],
       borderLeftWidth: 3,
-      borderLeftColor: isDark ? Colors.accent[500] : Colors.accent[500],
     },
     themeItem: {
       marginBottom: spacing[3],
@@ -218,9 +209,46 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
       alignItems: 'flex-end',
     },
   });
-  
-  // Create styles
-  const styles = getStyles();
+
+  // Dynamic styles based on theme
+  const dreamCardStyle = [
+    styles.dreamCardBase,
+    {
+      backgroundColor: isDark ? 'rgba(26, 32, 44, 0.5)' : 'rgba(247, 250, 252, 0.5)',
+      borderLeftColor: isDark ? Colors.accent[400] : Colors.accent[500],
+    }
+  ];
+
+  const symbolItemStyle = [
+    styles.symbolItemBase,
+    {
+      backgroundColor: isDark ? 'rgba(45, 55, 72, 0.3)' : 'rgba(247, 250, 252, 0.5)',
+    }
+  ];
+
+  const archetypeItemStyle = [
+    styles.archetypeItemBase,
+    {
+      backgroundColor: isDark ? 'rgba(45, 55, 72, 0.3)' : 'rgba(247, 250, 252, 0.5)',
+      borderLeftColor: isDark ? Colors.accent[500] : Colors.accent[500],
+    }
+  ];
+
+  const interpretationContainerStyle = [
+    styles.interpretationContainerBase,
+    {
+      backgroundColor: isDark ? 'rgba(45, 55, 72, 0.3)' : 'rgba(247, 250, 252, 0.5)',
+      borderLeftColor: isDark ? Colors.primary[500] : Colors.primary[500],
+    }
+  ];
+
+  const themeContainerStyle = [
+    styles.themeContainerBase,
+    {
+      backgroundColor: isDark ? 'rgba(45, 55, 72, 0.3)' : 'rgba(247, 250, 252, 0.5)',
+      borderLeftColor: isDark ? Colors.accent[500] : Colors.accent[500],
+    }
+  ];
 
   const handleSave = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -243,7 +271,7 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
     if (onDelete) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       setDeleteAlertVisible(true);
-      console.log('Delete alert should be visible now');
+      // Showing delete confirmation dialog
     }
   };
 
@@ -391,7 +419,7 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
                 Your Dream
               </Text>
             </View>
-            <View style={styles.dreamCard}>
+            <View style={dreamCardStyle}>
               <Text 
                 variant="dreamText" 
                 color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
@@ -417,13 +445,13 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
                 Interpretation
               </Text>
             </View>
-            <View style={styles.interpretationContainer}>
+            <View style={interpretationContainerStyle}>
               <Text 
                 variant="body1" 
                 color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
                 style={styles.interpretationText}
               >
-                {analysis.interpretation}
+                {analysis.interpretation || 'No interpretation available'}
               </Text>
             </View>
           </View>
@@ -444,7 +472,7 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
                   Dream Themes
                 </Text>
               </View>
-              <View style={styles.themeContainer}>
+              <View style={themeContainerStyle}>
                 <View style={styles.themeItem}>
                   <Text 
                     variant="subtitle1" 
@@ -458,7 +486,7 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
                     color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
                     style={styles.themeValue}
                   >
-                    {analysis.theme.primary}
+                    {analysis.theme.primary || 'General'}
                   </Text>
                 </View>
                 
@@ -478,19 +506,19 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
                         color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
                         style={styles.themeValue}
                       >
-                        {theme}
+                        {theme || 'Theme'}
                       </Text>
                     ))}
                   </View>
                 )}
                 
-                {analysis.theme.confidence && (
+                {(analysis.theme.confidence !== undefined && analysis.theme.confidence !== null) && (
                   <View style={styles.confidenceContainer}>
                     <Text 
                       variant="caption" 
                       color={isDark ? Colors.neutral[400] : Colors.neutral[500]}
                     >
-                      Theme Confidence: {Math.round(analysis.theme.confidence * 100)}%
+                      Theme Confidence: {Math.round((analysis.theme.confidence || 0) * 100)}%
                     </Text>
                   </View>
                 )}
@@ -516,7 +544,7 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
             <View style={styles.symbolsContainer}>
               {analysis.symbols.length > 0 ? (
                 analysis.symbols.map((symbol: Symbol, index: number) => (
-                  <View key={index} style={styles.symbolItem}>
+                  <View key={index} style={symbolItemStyle}>
                     <View style={styles.symbolHeader}>
                       <Text 
                         variant="subtitle1" 
@@ -537,7 +565,7 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
                             color={isDark ? Colors.secondary[300] : Colors.secondary[600]}
                             style={styles.frequencyText}
                           >
-                            {symbol.frequency}x
+                            {symbol.frequency || 1}x
                           </Text>
                         </View>
                       )}
@@ -581,7 +609,7 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
               </View>
               <View style={styles.archetypesContainer}>
                 {analysis.archetypes.map((archetype: Archetype, index: number) => (
-                  <View key={index} style={styles.archetypeItem}>
+                  <View key={index} style={archetypeItemStyle}>
                     <Text 
                       variant="subtitle1" 
                       color={isDark ? Colors.accent[300] : Colors.accent[600]}
@@ -596,11 +624,7 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
                     >
                       {archetype.description}
                     </Text>
-                    <Text 
-                      variant="body2" 
-                      color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
-                      style={styles.archetypeSignificance}
-                    >
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                       <Text 
                         variant="body2" 
                         color={isDark ? Colors.neutral[200] : Colors.neutral[700]}
@@ -608,8 +632,14 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
                       >
                         Significance: 
                       </Text>
-                      {' '}{archetype.significance}
-                    </Text>
+                      <Text 
+                        variant="body2" 
+                        color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
+                        style={styles.archetypeSignificance}
+                      >
+                        {archetype.significance}
+                      </Text>
+                    </View>
                   </View>
                 ))}
               </View>

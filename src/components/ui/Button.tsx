@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import {
   TouchableOpacity,
-  Text,
   StyleSheet,
   ActivityIndicator,
   ViewStyle,
@@ -14,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { Colors, BorderRadius, Shadows, typography, Animation } from '../../utils/theme';
 import { useTheme } from '../../providers/ThemeProvider';
+import Text from './Text';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'accent' | 'outline' | 'ghost' | 'error';
 export type ButtonSize = 'sm' | 'md' | 'lg';

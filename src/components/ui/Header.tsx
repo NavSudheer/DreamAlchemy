@@ -11,6 +11,7 @@ interface HeaderProps {
   title: string;
   leftIcon?: string;
   rightIcon?: string;
+  rightText?: string;
   onLeftPress?: () => void;
   onRightPress?: () => void;
   showMoon?: boolean;
@@ -20,6 +21,7 @@ const Header: React.FC<HeaderProps> = ({
   title,
   leftIcon,
   rightIcon,
+  rightText,
   onLeftPress,
   onRightPress,
   showMoon = false
@@ -106,6 +108,18 @@ const Header: React.FC<HeaderProps> = ({
               color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
             />
           </TouchableOpacity>
+        ) : rightText ? (
+          <View style={styles.rightTextContainer}>
+            <Text 
+              variant="caption" 
+              style={[
+                styles.rightText,
+                { color: isDark ? Colors.primary[300] : Colors.primary[600] }
+              ]}
+            >
+              {rightText}
+            </Text>
+          </View>
         ) : renderMoonIcon()}
       </View>
     </View>
@@ -172,6 +186,17 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  rightTextContainer: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rightText: {
+    fontSize: 11,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });
 

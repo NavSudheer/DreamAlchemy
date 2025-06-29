@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, SafeAreaView, StatusBar } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
-import DreamHistory from '../../src/components/DreamHistory';
-import DreamAnalysis from '../../src/components/DreamAnalysis';
-import { getDreams, deleteDream, clearDreams } from '../../src/utils/storage';
-import { Dream } from '../../src/types';
-import { useTheme } from '../../src/providers/ThemeProvider';
-import { Colors, spacing } from '../../src/utils/theme';
-import Text from '../../src/components/ui/Text';
-import Card from '../../src/components/ui/Card';
-import Header from '../../src/components/ui/Header';
+import DreamHistory from '@/components/DreamHistory';
+import DreamAnalysis from '@/components/DreamAnalysis';
+import { getDreams, deleteDream, clearDreams } from '@/utils/storage';
+import { Dream } from '@/types';
+import { useTheme } from '@/providers/ThemeProvider';
+import { Colors, spacing } from '@/utils/theme';
+import Text from '@/components/ui/Text';
+import Card from '@/components/ui/Card';
+import Header from '@/components/ui/Header';
 
 const HistoryScreen: React.FC = () => {
   const [dreams, setDreams] = useState<Dream[]>([]);
@@ -78,31 +78,31 @@ const HistoryScreen: React.FC = () => {
             onClearAllDreams={handleClearAllDreams}
           />
         </View>
-      ) : selectedDream?.analysis ? (
+      ) : selectedDream && selectedDream.analysis ? (
         <View style={styles.analysisContent}>
           <Header title="Dream Analysis" />
           
           <DreamAnalysis
             analysis={{
-              interpretation: selectedDream.analysis.interpretation,
-              symbols: selectedDream.analysis.symbols.map(s => ({
-                name: s.symbol,
-                meaning: s.meaning,
+              interpretation: String(selectedDream.analysis.interpretation || ''),
+              symbols: (selectedDream.analysis.symbols || []).map(s => ({
+                name: String(s.symbol || 'Unknown Symbol'),
+                meaning: String(s.meaning || 'No meaning available'),
                 frequency: 1
-              })),
-              archetypes: selectedDream.analysis.archetypes?.map(a => ({
-                type: a.type,
-                description: a.description,
-                significance: a.significance
-              })) || [],
-              timestamp: selectedDream.timestamp.toString(),
+              })).filter(s => s.name && s.meaning),
+              archetypes: (selectedDream.analysis.archetypes || []).map(a => ({
+                type: String(a.type || 'Unknown Type'),
+                description: String(a.description || 'No description available'),
+                significance: String(a.significance || 'No significance provided')
+              })).filter(a => a.type && a.description && a.significance),
+              timestamp: String(selectedDream.timestamp || Date.now()),
               theme: {
-                primary: selectedDream.analysis.theme,
-                secondary: selectedDream.analysis.secondaryThemes || [],
-                confidence: selectedDream.analysis.themeConfidence || 0
+                primary: String(selectedDream.analysis.theme || 'General'),
+                secondary: (selectedDream.analysis.secondaryThemes || []).map(t => String(t || '')).filter(Boolean),
+                confidence: Number(selectedDream.analysis.themeConfidence || 0)
               }
             }}
-            dreamText={selectedDream.content}
+            dreamText={String(selectedDream.content || '')}
             isAnalyzing={false}
             onSave={handleBackToHistory}
             onNewDream={handleNewDream}

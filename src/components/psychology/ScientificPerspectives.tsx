@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { Text, Card, List } from 'react-native-paper';
+import { List } from 'react-native-paper';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../hooks/useTheme';
+import Text from '../ui/Text';
+import Card from '../ui/Card';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const ScientificPerspectives = () => {
@@ -54,60 +56,62 @@ const ScientificPerspectives = () => {
         ]}
       >
         <View style={styles.header}>
-          <Text variant="headlineMedium" style={[styles.title, { color: textColor }]}>
+          <Text variant="h2" style={[styles.title, { color: textColor }]}>
             Scientific Perspectives
           </Text>
-          <Text variant="bodyLarge" style={[styles.subtitle, { color: subtitleColor }]}>
+          <Text variant="body1" style={[styles.subtitle, { color: subtitleColor }]}>
             Understanding the neuroscience of dreaming
           </Text>
         </View>
 
-        <Card style={[styles.section, { backgroundColor: cardBackgroundColor }]}>
-          <Card.Content>
-            <Text variant="titleLarge" style={[styles.sectionTitle, { color: textColor }]}>
-              Brain Regions Involved in Dreaming
+        <Card style={StyleSheet.flatten([styles.section, { backgroundColor: cardBackgroundColor }])}>
+          <View style={styles.content}>
+            <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
+              🧠 Neurological Basis of Dreams
+            </Text>
+            <Text variant="body1" style={[styles.description, { color: subtitleColor }]}>
+              Dreams primarily occur during REM (Rapid Eye Movement) sleep, when brain activity is high and resembles waking patterns.
+            </Text>
+
+            <Text variant="h4" style={[styles.subsectionTitle, { color: textColor }]}>
+              Key Brain Structures
             </Text>
             {brainRegions.map((region, index) => (
-              <List.Item
-                key={index}
-                title={() => (
-                  <Text style={{ color: textColor }}>{region.name}</Text>
-                )}
-                description={() => (
-                  <Text style={{ color: subtitleColor }}>{region.description}</Text>
-                )}
-                left={props => (
-                  <MaterialCommunityIcons 
-                    name="brain" 
-                    size={24} 
-                    color={isDark ? '#FFFFFF' : colors.primary} 
-                    style={{ marginTop: 8 }}
-                  />
-                )}
-              />
-            ))}
-          </Card.Content>
-        </Card>
-
-        <Card style={[styles.section, { backgroundColor: cardBackgroundColor }]}>
-          <Card.Content>
-            <Text variant="titleLarge" style={[styles.sectionTitle, { color: textColor }]}>
-              Sleep Stages and Dreaming
-            </Text>
-            {sleepStages.map((stage, index) => (
-              <View key={index} style={styles.stageContainer}>
-                <Text variant="titleMedium" style={{ color: textColor }}>{stage.stage}</Text>
-                <Text variant="bodyMedium" style={[styles.stageDescription, { color: subtitleColor }]}>
-                  {stage.description}
+              <View key={index} style={styles.listItem}>
+                <Text variant="body2" style={[styles.listTitle, { color: textColor }]}>
+                  {region.name}:
                 </Text>
-                {stage.characteristics.map((char, charIndex) => (
-                  <Text key={charIndex} style={[styles.characteristic, { color: textColor }]}>
-                    • {char}
-                  </Text>
-                ))}
+                <Text variant="body2" style={[styles.listDescription, { color: subtitleColor }]}>
+                  {region.description}
+                </Text>
               </View>
             ))}
-          </Card.Content>
+          </View>
+        </Card>
+
+        <Card style={StyleSheet.flatten([styles.section, { backgroundColor: cardBackgroundColor }])}>
+          <View style={styles.content}>
+            <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
+              🔬 Sleep Stages and Dream Formation
+            </Text>
+            <Text variant="body1" style={[styles.description, { color: subtitleColor }]}>
+              Understanding how dreams form across different sleep stages provides insight into their psychological significance.
+            </Text>
+
+            <Text variant="h4" style={[styles.subsectionTitle, { color: textColor }]}>
+              Sleep Stages
+            </Text>
+            {sleepStages.map((stage, index) => (
+              <View key={index} style={styles.listItem}>
+                <Text variant="body2" style={[styles.listTitle, { color: textColor }]}>
+                  {stage.stage}:
+                </Text>
+                <Text variant="body2" style={[styles.listDescription, { color: subtitleColor }]}>
+                  {stage.description}
+                </Text>
+              </View>
+            ))}
+          </View>
         </Card>
       </ScrollView>
     </SafeAreaView>
@@ -141,19 +145,28 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     elevation: 2,
   },
+  content: {
+    padding: 16,
+  },
   sectionTitle: {
+    marginBottom: 12,
+  },
+  description: {
     marginBottom: 16,
   },
-  stageContainer: {
-    marginBottom: 16,
-  },
-  stageDescription: {
-    marginTop: 4,
+  subsectionTitle: {
     marginBottom: 8,
+    marginTop: 8,
   },
-  characteristic: {
-    marginLeft: 16,
-    marginTop: 4,
+  listItem: {
+    marginBottom: 8,
+    paddingLeft: 8,
+  },
+  listTitle: {
+    fontWeight: '600',
+  },
+  listDescription: {
+    marginTop: 2,
   },
 });
 

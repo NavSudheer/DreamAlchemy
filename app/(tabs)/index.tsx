@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
-import { StyleSheet, ScrollView, View, SafeAreaView, StatusBar, Image, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, ScrollView, View, SafeAreaView, StatusBar, Image, Dimensions, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import DreamInput from '../../src/components/DreamInput';
-import DreamAnalysis from '../../src/components/DreamAnalysis';
-import { analyzeDream } from '../../src/services/dreamAnalysis';
-import { saveDream } from '../../src/utils/storage';
-import { generateId } from '../../src/utils/helpers';
-import { Dream, DreamAnalysis as DreamAnalysisType, Symbol, Archetype } from '../../src/types';
-import { useTheme } from '../../src/providers/ThemeProvider';
-import { Colors, spacing, BorderRadius, Shadows } from '../../src/utils/theme';
-import Text from '../../src/components/ui/Text';
-import Card from '../../src/components/ui/Card';
-import Header from '../../src/components/ui/Header';
+import DreamInput from '@/components/DreamInput';
+import DreamAnalysis from '@/components/DreamAnalysis';
+import { analyzeDream } from '@/services/dreamAnalysis';
+import { saveDream } from '@/utils/storage';
+import { generateId } from '@/utils/helpers';
+import { Dream, DreamAnalysis as DreamAnalysisType, Symbol, Archetype } from '@/types';
+import { useTheme } from '@/providers/ThemeProvider';
+import { Colors, spacing, BorderRadius, Shadows } from '@/utils/theme';
+import Text from '@/components/ui/Text';
+import Card from '@/components/ui/Card';
+import Header from '@/components/ui/Header';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { trialTrackingService, TrialStatus } from '@/services/trialTracking';
+import SubscriptionPaywall from '@/components/ui/SubscriptionPaywall';
 
 const { width } = Dimensions.get('window');
 
@@ -22,18 +24,46 @@ function Index() {
   const [analysis, setAnalysis] = useState<DreamAnalysisType | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [activeView, setActiveView] = useState<'input' | 'analysis'>('input');
+  const [trialStatus, setTrialStatus] = useState<TrialStatus | null>(null);
+  const [showPaywall, setShowPaywall] = useState(false);
   const { isDark } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
+  // Initialize trial tracking on component mount
+  useEffect(() => {
+    initializeTrialStatus();
+  }, []);
+
+  const initializeTrialStatus = async () => {
+    try {
+      await trialTrackingService.initialize();
+      const status = await trialTrackingService.getTrialStatus();
+      setTrialStatus(status);
+    } catch (error) {
+      console.error('Failed to initialize trial status:', error);
+    }
+  };
+
   const handleDreamSubmit = async (text: string) => {
+    // Check if user can perform analysis
+    const canAnalyze = await trialTrackingService.canPerformAnalysis();
+    
+    if (!canAnalyze) {
+      setShowPaywall(true);
+      return;
+    }
+
     setDreamText(text);
     setIsAnalyzing(true);
     setActiveView('analysis');
     
-    console.log("Starting dream analysis...");
+    // Starting dream analysis process
     
     try {
+      // Record the analysis attempt
+      const newTrialStatus = await trialTrackingService.recordAnalysis();
+      setTrialStatus(newTrialStatus);
       // Create a partial analysis object to display while streaming
       const initialAnalysis: DreamAnalysisType = {
         symbols: [],
@@ -46,14 +76,14 @@ function Index() {
       
       // Call analyzeDream with a callback for streaming updates
       const dreamAnalysis = await analyzeDream(text, (updatedAnalysis) => {
-        console.log("Received streaming update");
+        // Processing streaming analysis update
         setAnalysis(curr => ({
           ...curr!,
           ...updatedAnalysis
         }));
       });
       
-      console.log("Analysis complete");
+      // Dream analysis completed successfully
       setIsAnalyzing(false);
       
       // Set final analysis
@@ -105,13 +135,45 @@ function Index() {
     setActiveView('input');
   };
 
+  const handleSubscriptionSuccess = () => {
+    setShowPaywall(false);
+    initializeTrialStatus(); // Refresh trial status
+    Alert.alert(
+      '🎉 Welcome to Premium!', 
+      'You now have unlimited access to dream analysis!',
+      [{ text: 'Continue', style: 'default' }]
+    );
+  };
+
+  const getTrialDisplayText = (): string => {
+    if (!trialStatus) return '';
+    
+    if (trialStatus.isSubscriptionActive) {
+      return '✨ Premium Active';
+    }
+    
+    if (trialStatus.hasTrialExpired) {
+      return '⏰ Trial Expired';
+    }
+    
+    if (trialStatus.analysesLeft === 0) {
+      return '⏰ No analyses left';
+    }
+    
+    return '🔮 ' + trialStatus.analysesLeft + ' analyses left';
+  };
+
   return (
     <View style={[
       styles.container, 
       { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }
     ]}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      <Header showMoon={true} title={activeView === 'input' ? "New Dream" : "Dream Analysis"} />
+      <Header 
+        showMoon={true} 
+        title={activeView === 'input' ? "New Dream" : "Dream Analysis"}
+        rightText={getTrialDisplayText()}
+      />
       
       <ScrollView 
         style={styles.content}
@@ -133,6 +195,13 @@ function Index() {
           />
         )}
       </ScrollView>
+
+      <SubscriptionPaywall
+        visible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onSuccess={handleSubscriptionSuccess}
+        trialStatus={trialStatus || undefined}
+      />
     </View>
   );
 }

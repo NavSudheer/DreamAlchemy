@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, spacing } from '../../../utils/theme';
+import { Colors, spacing } from '@/utils/theme';
 import Text from '../Text';
 import Button from '../Button';
-import { useTheme } from '../../../providers/ThemeProvider';
-import { EmptyStateProps } from '../../../types';
+import { useTheme } from '@/providers/ThemeProvider';
+import { EmptyStateProps } from '@/types';
 
 const EmptyState: React.FC<EmptyStateProps> = ({
   icon,

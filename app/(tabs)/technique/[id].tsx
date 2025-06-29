@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity, Platform, Animated } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useTheme } from '../../../src/providers/ThemeProvider';
-import { Colors, spacing, Shadows, BorderRadius } from '../../../src/utils/theme';
-import Text from '../../../src/components/ui/Text';
-import Header from '../../../src/components/ui/Header';
+import { useTheme } from '@/providers/ThemeProvider';
+import { Colors, spacing, Shadows, BorderRadius } from '@/utils/theme';
+import Text from '@/components/ui/Text';
+import Header from '@/components/ui/Header';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { createNavigation } from '../../../src/navigation/routes';
+import { createNavigation } from '@/navigation/routes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Sample technique data - In a real app, this would come from an API or database
@@ -251,11 +251,15 @@ export default function TechniqueDetail() {
         </View>
 
         <TouchableOpacity
-          style={[styles.startButton, { backgroundColor: accentColor }]}
+          style={[styles.startButton, { backgroundColor: isDark ? Colors.neutral[600] : Colors.neutral[400] }]}
           activeOpacity={0.8}
+          onPress={() => {
+            // Show coming soon message
+            alert('🔮 Coming Soon!\n\nGuided practice sessions are currently in development. Stay tuned for this exciting feature!');
+          }}
         >
           <Text variant="button" style={styles.startButtonText}>
-            Start Practice
+            🔮 Coming Soon - Guided Practice
           </Text>
         </TouchableOpacity>
       </ScrollView>

@@ -70,7 +70,7 @@ const DreamHistory: React.FC<DreamHistoryProps> = ({
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSelectedDreamId(dreamId);
     setDeleteAlertVisible(true);
-    console.log('Delete alert should be visible now');
+    // Showing delete confirmation dialog
   };
 
   const confirmDeleteDream = () => {
@@ -88,7 +88,7 @@ const DreamHistory: React.FC<DreamHistoryProps> = ({
   const handleClearAllDreams = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setClearAllAlertVisible(true);
-    console.log('Clear all alert should be visible now');
+    // Showing clear all confirmation dialog
   };
 
   const confirmClearAllDreams = () => {

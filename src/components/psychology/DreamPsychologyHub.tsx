@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
-import { Text, Card } from 'react-native-paper';
+import { View, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../hooks/useTheme';
+import Card from '../ui/Card';
+import Text from '../ui/Text';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const DreamPsychologyHub = () => {
   const { colors, isDark } = useTheme();
@@ -41,6 +42,10 @@ const DreamPsychologyHub = () => {
   const textColor = isDark ? '#FFFFFF' : colors.onSurface;
   const subtitleColor = isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)';
 
+  const onNavigate = (route: string) => {
+    router.push(route as any);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView 
@@ -51,28 +56,32 @@ const DreamPsychologyHub = () => {
         ]}
       >
         <View style={styles.header}>
-          <Text variant="bodyLarge" style={[styles.subtitle, { color: subtitleColor }]}>
+          <Text variant="body1" style={[styles.subtitle, { color: subtitleColor }]}>
             Understand the science and psychology behind your dreams
           </Text>
         </View>
 
         <View style={styles.sectionsGrid}>
           {sections.map((section, index) => (
-            <Card
+            <TouchableOpacity
               key={index}
-              style={[styles.sectionCard, { backgroundColor: cardBackgroundColor }]}
-              onPress={() => router.push(section.route as any)}
+              onPress={() => onNavigate(section.route)}
+              activeOpacity={0.7}
             >
-              <Card.Content>
-                <Text style={styles.sectionIcon}>{section.icon}</Text>
-                <Text variant="titleMedium" style={[styles.sectionTitle, { color: textColor }]}>
-                  {section.title}
-                </Text>
-                <Text variant="bodyMedium" style={[styles.sectionDescription, { color: subtitleColor }]}>
-                  {section.description}
-                </Text>
-              </Card.Content>
-            </Card>
+              <Card
+                variant="elevated"
+                style={StyleSheet.flatten([styles.sectionCard, { backgroundColor: cardBackgroundColor }])}
+              >
+                <View style={styles.content}>
+                  <Text variant="h4" style={{ color: textColor, marginBottom: 8, fontWeight: '600' }}>
+                    {section.icon} {section.title}
+                  </Text>
+                  <Text variant="body2" style={{ color: subtitleColor }}>
+                    {section.description}
+                  </Text>
+                </View>
+              </Card>
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>
@@ -103,18 +112,12 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   sectionCard: {
+    marginHorizontal: 16,
     marginBottom: 16,
     elevation: 2,
   },
-  sectionIcon: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  sectionTitle: {
-    marginBottom: 4,
-  },
-  sectionDescription: {
-    marginTop: 4,
+  content: {
+    padding: 16,
   },
 });
 

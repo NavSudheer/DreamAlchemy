@@ -86,7 +86,7 @@ class VoiceRecognitionService {
           this.onSpeechPartialResults?.(e);
         };
       } catch (error) {
-        console.log('Voice recognition setup failed - running in Expo Go or unsupported environment');
+        // Voice recognition not available in this environment
         isVoiceAvailable = false;
       }
     }
@@ -208,7 +208,7 @@ class VoiceRecognitionService {
 
   // Handle the case when the module is not available
   private handleModuleNotAvailable() {
-    console.log('Voice recognition not available - running in Expo Go or unsupported environment');
+    // Voice recognition service unavailable
     this.onSpeechError?.({ 
       error: { 
         message: 'Voice recognition requires a development build. Please use EAS Build to create a development build.', 
