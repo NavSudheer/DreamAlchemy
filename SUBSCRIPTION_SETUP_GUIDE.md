@@ -51,8 +51,8 @@ const REVENUECAT_KEYS = {
 1. Go to [App Store Connect](https://appstoreconnect.apple.com)
 2. Navigate to your app → Features → In-App Purchases
 3. Create subscription products:
-   - **Monthly**: `dreamalchemy_monthly` - $7.99/month
-   - **Annual**: `dreamalchemy_annual` - $59.99/year
+   - **Monthly**: `dreamAlchemy_monthly` - $7.99/month
+- **Annual**: `dreamAlchemy_annual` - $59.99/year
 4. Configure auto-renewable subscription group
 5. Add these product IDs to RevenueCat dashboard
 

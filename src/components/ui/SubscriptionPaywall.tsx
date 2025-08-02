@@ -48,13 +48,13 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
 }) => {
   const { isDark } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<string>('monthly');
+  const [selectedPlan, setSelectedPlan] = useState<string>('dreamAlchemy_monthly');
   const [isRestoring, setIsRestoring] = useState(false);
 
   // Sample subscription plans - replace with actual RevenueCat offerings
   const subscriptionPlans: SubscriptionPlan[] = [
     {
-      id: 'monthly',
+      id: 'dreamAlchemy_monthly',
       title: 'Monthly',
       price: '$7.99',
       period: 'per month',
@@ -68,7 +68,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
       ],
     },
     {
-      id: 'annual',
+      id: 'dreamAlchemy_annual',
       title: 'Annual',
       price: '$59.99',
       period: 'per year',

@@ -209,7 +209,7 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
       alignItems: 'flex-end',
     },
   });
-
+  
   // Dynamic styles based on theme
   const dreamCardStyle = [
     styles.dreamCardBase,
@@ -638,7 +638,7 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
                         style={styles.archetypeSignificance}
                       >
                         {archetype.significance}
-                      </Text>
+                    </Text>
                     </View>
                   </View>
                 ))}

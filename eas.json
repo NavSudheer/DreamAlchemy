@@ -6,16 +6,32 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m1-medium"
+      }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "ios": {
+        "resourceClass": "m1-medium",
+        "buildConfiguration": "Release"
+      }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "navneet.sudheer@gmail.com",
+        "ascAppId": "6743727774",
+        "appleTeamId": "FQTZY686NM"
+      }
+    }
   }
 }

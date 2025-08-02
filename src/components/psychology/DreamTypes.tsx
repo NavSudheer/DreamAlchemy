@@ -81,8 +81,8 @@ const DreamTypes = () => {
                 <Text variant="h2" style={styles.typeIcon}>{type.icon}</Text>
                 <View style={styles.typeTitleContainer}>
                   <Text variant="h3" style={[styles.typeTitle, { color: textColor }]}>
-                    {type.name}
-                  </Text>
+                  {type.name}
+                </Text>
                   <Text variant="body2" style={[styles.frequency, { color: subtitleColor }]}>
                     {type.frequency}
                   </Text>
@@ -106,9 +106,9 @@ const DreamTypes = () => {
                 Psychological Significance
               </Text>
               <Text variant="body2" style={[styles.significance, { color: subtitleColor }]}>
-                {type.significance}
-              </Text>
-            </View>
+                  {type.significance}
+                </Text>
+              </View>
           </Card>
         ))}
       </ScrollView>

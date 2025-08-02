@@ -45,8 +45,8 @@
    - Navigate to Features → In-App Purchases
    - Create subscription group: "Dream Alchemy Premium"
    - Add products:
-     - Monthly: `dreamalchemy_monthly` - $7.99
-     - Annual: `dreamalchemy_annual` - $59.99
+     - Monthly: `dreamAlchemy_monthly` - $7.99
+     - Annual: `dreamAlchemy_annual` - $59.99
 
 3. **Link to RevenueCat**
    - Add product IDs to RevenueCat dashboard

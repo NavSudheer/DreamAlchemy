@@ -85,11 +85,11 @@ const PsychologicalTheories = () => {
             <View style={styles.content}>
               <View style={styles.theoryHeader}>
                 <Text variant="h3" style={[styles.theoryTitle, { color: textColor }]}>
-                  {theory.name}
-                </Text>
+                    {theory.name}
+                  </Text>
                 <Text variant="body2" style={[styles.founder, { color: subtitleColor }]}>
-                  Developed by {theory.founder}
-                </Text>
+                    Developed by {theory.founder}
+                  </Text>
               </View>
 
               <Divider style={[styles.divider, { backgroundColor: dividerColor }]} />
