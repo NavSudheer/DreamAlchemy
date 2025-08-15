@@ -6,6 +6,7 @@ import Purchases, {
   PurchasesError
 } from 'react-native-purchases';
 import { Platform } from 'react-native';
+import { DebugLogger } from '../components/debug/DebugPanel';
 
 // RevenueCat API Keys (replace with your actual keys)
 const REVENUECAT_KEYS = {
@@ -34,10 +35,19 @@ class SubscriptionService {
    * Initialize RevenueCat SDK
    */
   async initialize(): Promise<void> {
-    if (this.isInitialized) return;
+    if (this.isInitialized) {
+      DebugLogger.log('info', 'RevenueCat already initialized');
+      return;
+    }
 
     try {
       const apiKey = Platform.OS === 'ios' ? REVENUECAT_KEYS.ios : REVENUECAT_KEYS.android;
+      
+      DebugLogger.log('info', 'Initializing RevenueCat', {
+        platform: Platform.OS,
+        apiKeyPrefix: apiKey.substring(0, 10) + '...',
+        hasKey: !!apiKey,
+      });
       
       await Purchases.configure({
         apiKey,
@@ -49,8 +59,16 @@ class SubscriptionService {
       // Set debug mode in development
       if (__DEV__) {
         await Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG);
+        DebugLogger.log('info', 'RevenueCat debug mode enabled');
       }
+      
+      DebugLogger.log('info', 'RevenueCat initialized successfully');
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      DebugLogger.log('error', 'Failed to initialize RevenueCat', {
+        error: errorMsg,
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       console.error('Failed to initialize RevenueCat:', error);
       throw error;
     }
@@ -63,9 +81,38 @@ class SubscriptionService {
     await this.initialize();
     
     try {
+      DebugLogger.log('info', 'Fetching RevenueCat offerings...');
       const offerings = await Purchases.getOfferings();
+      
+      DebugLogger.log('info', 'Raw offerings response', {
+        current: offerings.current?.identifier,
+        all: Object.keys(offerings.all),
+        currentPackages: offerings.current?.availablePackages?.length || 0,
+      });
+      
+      if (!offerings.current) {
+        DebugLogger.log('error', 'No current offering found', {
+          allOfferings: Object.keys(offerings.all),
+          message: 'Check RevenueCat dashboard for active offerings'
+        });
+        return null;
+      }
+      
+      if (!offerings.current.availablePackages || offerings.current.availablePackages.length === 0) {
+        DebugLogger.log('error', 'No packages in current offering', {
+          offeringId: offerings.current.identifier,
+          message: 'Check products are configured in App Store Connect and RevenueCat'
+        });
+        return null;
+      }
+      
       return offerings.current;
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      DebugLogger.log('error', 'Failed to get offerings', {
+        error: errorMsg,
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       console.error('Failed to get offerings:', error);
       return null;
     }
@@ -79,8 +126,26 @@ class SubscriptionService {
     customerInfo?: CustomerInfo;
     error?: string;
   }> {
+    const purchaseData = {
+      identifier: packageToPurchase.identifier,
+      product: packageToPurchase.product,
+    };
+    console.log('🛒 Starting purchase for package:', purchaseData);
+    DebugLogger.log('info', 'Starting purchase', purchaseData);
+
     try {
       const { customerInfo } = await Purchases.purchasePackage(packageToPurchase);
+      
+      const successData = {
+        customerInfo: {
+          originalAppUserId: customerInfo.originalAppUserId,
+          activeSubscriptions: Object.keys(customerInfo.activeSubscriptions),
+          entitlements: Object.keys(customerInfo.entitlements.active),
+          latestExpirationDate: customerInfo.latestExpirationDate,
+        }
+      };
+      console.log('✅ Purchase successful:', successData);
+      DebugLogger.log('info', 'Purchase successful', successData);
       
       return {
         success: true,
@@ -89,8 +154,18 @@ class SubscriptionService {
     } catch (error) {
       const purchasesError = error as PurchasesError;
       
+      const errorData = {
+        code: purchasesError.code,
+        message: purchasesError.message,
+        userInfo: purchasesError.userInfo,
+        underlyingErrorMessage: purchasesError.underlyingErrorMessage,
+      };
+      console.error('❌ Purchase failed:', errorData);
+      DebugLogger.log('error', 'Purchase failed', errorData);
+      
       // Handle user cancellation gracefully
       if (purchasesError.code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
+        console.log('👤 User cancelled purchase');
         return {
           success: false,
           error: 'Purchase cancelled by user',

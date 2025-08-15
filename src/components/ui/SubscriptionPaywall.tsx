@@ -20,6 +20,7 @@ import Text from './Text';
 import Button from './Button';
 import { subscriptionService } from '../../services/subscriptions';
 import { trialTrackingService, TrialStatus } from '../../services/trialTracking';
+import DebugPanel from '../debug/DebugPanel';
 
 interface SubscriptionPaywallProps {
   visible: boolean;
@@ -50,6 +51,8 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string>('dreamAlchemy_monthly');
   const [isRestoring, setIsRestoring] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
+  const [debugTaps, setDebugTaps] = useState(0);
 
   // Sample subscription plans - replace with actual RevenueCat offerings
   const subscriptionPlans: SubscriptionPlan[] = [
@@ -94,7 +97,14 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
       const offering = await subscriptionService.getOfferings();
       
       if (!offering) {
-        Alert.alert('Error', 'Unable to load subscription options. Please try again.');
+        Alert.alert(
+          'Service Temporarily Unavailable', 
+          'Unable to load subscription options. This might be a temporary issue. Please try again in a few minutes or contact support if the problem persists.',
+          [
+            { text: 'OK', style: 'default' },
+            { text: 'Try Again', onPress: handlePurchase }
+          ]
+        );
         return;
       }
 
@@ -157,6 +167,18 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
       Alert.alert('Restore Failed', 'Unable to restore purchases. Please try again.');
     } finally {
       setIsRestoring(false);
+    }
+  };
+
+  const handleClosePress = () => {
+    const newTaps = debugTaps + 1;
+    setDebugTaps(newTaps);
+    
+    if (newTaps >= 5) {
+      setShowDebug(true);
+      setDebugTaps(0);
+    } else {
+      onClose();
     }
   };
 
@@ -253,7 +275,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
             </Text>
             
             <TouchableOpacity
-              onPress={onClose}
+              onPress={handleClosePress}
               style={styles.closeButton}
               hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
             >
@@ -305,6 +327,11 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
           </ScrollView>
         </LinearGradient>
       </BlurView>
+      
+      <DebugPanel 
+        visible={showDebug} 
+        onClose={() => setShowDebug(false)} 
+      />
     </Modal>
   );
 };
