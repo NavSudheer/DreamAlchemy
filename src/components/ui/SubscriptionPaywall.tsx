@@ -170,15 +170,16 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
     }
   };
 
-  const handleClosePress = () => {
+  const handleTitlePress = () => {
     const newTaps = debugTaps + 1;
     setDebugTaps(newTaps);
     
-    if (newTaps >= 5) {
+    if (newTaps >= 7) {
       setShowDebug(true);
       setDebugTaps(0);
-    } else {
-      onClose();
+    } else if (newTaps >= 3) {
+      // Give haptic feedback when close to activating debug mode
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
   };
 
@@ -270,12 +271,14 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
           style={styles.gradient}
         >
           <View style={styles.header}>
-            <Text variant="h3" style={[styles.title, { color: isDark ? Colors.neutral[100] : Colors.neutral[800] }]}>
-              Unlock Premium
-            </Text>
+            <TouchableOpacity onPress={handleTitlePress} activeOpacity={1}>
+              <Text variant="h3" style={[styles.title, { color: isDark ? Colors.neutral[100] : Colors.neutral[800] }]}>
+                Unlock Premium
+              </Text>
+            </TouchableOpacity>
             
             <TouchableOpacity
-              onPress={handleClosePress}
+              onPress={onClose}
               style={styles.closeButton}
               hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
             >
