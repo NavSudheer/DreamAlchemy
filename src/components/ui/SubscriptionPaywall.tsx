@@ -108,9 +108,9 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
         return;
       }
 
-      // Find the selected package
+      // Find the selected package by product identifier
       const packageToPurchase = offering.availablePackages.find(
-        pkg => pkg.identifier === selectedPlan
+        pkg => pkg.product.identifier === selectedPlan
       );
 
       if (!packageToPurchase) {
