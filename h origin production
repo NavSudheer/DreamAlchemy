@@ -1,0 +1,5 @@
+[33m3442dac[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mproduction[m[33m)[m Fix: Change debug trigger from close button to title tap
+[33m16ffa54[m Fix: Remove Flipper dependency causing build failure
+[33m4672ba0[m v1.0.1: Add comprehensive debugging features for RevenueCat testing
+[33m226c679[m Update subscription product IDs to match RevenueCat configuration
+[33mf4c3fa8[m[33m ([m[1;31morigin/production[m[33m)[m Add legal documents and final submission checklist for App Store launch

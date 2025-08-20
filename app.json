@@ -11,6 +11,7 @@
     "description": "A Jungian dream analysis app that helps interpret your dreams using AI and Jungian psychology principles.",
     "ios": {
       "supportsTablet": true,
+      "buildNumber": "16",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "Dream Alchemy needs access to your microphone to record your dream descriptions for analysis.",
         "NSSpeechRecognitionUsageDescription": "Dream Alchemy uses speech recognition to transcribe your spoken dream descriptions into text for analysis.",
