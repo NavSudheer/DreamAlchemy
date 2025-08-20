@@ -25,10 +25,11 @@ class DebugLogger {
   private static listeners: ((logs: LogEntry[]) => void)[] = [];
 
   static log(level: 'info' | 'error' | 'warn', message: string, data?: any) {
+    // TODO: REMOVE DEBUG FEATURES BEFORE APP STORE SUBMISSION
     // Only log in development builds
-    if (!__DEV__) {
-      return;
-    }
+    // if (!__DEV__) {
+    //   return;
+    // }
 
     const entry: LogEntry = {
       timestamp: new Date().toISOString(),
@@ -44,9 +45,10 @@ class DebugLogger {
   }
 
   static subscribe(listener: (logs: LogEntry[]) => void) {
-    if (!__DEV__) {
-      return () => {}; // Return empty unsubscribe function
-    }
+    // TODO: REMOVE DEBUG FEATURES BEFORE APP STORE SUBMISSION
+    // if (!__DEV__) {
+    //   return () => {}; // Return empty unsubscribe function
+    // }
 
     this.listeners.push(listener);
     listener([...this.logs]);
@@ -57,16 +59,18 @@ class DebugLogger {
   }
 
   static getLogs() {
-    if (!__DEV__) {
-      return [];
-    }
+    // TODO: REMOVE DEBUG FEATURES BEFORE APP STORE SUBMISSION
+    // if (!__DEV__) {
+    //   return [];
+    // }
     return [...this.logs];
   }
 
   static clear() {
-    if (!__DEV__) {
-      return;
-    }
+    // TODO: REMOVE DEBUG FEATURES BEFORE APP STORE SUBMISSION
+    // if (!__DEV__) {
+    //   return;
+    // }
     this.logs = [];
     this.listeners.forEach(listener => listener([]));
   }
@@ -85,10 +89,11 @@ const DebugPanel: React.FC<DebugPanelProps> = ({ visible, onClose }) => {
     return unsubscribe;
   }, []);
 
+  // TODO: REMOVE DEBUG FEATURES BEFORE APP STORE SUBMISSION
   // Debug panel only available in development builds
-  if (!__DEV__) {
-    return null;
-  }
+  // if (!__DEV__) {
+  //   return null;
+  // }
 
   const testRevenueCat = async () => {
     DebugLogger.log('info', 'Testing RevenueCat offerings...');

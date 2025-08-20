@@ -171,10 +171,11 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
   };
 
   const handleTitlePress = () => {
+    // TODO: REMOVE DEBUG FEATURES BEFORE APP STORE SUBMISSION
     // Debug panel activation only available in development builds
-    if (!__DEV__) {
-      return;
-    }
+    // if (!__DEV__) {
+    //   return;
+    // }
     
     const newTaps = debugTaps + 1;
     setDebugTaps(newTaps);
@@ -336,13 +337,14 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
         </LinearGradient>
       </BlurView>
       
+      {/* TODO: REMOVE DEBUG FEATURES BEFORE APP STORE SUBMISSION */}
       {/* Debug panel only available in development builds */}
-      {__DEV__ && (
+      {/* {__DEV__ && ( */}
         <DebugPanel 
           visible={showDebug} 
           onClose={() => setShowDebug(false)} 
         />
-      )}
+      {/* )} */}
     </Modal>
   );
 };

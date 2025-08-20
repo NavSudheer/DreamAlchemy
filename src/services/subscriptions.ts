@@ -276,12 +276,13 @@ class SubscriptionService {
     error?: string;
     recommendations?: string[];
   }> {
-    if (!__DEV__) {
-      return {
-        success: false,
-        error: 'Debug methods only available in development builds',
-      };
-    }
+    // TODO: REMOVE DEBUG FEATURES BEFORE APP STORE SUBMISSION
+    // if (!__DEV__) {
+    //   return {
+    //     success: false,
+    //     error: 'Debug methods only available in development builds',
+    //   };
+    // }
 
     await this.initialize();
     
@@ -356,13 +357,14 @@ class SubscriptionService {
     platform?: string;
     recommendations?: string[];
   }> {
-    if (!__DEV__) {
-      return {
-        success: false,
-        error: 'Debug methods only available in development builds',
-        platform: Platform.OS,
-      };
-    }
+    // TODO: REMOVE DEBUG FEATURES BEFORE APP STORE SUBMISSION
+    // if (!__DEV__) {
+    //   return {
+    //     success: false,
+    //     error: 'Debug methods only available in development builds',
+    //     platform: Platform.OS,
+    //   };
+    // }
 
     const productIds = ['dreamAlchemy_monthly', 'dreamAlchemy_annual'];
     
@@ -444,12 +446,13 @@ class SubscriptionService {
     customerInfo?: any;
     recommendations?: string[];
   }> {
-    if (!__DEV__) {
-      return {
-        success: false,
-        recommendations: ['Debug methods only available in development builds'],
-      };
-    }
+    // TODO: REMOVE DEBUG FEATURES BEFORE APP STORE SUBMISSION
+    // if (!__DEV__) {
+    //   return {
+    //     success: false,
+    //     recommendations: ['Debug methods only available in development builds'],
+    //   };
+    // }
 
     await this.initialize();
     
@@ -513,13 +516,14 @@ class SubscriptionService {
     issues?: string[];
     recommendations?: string[];
   }> {
-    if (!__DEV__) {
-      return {
-        success: false,
-        issues: ['Debug methods only available in development builds'],
-        recommendations: ['Debug methods only available in development builds'],
-      };
-    }
+    // TODO: REMOVE DEBUG FEATURES BEFORE APP STORE SUBMISSION
+    // if (!__DEV__) {
+    //   return {
+    //     success: false,
+    //     issues: ['Debug methods only available in development builds'],
+    //     recommendations: ['Debug methods only available in development builds'],
+    //   };
+    // }
 
     await this.initialize();
     
@@ -632,23 +636,24 @@ class SubscriptionService {
       recommendations: string[];
     };
   }> {
-    if (!__DEV__) {
-      const errorResult = {
-        success: false,
-        error: 'Debug methods only available in development builds',
-      };
-      return {
-        step1: errorResult,
-        step2: errorResult,
-        step3: errorResult,
-        step6: errorResult,
-        summary: {
-          passed: 0,
-          failed: 4,
-          recommendations: ['Debug methods only available in development builds'],
-        },
-      };
-    }
+    // TODO: REMOVE DEBUG FEATURES BEFORE APP STORE SUBMISSION
+    // if (!__DEV__) {
+    //   const errorResult = {
+    //     success: false,
+    //     error: 'Debug methods only available in development builds',
+    //   };
+    //   return {
+    //     step1: errorResult,
+    //     step2: errorResult,
+    //     step3: errorResult,
+    //     step6: errorResult,
+    //     summary: {
+    //       passed: 0,
+    //       failed: 4,
+    //       recommendations: ['Debug methods only available in development builds'],
+    //     },
+    //   };
+    // }
 
     DebugLogger.log('info', '🚀 Starting comprehensive subscription debugging...');
     
