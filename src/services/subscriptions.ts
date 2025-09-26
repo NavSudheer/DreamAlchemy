@@ -622,6 +622,112 @@ class SubscriptionService {
   }
 
   /**
+   * Enhanced debugging with TestFlight-specific checks
+   * DEVELOPMENT ONLY
+   */
+  async debugStep7_TestFlightChecklist(): Promise<{
+    success: boolean;
+    checklist: {
+      item: string;
+      status: 'unknown' | 'check_required' | 'critical';
+      details: string;
+    }[];
+    appInfo: {
+      bundleId: string;
+      ascAppId: string;
+      productIds: string[];
+      testingEnvironment: string;
+    };
+    recommendations: string[];
+  }> {
+    const appInfo = {
+      bundleId: 'com.navford.DreamAlchemy', // From app.json
+      ascAppId: '6743727774', // From eas.json
+      productIds: ['dreamAlchemy_monthly', 'dreamAlchemy_annual'],
+      testingEnvironment: 'TestFlight (App Review Environment)',
+    };
+
+    const checklist = [
+      {
+        item: '🚨 In-App Purchases submitted WITH app for review',
+        status: 'critical' as const,
+        details: 'CRITICAL: When submitting your app version to App Store Connect, you MUST include your in-app purchases in the submission. Go to App Store Connect → App Store → [Your Version] → In-App Purchases → Add your products to this version before submitting.',
+      },
+      {
+        item: 'Products in Ready to Submit or Approved state',
+        status: 'critical' as const,
+        details: 'Go to App Store Connect → Apps → Dream Alchemy → In-App Purchases. Verify both dreamAlchemy_monthly and dreamAlchemy_annual are in "Ready to Submit" or "Approved" status (not "Draft" or "Rejected")',
+      },
+      {
+        item: 'App version includes IAP metadata',
+        status: 'critical' as const,
+        details: 'TestFlight uses the App Review environment which requires IAPs to be attached to the specific app version. Check App Store Connect → App Store → [Your Version] → In-App Purchases section.',
+      },
+      {
+        item: 'Bundle ID exact match (EAS Build)',
+        status: 'check_required' as const,
+        details: `EAS Build uses app.json bundle ID. Verify "ios.bundleIdentifier": "${appInfo.bundleId}" matches exactly in App Store Connect`,
+      },
+      {
+        item: 'Paid Applications Agreement signed',
+        status: 'critical' as const,
+        details: 'App Store Connect → Agreements, Tax, and Banking → Paid Applications Agreement must be "Active" (not expired). TestFlight will not load products if this is missing.',
+      },
+      {
+        item: 'Banking and tax info complete',
+        status: 'critical' as const,
+        details: 'App Store Connect → Agreements, Tax, and Banking → All sections must be complete and "Active" for TestFlight IAP testing',
+      },
+      {
+        item: 'TestFlight 24hr propagation wait',
+        status: 'check_required' as const,
+        details: 'After submitting app + IAPs for review, wait 24+ hours before TestFlight can access the products. The App Review environment takes longer to propagate.',
+      },
+      {
+        item: 'App Review environment testing',
+        status: 'check_required' as const,
+        details: 'TestFlight uses the App Review environment (not Sandbox). Products must be approved and attached to your app version, not just created in App Store Connect.',
+      },
+    ];
+
+    const recommendations = [
+      '🚨 TESTFLIGHT CRITICAL ACTIONS:',
+      '1. App Store Connect → App Store → [Your Version] → In-App Purchases → ADD YOUR PRODUCTS TO THIS VERSION',
+      '2. When submitting for review, INCLUDE both dreamAlchemy_monthly and dreamAlchemy_annual',
+      '3. Check Paid Applications Agreement is active (TestFlight requires this)',
+      '4. Complete all banking/tax info (required for App Review environment)',
+      '',
+      '⏰ TIMING CONSIDERATIONS:',
+      '5. Wait 24+ hours after submitting app + IAPs before testing in TestFlight',
+      '6. App Review environment propagation is slower than Sandbox',
+      '7. Products must be "Approved" state, not just "Ready to Submit"',
+      '',
+      '🛠️ TESTFLIGHT TROUBLESHOOTING:',
+      '8. TestFlight uses App Review environment (different from Sandbox)',
+      '9. Products must be attached to specific app version, not just created',
+      '10. EAS Build bundle ID in app.json must match App Store Connect exactly',
+      '11. If still failing, submit a video of TestFlight IAP flow to Apple Support',
+      '',
+      '📚 REFERENCE:',
+      '12. Apple Docs: In-App Purchase must be submitted with app version for TestFlight',
+      '13. RevenueCat: App Review environment is notoriously flaky',
+    ];
+
+    DebugLogger.log('info', '🔍 STEP 7: TestFlight Configuration Checklist', {
+      appInfo,
+      checklist,
+      recommendations,
+    });
+
+    return {
+      success: true,
+      checklist,
+      appInfo,
+      recommendations,
+    };
+  }
+
+  /**
    * Run all debugging steps in sequence
    * DEVELOPMENT ONLY
    */
@@ -630,6 +736,7 @@ class SubscriptionService {
     step2: any;
     step3: any;
     step6: any;
+    step7: any;
     summary: {
       passed: number;
       failed: number;
@@ -661,6 +768,7 @@ class SubscriptionService {
     const step2 = await this.debugStep2_DirectStoreKitProbe();
     const step3 = await this.debugStep3_CountryAvailabilityCheck();
     const step6 = await this.debugStep6_RevenueCatSanityCheck();
+    const step7 = await this.debugStep7_TestFlightChecklist();
     
     const results = [step1, step2, step3, step6];
     const passed = results.filter(r => r.success).length;
@@ -671,6 +779,7 @@ class SubscriptionService {
       ...(step2.recommendations || []),
       ...(step3.recommendations || []),
       ...(step6.recommendations || []),
+      ...(step7.recommendations || []),
     ].filter(Boolean);
     
     const summary = {
@@ -686,6 +795,7 @@ class SubscriptionService {
       step2,
       step3,
       step6,
+      step7,
       summary,
     };
   }
