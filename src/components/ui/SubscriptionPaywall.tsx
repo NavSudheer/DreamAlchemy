@@ -8,11 +8,16 @@ import {
   ActivityIndicator,
   Dimensions,
   Alert,
+  Linking,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { BlurView } from 'expo-blur';
+
+// Legal document URLs
+const PRIVACY_POLICY_URL = 'https://navsudheer.github.io/DreamAlchemy/privacy-policy.html';
+const TERMS_OF_SERVICE_URL = 'https://navsudheer.github.io/DreamAlchemy/terms-of-service.html';
 
 import { useTheme } from '../../providers/ThemeProvider';
 import { Colors, spacing, BorderRadius, Shadows, typography } from '../../utils/theme';
@@ -331,8 +336,24 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
             </TouchableOpacity>
 
             <Text variant="caption" style={[styles.termsText, { color: isDark ? Colors.neutral[500] : Colors.neutral[500] }]}>
-              Subscription automatically renews unless auto-renew is turned off at least 24 hours before the end of the current period.
+              Subscription automatically renews unless auto-renew is turned off at least 24 hours before the end of the current period. Payment will be charged to your Apple ID account at confirmation of purchase.
             </Text>
+
+            <View style={styles.legalLinksContainer}>
+              <TouchableOpacity onPress={() => Linking.openURL(TERMS_OF_SERVICE_URL)}>
+                <Text variant="caption" style={styles.legalLink}>
+                  Terms of Use
+                </Text>
+              </TouchableOpacity>
+              <Text variant="caption" style={[styles.legalSeparator, { color: isDark ? Colors.neutral[500] : Colors.neutral[500] }]}>
+                {' | '}
+              </Text>
+              <TouchableOpacity onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
+                <Text variant="caption" style={styles.legalLink}>
+                  Privacy Policy
+                </Text>
+              </TouchableOpacity>
+            </View>
           </ScrollView>
         </LinearGradient>
       </BlurView>
@@ -444,7 +465,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 18,
     paddingHorizontal: spacing[2],
+    marginBottom: spacing[4],
+  },
+  legalLinksContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: spacing[6],
+  },
+  legalLink: {
+    color: Colors.primary[500],
+    textDecorationLine: 'underline',
+  },
+  legalSeparator: {
+    marginHorizontal: spacing[1],
   },
 });
 
