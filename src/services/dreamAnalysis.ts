@@ -1,8 +1,45 @@
-import { DreamAnalysis } from '../types';
+import { DreamAnalysis, DreamTheme } from '../types';
 
 // Environment flag to switch between local and production API calls
 const USE_LOCAL_API = process.env.EXPO_PUBLIC_USE_LOCAL_API === 'true';
 const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
+
+/**
+ * Normalizes theme from API response to DreamTheme object
+ * Handles both string themes ("Emotional") and object themes ({ primary: "Emotional" })
+ * Also handles themes with subtypes ("Emotional: Fear" -> primary: "Emotional", secondary: ["Fear"])
+ */
+function normalizeTheme(theme: string | DreamTheme | undefined): DreamTheme | undefined {
+  if (!theme) {
+    return undefined;
+  }
+
+  // If already a DreamTheme object, return as-is
+  if (typeof theme === 'object' && 'primary' in theme) {
+    return theme;
+  }
+
+  // If it's a string, convert to DreamTheme object
+  if (typeof theme === 'string') {
+    // Check if theme has a colon separator (e.g., "Emotional: Fear")
+    const colonIndex = theme.indexOf(':');
+    if (colonIndex > 0) {
+      const primary = theme.substring(0, colonIndex).trim();
+      const secondary = theme.substring(colonIndex + 1).trim();
+      return {
+        primary,
+        secondary: [secondary]
+      };
+    }
+    
+    // Simple theme without subtype
+    return {
+      primary: theme
+    };
+  }
+
+  return undefined;
+}
 
 /**
  * Analyzes a dream using either local OpenAI API or Vercel Edge Function
@@ -45,6 +82,11 @@ export const analyzeDream = async (
       analysisData.timestamp = new Date(analysisData.timestamp);
     } else if (!analysisData.timestamp) {
       analysisData.timestamp = initialAnalysis.timestamp;
+    }
+    
+    // Normalize theme from string to DreamTheme object
+    if (analysisData.theme) {
+      analysisData.theme = normalizeTheme(analysisData.theme);
     }
     
     // Send the final update
