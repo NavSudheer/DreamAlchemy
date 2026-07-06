@@ -1,19 +1,42 @@
 import { Link, Stack } from 'expo-router';
-import { StyleSheet } from 'react-native';
-
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../src/providers/ThemeProvider';
+import { Colors, spacing } from '../src/utils/theme';
+import Text from '../src/components/ui/Text';
 
 export default function NotFoundScreen() {
+  const { isDark } = useTheme();
+
   return (
     <>
       <Stack.Screen options={{ title: 'Oops!' }} />
-      <ThemedView style={styles.container}>
-        <ThemedText type="title">This screen doesn't exist.</ThemedText>
+      <View style={[
+        styles.container,
+        { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }
+      ]}>
+        <Ionicons
+          name="cloud-outline"
+          size={64}
+          color={isDark ? Colors.neutral[500] : Colors.neutral[400]}
+          style={styles.icon}
+        />
+        <Text variant="h3" color={isDark ? Colors.neutral[200] : Colors.neutral[700]}>
+          This dream doesn't exist
+        </Text>
+        <Text
+          variant="body1"
+          color={isDark ? Colors.neutral[400] : Colors.neutral[500]}
+          style={styles.subtitle}
+        >
+          The screen you're looking for drifted away.
+        </Text>
         <Link href="/" style={styles.link}>
-          <ThemedText type="link">Go to home screen!</ThemedText>
+          <Text variant="body1" color={isDark ? Colors.primary[300] : Colors.primary[600]}>
+            Return to your journal
+          </Text>
         </Link>
-      </ThemedView>
+      </View>
     </>
   );
 }
@@ -23,10 +46,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: spacing[5],
+  },
+  icon: {
+    marginBottom: spacing[4],
+  },
+  subtitle: {
+    marginTop: spacing[1],
+    textAlign: 'center',
   },
   link: {
-    marginTop: 15,
-    paddingVertical: 15,
+    marginTop: spacing[5],
+    paddingVertical: spacing[3],
   },
 });

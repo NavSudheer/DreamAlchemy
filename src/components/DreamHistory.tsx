@@ -1,44 +1,25 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Dimensions,
+  TextInput,
+  ScrollView,
   AccessibilityInfo,
-  ViewStyle,
-  TextStyle,
-  ScrollView
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import Animated, { 
-  FadeIn, 
-  FadeOut, 
-  Layout,
-  withSpring,
-  WithSpringConfig
-} from 'react-native-reanimated';
-import { Dream } from '../types';
-import { formatDate, truncateText } from '../utils/helpers';
+import Animated, { FadeIn, Layout } from 'react-native-reanimated';
+import { useRouter } from 'expo-router';
+import { Dream, getMoodInfo } from '../types';
+import { formatDate, truncateText, capitalize } from '../utils/helpers';
 import { useTheme } from '../providers/ThemeProvider';
-import { Colors, spacing, BorderRadius, typography, Shadows } from '../utils/theme';
+import { Colors, spacing, BorderRadius, Shadows } from '../utils/theme';
 import Text from './ui/Text';
 import Button from './ui/Button';
-import Card from './ui/Card';
 import { EmptyState } from './ui/EmptyState';
 import AlertDialog from './ui/AlertDialog';
-import { useRouter } from 'expo-router';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_MARGIN = spacing[4];
-const CARD_WIDTH = SCREEN_WIDTH - (CARD_MARGIN * 2);
-
-const springConfig: WithSpringConfig = {
-  damping: 15,
-  mass: 1,
-  stiffness: 200
-};
 
 interface DreamHistoryProps {
   dreams: Dream[];
@@ -53,12 +34,40 @@ const DreamHistory: React.FC<DreamHistoryProps> = ({
   onDeleteDream,
   onClearAllDreams
 }) => {
-  const [expandedDreamId, setExpandedDreamId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [themeFilter, setThemeFilter] = useState<string | null>(null);
   const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
   const [clearAllAlertVisible, setClearAllAlertVisible] = useState(false);
   const [selectedDreamId, setSelectedDreamId] = useState<string | null>(null);
   const { isDark } = useTheme();
   const router = useRouter();
+
+  const styles = getStyles(isDark);
+
+  // Unique themes across saved dreams, most frequent first
+  const themes = useMemo(() => {
+    const counts = new Map<string, number>();
+    dreams.forEach(d => {
+      const theme = d.analysis?.theme;
+      if (theme) counts.set(theme, (counts.get(theme) || 0) + 1);
+    });
+    return [...counts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([theme]) => theme);
+  }, [dreams]);
+
+  const filteredDreams = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return dreams.filter(dream => {
+      if (themeFilter && dream.analysis?.theme !== themeFilter) return false;
+      if (!query) return true;
+      return (
+        dream.content.toLowerCase().includes(query) ||
+        dream.analysis?.interpretation?.toLowerCase().includes(query) ||
+        dream.analysis?.symbols?.some(s => s.symbol.toLowerCase().includes(query))
+      );
+    });
+  }, [dreams, searchQuery, themeFilter]);
 
   const handleSelectDream = (dream: Dream) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -70,7 +79,6 @@ const DreamHistory: React.FC<DreamHistoryProps> = ({
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSelectedDreamId(dreamId);
     setDeleteAlertVisible(true);
-    console.log('Delete alert should be visible now');
   };
 
   const confirmDeleteDream = () => {
@@ -81,14 +89,9 @@ const DreamHistory: React.FC<DreamHistoryProps> = ({
     setDeleteAlertVisible(false);
   };
 
-  const cancelDeleteDream = () => {
-    setDeleteAlertVisible(false);
-  };
-
   const handleClearAllDreams = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setClearAllAlertVisible(true);
-    console.log('Clear all alert should be visible now');
   };
 
   const confirmClearAllDreams = () => {
@@ -97,147 +100,119 @@ const DreamHistory: React.FC<DreamHistoryProps> = ({
     setClearAllAlertVisible(false);
   };
 
-  const cancelClearAllDreams = () => {
-    setClearAllAlertVisible(false);
-  };
-
-  const toggleExpandDream = (dreamId: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setExpandedDreamId(expandedDreamId === dreamId ? null : dreamId);
-    AccessibilityInfo.announceForAccessibility(
-      expandedDreamId === dreamId ? 'Dream collapsed' : 'Dream expanded'
-    );
-  };
-
   const renderDreamItem = ({ item, index }: { item: Dream; index: number }) => {
-    const isExpanded = expandedDreamId === item.id;
-    
+    const moodInfo = getMoodInfo(item.analysis?.mood);
+    const theme = item.analysis?.theme;
+
     return (
       <Animated.View
-        entering={FadeIn.delay(index * 100)}
+        entering={FadeIn.delay(Math.min(index, 8) * 60)}
         layout={Layout.springify().mass(1).damping(15).stiffness(200)}
-        style={styles.dreamItemContainer}
       >
-        <Card 
-          variant={isExpanded ? "elevated" : "outlined"} 
-          style={styles.dreamItem}
-          backgroundColor={isDark ? Colors.neutral[800] : Colors.neutral[50]}
+        <TouchableOpacity
+          style={styles.dreamCard}
+          onPress={() => handleSelectDream(item)}
+          activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel={`Dream from ${formatDate(new Date(item.timestamp))}`}
+          accessibilityHint="Opens the full dream analysis"
         >
-          <TouchableOpacity
-            style={styles.dreamHeader}
-            onPress={() => toggleExpandDream(item.id)}
-            accessibilityRole="button"
-            accessibilityLabel={`Dream from ${formatDate(new Date(item.timestamp))}`}
-            accessibilityHint="Double tap to expand or collapse dream details"
-          >
-            <View style={styles.dreamHeaderContent}>
-              <Text 
-                variant="subtitle2" 
-                color={isDark ? Colors.primary[300] : Colors.primary[600]}
-                style={styles.dateText}
-              >
-                {formatDate(new Date(item.timestamp))}
-              </Text>
-              <Text 
-                variant="body1" 
-                color={isDark ? Colors.neutral[200] : Colors.neutral[700]}
-                style={styles.previewText}
-              >
-                {truncateText(item.content, isExpanded ? 120 : 60)}
-              </Text>
-            </View>
-            <Animated.View>
-              <Ionicons
-                name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                size={24}
-                color={isDark ? Colors.primary[400] : Colors.primary[500]}
-              />
-            </Animated.View>
-          </TouchableOpacity>
-          
-          {isExpanded && (
-            <Animated.View 
-              entering={FadeIn.springify()}
-              exiting={FadeOut.springify()}
-              style={styles.dreamExpandedContent}
+          <View style={styles.dreamCardHeader}>
+            <Text
+              variant="caption"
+              color={isDark ? Colors.neutral[400] : Colors.neutral[500]}
             >
-              <Text 
-                variant="body2" 
-                color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
-                style={styles.fullContent}
-              >
-                {item.content}
-              </Text>
-              
-              {item.analysis && (
-                <Card 
-                  variant="filled" 
-                  style={styles.analysisPreview}
-                  backgroundColor={isDark ? Colors.primary[900] : Colors.primary[50]}
+              {formatDate(new Date(item.timestamp))}
+            </Text>
+            <TouchableOpacity
+              onPress={() => handleDeleteDream(item.id)}
+              style={styles.deleteIconButton}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              accessibilityRole="button"
+              accessibilityLabel="Delete dream"
+            >
+              <Ionicons
+                name="trash-outline"
+                size={16}
+                color={isDark ? Colors.neutral[500] : Colors.neutral[400]}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <Text
+            variant="body1"
+            color={isDark ? Colors.neutral[200] : Colors.neutral[700]}
+            style={styles.previewText}
+            numberOfLines={2}
+          >
+            {item.content}
+          </Text>
+
+          {item.analysis?.interpretation ? (
+            <Text
+              variant="body2"
+              color={isDark ? Colors.neutral[400] : Colors.neutral[500]}
+              style={styles.interpretationPreview}
+              numberOfLines={2}
+            >
+              {truncateText(item.analysis.interpretation, 140)}
+            </Text>
+          ) : null}
+
+          <View style={styles.badgesRow}>
+            {moodInfo && (
+              <View style={styles.badge}>
+                <Text variant="caption">{moodInfo.emoji}</Text>
+                <Text
+                  variant="caption"
+                  color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
                 >
-                  <Text 
-                    variant="subtitle2" 
-                    color={isDark ? Colors.primary[300] : Colors.primary[700]}
-                    style={styles.analysisPreviewTitle}
-                  >
-                    Analysis Preview
-                  </Text>
-                  <Text 
-                    variant="body2" 
-                    color={isDark ? Colors.neutral[300] : Colors.neutral[700]}
-                    style={styles.analysisPreviewText}
-                  >
-                    {truncateText(item.analysis.interpretation, 120)}
-                  </Text>
-                </Card>
-              )}
-              
-              <View style={styles.actionButtons}>
-                <Button
-                  variant="primary"
-                  size="md"
-                  onPress={() => handleSelectDream(item)}
-                  style={styles.viewButton}
-                  hapticFeedback
-                >
-                  View Full Analysis
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  size="md"
-                  onPress={() => handleDeleteDream(item.id)}
-                  style={styles.deleteButton}
-                  hapticFeedback
-                >
-                  Delete
-                </Button>
+                  {moodInfo.label}
+                </Text>
               </View>
-            </Animated.View>
-          )}
-        </Card>
+            )}
+            {theme && (
+              <View style={[styles.badge, styles.themeBadge]}>
+                <Ionicons
+                  name="pricetag-outline"
+                  size={11}
+                  color={isDark ? Colors.accent[300] : Colors.accent[600]}
+                />
+                <Text
+                  variant="caption"
+                  color={isDark ? Colors.accent[300] : Colors.accent[600]}
+                >
+                  {capitalize(theme)}
+                </Text>
+              </View>
+            )}
+            <View style={styles.badgeSpacer} />
+            <Ionicons
+              name="chevron-forward"
+              size={16}
+              color={isDark ? Colors.primary[400] : Colors.primary[500]}
+            />
+          </View>
+        </TouchableOpacity>
       </Animated.View>
     );
   };
 
   if (dreams.length === 0) {
     return (
-      <ScrollView 
-        contentContainerStyle={[
-          styles.emptyStateScrollContent,
-          { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }
-        ]}
-        showsVerticalScrollIndicator={true}
+      <ScrollView
+        contentContainerStyle={styles.emptyStateScrollContent}
+        showsVerticalScrollIndicator={false}
       >
         <EmptyState
           icon="moon-outline"
           title="Begin Your Dream Journey"
-          description="Transform your dreams into meaningful insights with our guided dream journaling experience."
+          description="Your saved dreams and their interpretations will live here."
           steps={[
             "Record your dreams as soon as you wake up for best recall",
-            "Add emotions, symbols, and themes to enrich your entries",
-            "Get AI-powered analysis to uncover patterns and meanings",
-            "Track your dream patterns over time for deeper insights"
+            "Tag the mood so patterns emerge over time",
+            "Get AI-powered analysis to uncover symbols and meanings",
+            "Revisit past dreams to track recurring themes"
           ]}
           actionLabel="Record Your First Dream"
           onAction={() => {
@@ -252,29 +227,133 @@ const DreamHistory: React.FC<DreamHistoryProps> = ({
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={dreams}
-        renderItem={renderDreamItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={true}
-        ListHeaderComponent={
-          dreams.length > 0 ? (
-            <View style={styles.header}>
-              <View style={styles.headerPlaceholder} />
-              <Button
-                variant="outline"
-                size="sm"
-                onPress={handleClearAllDreams}
-                style={styles.clearButton}
-                hapticFeedback
+      <View style={styles.searchContainer}>
+        <Ionicons
+          name="search"
+          size={18}
+          color={isDark ? Colors.neutral[500] : Colors.neutral[400]}
+          style={styles.searchIcon}
+        />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search dreams, symbols, meanings…"
+          placeholderTextColor={isDark ? Colors.neutral[500] : Colors.neutral[400]}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          returnKeyType="search"
+          accessibilityLabel="Search dreams"
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity
+            onPress={() => setSearchQuery('')}
+            accessibilityRole="button"
+            accessibilityLabel="Clear search"
+          >
+            <Ionicons
+              name="close-circle"
+              size={18}
+              color={isDark ? Colors.neutral[500] : Colors.neutral[400]}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {themes.length > 0 && (
+        <View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.filterRow}
+          >
+            <TouchableOpacity
+              style={[styles.filterChip, themeFilter === null && styles.filterChipActive]}
+              onPress={() => {
+                Haptics.selectionAsync();
+                setThemeFilter(null);
+              }}
+              accessibilityRole="button"
+              accessibilityState={{ selected: themeFilter === null }}
+            >
+              <Text
+                variant="caption"
+                color={
+                  themeFilter === null
+                    ? (isDark ? Colors.primary[200] : Colors.primary[700])
+                    : (isDark ? Colors.neutral[400] : Colors.neutral[500])
+                }
               >
-                Clear All
-              </Button>
-            </View>
-          ) : null
-        }
-      />
+                All ({dreams.length})
+              </Text>
+            </TouchableOpacity>
+            {themes.map(theme => {
+              const active = themeFilter === theme;
+              return (
+                <TouchableOpacity
+                  key={theme}
+                  style={[styles.filterChip, active && styles.filterChipActive]}
+                  onPress={() => {
+                    Haptics.selectionAsync();
+                    setThemeFilter(active ? null : theme);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: active }}
+                >
+                  <Text
+                    variant="caption"
+                    color={
+                      active
+                        ? (isDark ? Colors.primary[200] : Colors.primary[700])
+                        : (isDark ? Colors.neutral[400] : Colors.neutral[500])
+                    }
+                  >
+                    {capitalize(theme)}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
+
+      {filteredDreams.length === 0 ? (
+        <View style={styles.noResults}>
+          <Ionicons
+            name="search-outline"
+            size={40}
+            color={isDark ? Colors.neutral[500] : Colors.neutral[400]}
+          />
+          <Text
+            variant="body1"
+            color={isDark ? Colors.neutral[400] : Colors.neutral[500]}
+            style={styles.noResultsText}
+          >
+            No dreams match your search
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredDreams}
+          renderItem={renderDreamItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListFooterComponent={
+            dreams.length > 1 ? (
+              <View style={styles.footer}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  leftIcon="trash-outline"
+                  onPress={handleClearAllDreams}
+                  hapticFeedback
+                >
+                  Clear All Dreams
+                </Button>
+              </View>
+            ) : null
+          }
+        />
+      )}
 
       <AlertDialog
         visible={deleteAlertVisible}
@@ -283,7 +362,7 @@ const DreamHistory: React.FC<DreamHistoryProps> = ({
         confirmText="Delete"
         cancelText="Cancel"
         onConfirm={confirmDeleteDream}
-        onCancel={cancelDeleteDream}
+        onCancel={() => setDeleteAlertVisible(false)}
         destructive={true}
       />
 
@@ -294,96 +373,127 @@ const DreamHistory: React.FC<DreamHistoryProps> = ({
         confirmText="Clear All"
         cancelText="Cancel"
         onConfirm={confirmClearAllDreams}
-        onCancel={cancelClearAllDreams}
+        onCancel={() => setClearAllAlertVisible(false)}
         destructive={true}
       />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (isDark: boolean) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.neutral[50],
-  } as ViewStyle,
-  header: {
+  },
+  searchContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[2],
-    marginBottom: spacing[2],
-  } as ViewStyle,
-  headerPlaceholder: {
+    marginHorizontal: spacing[4],
+    marginTop: spacing[2],
+    marginBottom: spacing[3],
+    paddingHorizontal: spacing[3],
+    borderRadius: BorderRadius.lg,
+    backgroundColor: isDark ? Colors.neutral[800] : '#FFFFFF',
+    borderWidth: 1,
+    borderColor: isDark ? Colors.neutral[700] : Colors.neutral[200],
+    ...Shadows.sm,
+  },
+  searchIcon: {
+    marginRight: spacing[2],
+  },
+  searchInput: {
     flex: 1,
-  } as ViewStyle,
-  clearButton: {
-    minWidth: 100,
-  } as ViewStyle,
-  listContent: {
-    paddingBottom: spacing[20],
-  } as ViewStyle,
-  dreamItemContainer: {
-    width: CARD_WIDTH,
-    alignSelf: 'center',
-    marginBottom: spacing[4],
-  } as ViewStyle,
-  dreamItem: {
-    width: '100%',
-  } as ViewStyle,
-  dreamHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: spacing[4],
-    minHeight: 80,
-  } as ViewStyle,
-  dreamHeaderContent: {
-    flex: 1,
-    marginRight: spacing[4],
-  } as ViewStyle,
-  dateText: {
-    marginBottom: spacing[1],
-  } as TextStyle,
-  previewText: {
-    lineHeight: 20,
-  } as TextStyle,
-  dreamExpandedContent: {
-    padding: spacing[4],
-    paddingTop: 0,
-    borderTopWidth: 1,
-    borderTopColor: Colors.neutral[200],
-  } as ViewStyle,
-  fullContent: {
-    marginBottom: spacing[4],
-    lineHeight: 24,
-  } as TextStyle,
-  analysisPreview: {
-    padding: spacing[4],
-    marginBottom: spacing[4],
-    borderRadius: BorderRadius.md,
-  } as ViewStyle,
-  analysisPreviewTitle: {
-    marginBottom: spacing[1],
-  } as TextStyle,
-  analysisPreviewText: {
-    lineHeight: 20,
-  } as TextStyle,
-  actionButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    paddingVertical: spacing[3],
+    fontSize: 15,
+    color: isDark ? Colors.neutral[200] : Colors.neutral[800],
+  },
+  filterRow: {
     gap: spacing[2],
-  } as ViewStyle,
-  viewButton: {
+    paddingHorizontal: spacing[4],
+    paddingBottom: spacing[3],
+  },
+  filterChip: {
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1],
+    borderRadius: BorderRadius.pill,
+    backgroundColor: isDark ? Colors.neutral[800] : Colors.neutral[100],
+    borderWidth: 1,
+    borderColor: isDark ? Colors.neutral[700] : Colors.neutral[200],
+  },
+  filterChipActive: {
+    backgroundColor: isDark ? 'rgba(150, 131, 240, 0.16)' : Colors.primary[50],
+    borderColor: isDark ? Colors.primary[400] : Colors.primary[500],
+  },
+  listContent: {
+    paddingHorizontal: spacing[4],
+    paddingBottom: spacing[24],
+  },
+  dreamCard: {
+    backgroundColor: isDark ? Colors.neutral[800] : '#FFFFFF',
+    borderRadius: BorderRadius.lg,
+    padding: spacing[4],
+    marginBottom: spacing[3],
+    borderWidth: 1,
+    borderColor: isDark ? Colors.neutral[700] : Colors.neutral[200],
+    ...Shadows.sm,
+  },
+  dreamCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing[2],
+  },
+  deleteIconButton: {
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  previewText: {
+    lineHeight: 22,
+    marginBottom: spacing[2],
+  },
+  interpretationPreview: {
+    lineHeight: 19,
+    marginBottom: spacing[3],
+    fontStyle: 'italic',
+  },
+  badgesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+  },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: spacing[2],
+    paddingVertical: 3,
+    borderRadius: BorderRadius.pill,
+    backgroundColor: isDark ? 'rgba(20, 18, 31, 0.6)' : Colors.neutral[100],
+  },
+  themeBadge: {
+    backgroundColor: isDark ? 'rgba(247, 174, 36, 0.1)' : Colors.accent[50],
+  },
+  badgeSpacer: {
     flex: 1,
-  } as ViewStyle,
-  deleteButton: {
+  },
+  noResults: {
     flex: 1,
-  } as ViewStyle,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: spacing[24],
+  },
+  noResultsText: {
+    marginTop: spacing[3],
+  },
+  footer: {
+    alignItems: 'center',
+    paddingVertical: spacing[4],
+  },
   emptyStateScrollContent: {
     flexGrow: 1,
-    paddingBottom: 100, // Extra padding to ensure content isn't hidden by tab bar
-  } as ViewStyle,
+    paddingBottom: 100, // Keep content clear of the tab bar
+  },
 });
 
-export default DreamHistory; 
+export default DreamHistory;

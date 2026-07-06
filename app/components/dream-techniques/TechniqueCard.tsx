@@ -101,7 +101,7 @@ export const TechniqueCard: React.FC<TechniqueCardProps> = ({
               <MaterialCommunityIcons 
                 name="check-circle" 
                 size={24} 
-                color={Colors.success} 
+                color={Colors.success[500]}
               />
             </View>
           )}
