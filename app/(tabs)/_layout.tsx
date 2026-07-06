@@ -13,7 +13,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: isDark ? Colors.secondary[400] : Colors.primary[600],
+        tabBarActiveTintColor: isDark ? Colors.accent[300] : Colors.primary[600],
         tabBarInactiveTintColor: isDark ? Colors.neutral[400] : Colors.neutral[500],
         tabBarStyle: {
           backgroundColor: 'transparent',
@@ -62,25 +62,25 @@ export default function TabLayout() {
                 bottom: 0,
                 borderRadius: 0,
                 overflow: 'hidden',
-                backgroundColor: isDark 
-                  ? 'rgba(45, 55, 72, 0.75)' 
-                  : 'rgba(247, 250, 252, 0.75)',
+                backgroundColor: isDark
+                  ? 'rgba(33, 30, 56, 0.75)'
+                  : 'rgba(249, 248, 253, 0.75)',
                 borderTopWidth: isDark ? 1 : 0,
                 borderTopColor: isDark ? Colors.neutral[600] : 'transparent',
                 ...Shadows.md
               }}
             />
           ) : (
-            <View style={{ 
-              position: 'absolute', 
-              top: 0, 
-              left: 0, 
-              right: 0, 
+            <View style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
               bottom: 0,
               borderRadius: 0,
-              backgroundColor: isDark 
-                ? 'rgba(45, 55, 72, 0.9)' 
-                : 'rgba(247, 250, 252, 0.9)',
+              backgroundColor: isDark
+                ? 'rgba(33, 30, 56, 0.95)'
+                : 'rgba(249, 248, 253, 0.95)',
               overflow: 'hidden',
               borderTopWidth: isDark ? 1 : 0,
               borderTopColor: isDark ? Colors.neutral[600] : 'transparent',
@@ -93,27 +93,18 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'New Dream',
+          title: 'Journal',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-circle" size={size} color={color} />
+            <Ionicons name="moon" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="history"
         options={{
-          title: 'Dream History',
+          title: 'History',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="time" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="compass" size={size} color={color} />
           ),
         }}
       />
@@ -124,7 +115,15 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="book" size={size} color={color} />
           ),
-          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="explore"
+        options={{
+          title: 'Explore',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="compass" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen

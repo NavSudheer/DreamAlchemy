@@ -72,6 +72,27 @@ export interface Archetype {
   significance: string;
 }
 
+export type DreamMood = 'joyful' | 'peaceful' | 'neutral' | 'confusing' | 'anxious' | 'frightening';
+
+export interface MoodInfo {
+  key: DreamMood;
+  label: string;
+  emoji: string;
+}
+
+// Moods the dreamer can tag a dream with when recording it
+export const DREAM_MOODS: MoodInfo[] = [
+  { key: 'joyful', label: 'Joyful', emoji: '😊' },
+  { key: 'peaceful', label: 'Peaceful', emoji: '😌' },
+  { key: 'neutral', label: 'Neutral', emoji: '😐' },
+  { key: 'confusing', label: 'Confusing', emoji: '😵‍💫' },
+  { key: 'anxious', label: 'Anxious', emoji: '😰' },
+  { key: 'frightening', label: 'Frightening', emoji: '😨' },
+];
+
+export const getMoodInfo = (mood?: string): MoodInfo | undefined =>
+  DREAM_MOODS.find(m => m.key === mood);
+
 // Constants for available dream themes
 export const DREAM_THEMES = {
   EMOTIONAL: {

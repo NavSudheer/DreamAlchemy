@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  ActivityIndicator,
+  Animated,
   Share
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { DreamAnalysis as DreamAnalysisType, Symbol, Archetype, DREAM_THEMES } from '../types';
+import { DreamAnalysis as DreamAnalysisType, Symbol, Archetype, DreamMood, getMoodInfo, DREAM_THEMES } from '../types';
 import { formatDate } from '../utils/helpers';
 import { useTheme } from '../providers/ThemeProvider';
 import { Colors, spacing, BorderRadius, Shadows, typography } from '../utils/theme';
@@ -18,12 +18,99 @@ import Card from './ui/Card';
 import AlertDialog from './ui/AlertDialog';
 import Button from './ui/Button';
 
+const LOADING_MESSAGES = [
+  'Reading your dream…',
+  'Tracing the symbols…',
+  'Consulting the archetypes…',
+  'Weaving your interpretation…',
+];
+
+// Pulsing moon with rotating status messages shown while the analysis streams in
+const AnalyzingIndicator: React.FC<{ isDark: boolean }> = ({ isDark }) => {
+  const [messageIndex, setMessageIndex] = useState(0);
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, { toValue: 1.15, duration: 900, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1, duration: 900, useNativeDriver: true }),
+      ])
+    );
+    pulse.start();
+
+    const interval = setInterval(() => {
+      setMessageIndex(i => (i + 1) % LOADING_MESSAGES.length);
+    }, 2500);
+
+    return () => {
+      pulse.stop();
+      clearInterval(interval);
+    };
+  }, [pulseAnim]);
+
+  return (
+    <View style={analyzingStyles.container}>
+      <Animated.View
+        style={[
+          analyzingStyles.moonCircle,
+          {
+            backgroundColor: isDark ? 'rgba(150, 131, 240, 0.15)' : Colors.primary[50],
+            transform: [{ scale: pulseAnim }],
+          },
+        ]}
+      >
+        <Ionicons
+          name="moon"
+          size={40}
+          color={isDark ? Colors.primary[300] : Colors.primary[500]}
+        />
+      </Animated.View>
+      <Text
+        variant="body1"
+        color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
+        style={analyzingStyles.message}
+      >
+        {LOADING_MESSAGES[messageIndex]}
+      </Text>
+      <Text variant="caption" color={isDark ? Colors.neutral[500] : Colors.neutral[400]}>
+        This usually takes a few seconds
+      </Text>
+    </View>
+  );
+};
+
+const analyzingStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 320,
+    padding: spacing[6],
+  },
+  moonCircle: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing[5],
+  },
+  message: {
+    marginBottom: spacing[1],
+    textAlign: 'center',
+  },
+});
+
 interface DreamAnalysisProps {
   analysis: DreamAnalysisType | null;
   dreamText: string;
   isAnalyzing: boolean;
   onSave: () => void;
   onNewDream: () => void;
+  mood?: DreamMood | string;
+  error?: string | null;
+  onRetry?: () => void;
   isViewingSavedDream?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
@@ -36,6 +123,9 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
   isAnalyzing,
   onSave,
   onNewDream,
+  mood,
+  error,
+  onRetry,
   isViewingSavedDream = false,
   onEdit,
   onDelete,
@@ -43,7 +133,8 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
 }) => {
   const { isDark } = useTheme();
   const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
-  
+  const moodInfo = getMoodInfo(mood);
+
   // Define static styles
   const styles = StyleSheet.create({
     container: {
@@ -56,6 +147,50 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
       justifyContent: 'center',
       alignItems: 'center',
       minHeight: 250,
+    },
+    errorContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: 320,
+      padding: spacing[6],
+    },
+    errorIconCircle: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: spacing[4],
+    },
+    errorTitle: {
+      marginBottom: spacing[2],
+      textAlign: 'center',
+    },
+    errorMessage: {
+      textAlign: 'center',
+      marginBottom: spacing[6],
+      lineHeight: 22,
+    },
+    errorActions: {
+      flexDirection: 'row',
+      gap: spacing[3],
+      width: '100%',
+      paddingHorizontal: spacing[4],
+    },
+    metaRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: spacing[3],
+    },
+    moodBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing[1],
+      paddingHorizontal: spacing[3],
+      paddingVertical: 4,
+      borderRadius: BorderRadius.pill,
     },
     header: {
       flexDirection: 'row',
@@ -73,7 +208,6 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
       marginLeft: spacing[1],
     },
     dateText: {
-      marginBottom: spacing[3],
       opacity: 0.8,
     },
     actions: {
@@ -309,15 +443,63 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
     }
   };
 
-  if (isAnalyzing && (!analysis || !analysis.interpretation)) {
+  if (error) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={isDark ? Colors.primary[400] : Colors.primary[500]} />
-        <Text variant="body1" color={isDark ? Colors.neutral[300] : Colors.neutral[600]} style={{ marginTop: spacing[4] }}>
-          Analyzing your dream...
+      <View style={styles.errorContainer}>
+        <View style={[
+          styles.errorIconCircle,
+          { backgroundColor: isDark ? 'rgba(239, 68, 68, 0.12)' : Colors.error[50] }
+        ]}>
+          <Ionicons
+            name="cloud-offline-outline"
+            size={36}
+            color={isDark ? Colors.error[400] : Colors.error[500]}
+          />
+        </View>
+        <Text
+          variant="h4"
+          color={isDark ? Colors.neutral[200] : Colors.neutral[700]}
+          style={styles.errorTitle}
+        >
+          Analysis Failed
         </Text>
+        <Text
+          variant="body1"
+          color={isDark ? Colors.neutral[400] : Colors.neutral[500]}
+          style={styles.errorMessage}
+        >
+          {error}
+        </Text>
+        <View style={styles.errorActions}>
+          {onRetry && (
+            <Button
+              variant="primary"
+              size="md"
+              leftIcon="refresh-outline"
+              onPress={onRetry}
+              style={styles.actionButton}
+              hapticFeedback
+            >
+              Try Again
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="md"
+            leftIcon="create-outline"
+            onPress={handleNewDream}
+            style={styles.actionButton}
+            hapticFeedback
+          >
+            Edit Dream
+          </Button>
+        </View>
       </View>
     );
+  }
+
+  if (isAnalyzing && (!analysis || !analysis.interpretation)) {
+    return <AnalyzingIndicator isDark={isDark} />;
   }
 
   if (!analysis) {
@@ -381,29 +563,33 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
       </View>
       
       {isAnalyzing ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator 
-            size="large" 
-            color={isDark ? Colors.primary[400] : Colors.primary[500]} 
-          />
-          <Text
-            variant="body1"
-            color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
-            style={{ marginTop: spacing[4] }}
-          >
-            Analyzing your dream...
-          </Text>
-        </View>
+        <AnalyzingIndicator isDark={isDark} />
       ) : analysis ? (
         <>
-          <Text
-            variant="caption"
-            color={isDark ? Colors.neutral[400] : Colors.neutral[500]}
-            style={styles.dateText}
-          >
-            {formatDate(new Date(analysis.timestamp))}
-          </Text>
-          
+          <View style={styles.metaRow}>
+            <Text
+              variant="caption"
+              color={isDark ? Colors.neutral[400] : Colors.neutral[500]}
+              style={styles.dateText}
+            >
+              {formatDate(new Date(analysis.timestamp))}
+            </Text>
+            {moodInfo && (
+              <View style={[
+                styles.moodBadge,
+                { backgroundColor: isDark ? 'rgba(150, 131, 240, 0.14)' : Colors.primary[50] }
+              ]}>
+                <Text variant="caption">{moodInfo.emoji}</Text>
+                <Text
+                  variant="caption"
+                  color={isDark ? Colors.primary[200] : Colors.primary[700]}
+                >
+                  {moodInfo.label}
+                </Text>
+              </View>
+            )}
+          </View>
+
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Ionicons 

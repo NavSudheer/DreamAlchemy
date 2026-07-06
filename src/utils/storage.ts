@@ -32,17 +32,8 @@ export const getDreams = async (): Promise<Dream[]> => {
       return [];
     }
     
-    const dreams = JSON.parse(dreamsJson) as Dream[];
-    
-    // Convert string timestamps back to Date objects
-    return dreams.map(dream => ({
-      ...dream,
-      timestamp: new Date(dream.timestamp),
-      analysis: dream.analysis ? {
-        ...dream.analysis,
-        timestamp: new Date(dream.analysis.timestamp)
-      } : undefined
-    }));
+    // Timestamps are stored as epoch milliseconds, matching the Dream type
+    return JSON.parse(dreamsJson) as Dream[];
   } catch (error) {
     console.error('Error getting dreams:', error);
     return [];

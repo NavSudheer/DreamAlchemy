@@ -3,39 +3,44 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  ActivityIndicator,
   Platform,
   KeyboardAvoidingView,
   ScrollView,
-  Alert,
   PermissionsAndroid,
-  Dimensions,
-  TextInput
+  TextInput,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { LinearGradient } from 'expo-linear-gradient';
-import VoiceRecognitionService, { 
-  initialState, 
-  VoiceRecognitionState 
+import VoiceRecognitionService, {
+  initialState,
+  VoiceRecognitionState
 } from '../services/voiceRecognition';
 import { useTheme } from '../providers/ThemeProvider';
 import { Colors, spacing, BorderRadius, Shadows } from '../utils/theme';
+import { DREAM_MOODS, DreamMood } from '../types';
 import Text from './ui/Text';
-import Input from './ui/Input';
 import Button from './ui/Button';
 import Card from './ui/Card';
 import AlertDialog from './ui/AlertDialog';
 
-const { width } = Dimensions.get('window');
+const MIN_DREAM_LENGTH = 10;
+
+// Gentle nudges for when the page is blank
+const DREAM_PROMPTS = [
+  'Where were you?',
+  'Who was with you?',
+  'How did it feel?',
+  'What stood out most?',
+];
 
 interface DreamInputProps {
-  onSubmit: (text: string) => void;
+  onSubmit: (text: string, mood: DreamMood) => void;
   isLoading: boolean;
 }
 
 const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
   const [dreamText, setDreamText] = useState('');
+  const [mood, setMood] = useState<DreamMood>('neutral');
   const [isRecording, setIsRecording] = useState(false);
   const [voiceState, setVoiceState] = useState<VoiceRecognitionState>(initialState);
   const [voiceAvailable, setVoiceAvailable] = useState(false);
@@ -58,9 +63,9 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
         setShowVoiceFeature(false);
       }
     };
-    
+
     checkVoiceAvailability();
-    
+
     // Set up voice recognition event handlers
     VoiceRecognitionService.setupEventHandlers({
       onSpeechStart: () => {
@@ -74,13 +79,13 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
         setIsRecording(false);
       },
       onSpeechError: (e) => {
-        setVoiceState(prev => ({ 
-          ...prev, 
+        setVoiceState(prev => ({
+          ...prev,
           error: e.error?.message || 'Unknown error',
-          isRecording: false 
+          isRecording: false
         }));
         setIsRecording(false);
-        
+
         // Show error message if not canceled by user and not a module unavailable error
         if (e.error?.code !== '7' && e.error?.code !== 'cancelled') {
           if (e.error?.code === 'module_unavailable') {
@@ -96,7 +101,7 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
       onSpeechResults: (e) => {
         if (e.value && e.value.length > 0) {
           const transcribedText = e.value[0];
-          
+
           // Append to existing text with a space if there's already text
           setDreamText(prev => {
             if (prev.trim().length > 0) {
@@ -104,23 +109,23 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
             }
             return transcribedText;
           });
-          
-          setVoiceState(prev => ({ 
-            ...prev, 
-            results: e.value || [] 
+
+          setVoiceState(prev => ({
+            ...prev,
+            results: e.value || []
           }));
         }
       },
       onSpeechPartialResults: (e) => {
         if (e.value && e.value.length > 0) {
-          setVoiceState(prev => ({ 
-            ...prev, 
-            partialResults: e.value || [] 
+          setVoiceState(prev => ({
+            ...prev,
+            partialResults: e.value || []
           }));
         }
       }
     });
-    
+
     // Clean up voice recognition on component unmount
     return () => {
       VoiceRecognitionService.destroyRecognizer();
@@ -128,7 +133,7 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
   }, []);
 
   const handleSubmit = () => {
-    if (dreamText.trim().length < 10) {
+    if (dreamText.trim().length < MIN_DREAM_LENGTH) {
       setAlertTitle('Dream Too Short');
       setAlertMessage('Please provide more details about your dream for a better analysis.');
       setAlertVisible(true);
@@ -138,7 +143,7 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
     if (isLoading) return;
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    onSubmit(dreamText);
+    onSubmit(dreamText, mood);
   };
 
   const handleClear = () => {
@@ -146,12 +151,17 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
     setDreamText('');
   };
 
+  const handleSelectMood = (selected: DreamMood) => {
+    Haptics.selectionAsync();
+    setMood(selected);
+  };
+
   // Request microphone permission on Android
   const requestMicrophonePermission = async (): Promise<boolean> => {
     if (Platform.OS !== 'android') {
       return true;
     }
-    
+
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
@@ -162,7 +172,7 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
           buttonNegative: 'Cancel',
         }
       );
-      
+
       return granted === PermissionsAndroid.RESULTS.GRANTED;
     } catch (err) {
       console.error('Error requesting microphone permission:', err);
@@ -173,14 +183,14 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
   // Toggle voice recording
   const toggleRecording = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
+
     if (!voiceAvailable) {
       setAlertTitle('Voice Recognition Unavailable');
       setAlertMessage('Voice recognition is not available on your device.');
       setAlertVisible(true);
       return;
     }
-    
+
     try {
       if (isRecording) {
         // Stop recording
@@ -190,14 +200,14 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
       } else {
         // Start recording if permission granted
         const hasPermission = await requestMicrophonePermission();
-        
+
         if (hasPermission) {
           // Reset voice state
           setVoiceState({
             ...initialState,
             isRecording: true
           });
-          
+
           setIsRecording(true);
           await VoiceRecognitionService.startRecognizing();
         } else {
@@ -209,115 +219,18 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
     } catch (error) {
       console.error('Error toggling voice recording:', error);
       setIsRecording(false);
-      
+
       setAlertTitle('Voice Recording Error');
       setAlertMessage('An error occurred while trying to record. Please try again.');
       setAlertVisible(true);
     }
   };
 
-  // Use a function to create styles that can access isDark
-  const getStyles = () => StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    scrollContainer: {
-      flexGrow: 1,
-      paddingHorizontal: spacing[4],
-      paddingTop: spacing[2],
-      paddingBottom: spacing[20],
-    },
-    title: {
-      marginBottom: spacing[4],
-      paddingHorizontal: spacing[2],
-    },
-    card: {
-      flex: 1,
-      borderRadius: BorderRadius.lg,
-    },
-    inputContainer: {
-      flex: 1,
-      position: 'relative',
-    },
-    dreamInput: {
-      minHeight: 200,
-      borderRadius: BorderRadius.lg,
-      paddingHorizontal: spacing[4],
-      paddingVertical: spacing[4],
-      paddingBottom: spacing[6],
-      fontSize: 16,
-      lineHeight: 24,
-      letterSpacing: 0.3,
-      fontFamily: 'Georgia',
-      color: isDark ? Colors.neutral[200] : Colors.neutral[800],
-      backgroundColor: isDark ? 'rgba(26, 32, 44, 0.5)' : 'rgba(247, 250, 252, 0.8)',
-      borderWidth: 1,
-      borderColor: isDark ? Colors.neutral[700] : Colors.neutral[300],
-    },
-    inputActions: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginTop: spacing[2],
-      marginBottom: spacing[4],
-    },
-    voiceButton: {
-      width: 44,
-      height: 44,
-      borderRadius: 22,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: isDark ? 'rgba(26, 32, 44, 0.5)' : Colors.neutral[100],
-      borderWidth: 1,
-      borderColor: isDark ? Colors.neutral[700] : Colors.neutral[300],
-      ...Shadows.sm,
-    },
-    voiceButtonRecording: {
-      backgroundColor: Colors.secondary[500],
-      borderColor: Colors.secondary[400],
-      ...Shadows.md,
-    },
-    clearButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    analyzeButton: {
-      marginTop: spacing[2],
-    },
-    stepsContainer: {
-      marginBottom: spacing[6],
-      marginTop: spacing[2],
-    },
-    stepContainer: {
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      marginBottom: spacing[4],
-    },
-    stepNumber: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      backgroundColor: isDark ? 'rgba(26, 32, 44, 0.6)' : 'rgba(226, 232, 240, 0.8)',
-      marginRight: spacing[3],
-      justifyContent: 'center',
-      alignItems: 'center',
-      ...Shadows.sm,
-    },
-    stepText: {
-      flex: 1,
-      paddingTop: 4,
-    },
-    introText: {
-      marginBottom: spacing[6],
-      paddingHorizontal: spacing[2],
-      lineHeight: 22,
-    },
-  });
+  const wordCount = dreamText.trim().length === 0
+    ? 0
+    : dreamText.trim().split(/\s+/).length;
 
-  // Get the styles
-  const styles = getStyles();
+  const styles = getStyles(isDark);
 
   const closeAlert = () => {
     setAlertVisible(false);
@@ -329,101 +242,43 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
-      <ScrollView 
-        contentContainerStyle={styles.scrollContainer} 
-        showsVerticalScrollIndicator={true}
+      <Card
+        variant="elevated"
+        style={styles.card}
+        backgroundColor={isDark ? Colors.neutral[800] : '#FFFFFF'}
       >
-        <Text 
-          variant="h2" 
-          color={isDark ? Colors.neutral[200] : Colors.neutral[700]}
-          style={styles.title}
-        >
-          Begin Your Dream Journey
-        </Text>
-        
-        <Text 
-          variant="body1" 
-          color={isDark ? Colors.neutral[400] : Colors.neutral[600]}
-          style={styles.introText}
-        >
-          Transform your dreams into meaningful insights with our guided dream journaling experience.
-        </Text>
-        
-        <View style={styles.stepsContainer}>
-          <View style={styles.stepContainer}>
-            <View style={styles.stepNumber}>
-              <Text variant="body2" color={isDark ? Colors.primary[400] : Colors.primary[600]}>1</Text>
-            </View>
-            <Text 
-              variant="body1" 
-              color={isDark ? Colors.neutral[300] : Colors.neutral[700]}
-              style={styles.stepText}
-            >
-              Record your dreams as soon as you wake up for best recall
-            </Text>
-          </View>
-          
-          <View style={styles.stepContainer}>
-            <View style={styles.stepNumber}>
-              <Text variant="body2" color={isDark ? Colors.primary[400] : Colors.primary[600]}>2</Text>
-            </View>
-            <Text 
-              variant="body1" 
-              color={isDark ? Colors.neutral[300] : Colors.neutral[700]}
-              style={styles.stepText}
-            >
-              Add emotions, symbols, and themes to enrich your entries
-            </Text>
-          </View>
-          
-          <View style={styles.stepContainer}>
-            <View style={styles.stepNumber}>
-              <Text variant="body2" color={isDark ? Colors.primary[400] : Colors.primary[600]}>3</Text>
-            </View>
-            <Text 
-              variant="body1" 
-              color={isDark ? Colors.neutral[300] : Colors.neutral[700]}
-              style={styles.stepText}
-            >
-              Get AI-powered analysis to uncover patterns and meanings
-            </Text>
-          </View>
-          
-          <View style={styles.stepContainer}>
-            <View style={styles.stepNumber}>
-              <Text variant="body2" color={isDark ? Colors.primary[400] : Colors.primary[600]}>4</Text>
-            </View>
-            <Text 
-              variant="body1" 
-              color={isDark ? Colors.neutral[300] : Colors.neutral[700]}
-              style={styles.stepText}
-            >
-              Track your dream patterns over time for deeper insights
-            </Text>
-          </View>
+        <View style={styles.cardTitleRow}>
+          <Ionicons
+            name="sparkles"
+            size={18}
+            color={isDark ? Colors.accent[300] : Colors.accent[500]}
+          />
+          <Text
+            variant="h5"
+            color={isDark ? Colors.neutral[100] : Colors.neutral[800]}
+            style={styles.cardTitle}
+          >
+            What did you dream?
+          </Text>
         </View>
-        
-        <Card 
-          variant="elevated" 
-          style={styles.card}
-          backgroundColor={isDark ? Colors.neutral[800] : Colors.neutral[50]}
-        >
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.dreamInput}
-              placeholder="Describe your dream..."
-              placeholderTextColor={isDark ? Colors.neutral[500] : Colors.neutral[400]}
-              multiline
-              value={dreamText}
-              onChangeText={setDreamText}
-              numberOfLines={6}
-              textAlignVertical="top"
-              selectionColor={isDark ? Colors.primary[400] : Colors.primary[500]}
-              autoCorrect={true}
-              spellCheck={true}
-            />
-            
-            <View style={styles.inputActions}>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.dreamInput}
+            placeholder="Describe your dream while it's still fresh…"
+            placeholderTextColor={isDark ? Colors.neutral[500] : Colors.neutral[400]}
+            multiline
+            value={dreamText}
+            onChangeText={setDreamText}
+            numberOfLines={6}
+            textAlignVertical="top"
+            selectionColor={isDark ? Colors.primary[400] : Colors.primary[500]}
+            autoCorrect={true}
+            spellCheck={true}
+          />
+
+          <View style={styles.inputActions}>
+            <View style={styles.inputActionsLeft}>
               {showVoiceFeature && (
                 <TouchableOpacity
                   onPress={toggleRecording}
@@ -432,47 +287,117 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
                     isRecording && styles.voiceButtonRecording
                   ]}
                   activeOpacity={0.7}
+                  accessibilityRole="button"
+                  accessibilityLabel={isRecording ? 'Stop voice recording' : 'Record dream by voice'}
                 >
                   <Ionicons
-                    name={isRecording ? "mic" : "mic-outline"}
-                    size={24}
+                    name={isRecording ? 'mic' : 'mic-outline'}
+                    size={22}
                     color={isRecording ? Colors.neutral[50] : (isDark ? Colors.neutral[300] : Colors.primary[600])}
                   />
                 </TouchableOpacity>
               )}
 
+              {isRecording && (
+                <Text variant="caption" color={isDark ? Colors.secondary[300] : Colors.secondary[600]}>
+                  Listening…
+                </Text>
+              )}
+            </View>
+
+            <View style={styles.inputActionsRight}>
+              {wordCount > 0 && (
+                <Text variant="caption" color={isDark ? Colors.neutral[500] : Colors.neutral[400]}>
+                  {wordCount} {wordCount === 1 ? 'word' : 'words'}
+                </Text>
+              )}
               {dreamText.length > 0 && (
                 <TouchableOpacity
                   onPress={handleClear}
                   style={styles.clearButton}
                   activeOpacity={0.7}
+                  accessibilityRole="button"
+                  accessibilityLabel="Clear dream text"
                 >
-                  <Ionicons 
-                    name="close-circle" 
-                    size={22} 
-                    color={isDark ? Colors.neutral[500] : Colors.neutral[400]} 
+                  <Ionicons
+                    name="close-circle"
+                    size={20}
+                    color={isDark ? Colors.neutral[500] : Colors.neutral[400]}
                   />
                 </TouchableOpacity>
               )}
             </View>
-
-            <Button
-              onPress={handleSubmit}
-              disabled={dreamText.trim().length < 10 || isLoading}
-              style={styles.analyzeButton}
-              variant="primary"
-              size="lg"
-              isLoading={isLoading}
-              isRounded={true}
-              fullWidth={true}
-              leftIcon="analytics-outline"
-            >
-              Analyze Dream
-            </Button>
           </View>
-        </Card>
-      </ScrollView>
-      
+        </View>
+
+        {dreamText.trim().length === 0 && (
+          <View style={styles.promptsRow}>
+            {DREAM_PROMPTS.map(prompt => (
+              <View key={prompt} style={styles.promptChip}>
+                <Text variant="caption" color={isDark ? Colors.neutral[400] : Colors.neutral[500]}>
+                  {prompt}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        <Text
+          variant="subtitle2"
+          color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
+          style={styles.moodLabel}
+        >
+          How did it feel?
+        </Text>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.moodRow}
+        >
+          {DREAM_MOODS.map(m => {
+            const selected = mood === m.key;
+            return (
+              <TouchableOpacity
+                key={m.key}
+                onPress={() => handleSelectMood(m.key)}
+                style={[styles.moodChip, selected && styles.moodChipSelected]}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                accessibilityLabel={`Mood: ${m.label}`}
+              >
+                <Text variant="body2" style={styles.moodEmoji}>{m.emoji}</Text>
+                <Text
+                  variant="caption"
+                  color={
+                    selected
+                      ? (isDark ? Colors.primary[200] : Colors.primary[700])
+                      : (isDark ? Colors.neutral[400] : Colors.neutral[500])
+                  }
+                >
+                  {m.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+
+        <Button
+          onPress={handleSubmit}
+          disabled={dreamText.trim().length < MIN_DREAM_LENGTH || isLoading}
+          style={styles.analyzeButton}
+          variant="primary"
+          size="lg"
+          isLoading={isLoading}
+          isRounded={true}
+          fullWidth={true}
+          leftIcon="sparkles-outline"
+        >
+          Analyze Dream
+        </Button>
+      </Card>
+
       <AlertDialog
         visible={alertVisible}
         title={alertTitle}
@@ -487,4 +412,121 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
   );
 };
 
-export default DreamInput; 
+const getStyles = (isDark: boolean) => StyleSheet.create({
+  container: {
+    width: '100%',
+  },
+  card: {
+    borderRadius: BorderRadius.xl,
+  },
+  cardTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+    marginBottom: spacing[3],
+  },
+  cardTitle: {
+    flex: 1,
+  },
+  inputContainer: {
+    position: 'relative',
+  },
+  dreamInput: {
+    minHeight: 160,
+    borderRadius: BorderRadius.lg,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[4],
+    fontSize: 16,
+    lineHeight: 24,
+    letterSpacing: 0.3,
+    fontFamily: 'Georgia',
+    color: isDark ? Colors.neutral[200] : Colors.neutral[800],
+    backgroundColor: isDark ? 'rgba(20, 18, 31, 0.5)' : Colors.neutral[50],
+    borderWidth: 1,
+    borderColor: isDark ? Colors.neutral[700] : Colors.neutral[200],
+  },
+  inputActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: spacing[2],
+  },
+  inputActionsLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+  },
+  inputActionsRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+  },
+  voiceButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: isDark ? 'rgba(20, 18, 31, 0.5)' : Colors.neutral[100],
+    borderWidth: 1,
+    borderColor: isDark ? Colors.neutral[700] : Colors.neutral[200],
+    ...Shadows.sm,
+  },
+  voiceButtonRecording: {
+    backgroundColor: Colors.secondary[500],
+    borderColor: Colors.secondary[400],
+    ...Shadows.md,
+  },
+  clearButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  promptsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing[2],
+    marginTop: spacing[3],
+  },
+  promptChip: {
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1],
+    borderRadius: BorderRadius.pill,
+    backgroundColor: isDark ? 'rgba(150, 131, 240, 0.08)' : Colors.primary[50],
+    borderWidth: 1,
+    borderColor: isDark ? Colors.neutral[700] : Colors.primary[100],
+  },
+  moodLabel: {
+    marginTop: spacing[5],
+    marginBottom: spacing[2],
+  },
+  moodRow: {
+    gap: spacing[2],
+    paddingVertical: spacing[1],
+  },
+  moodChip: {
+    alignItems: 'center',
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
+    borderRadius: BorderRadius.lg,
+    backgroundColor: isDark ? 'rgba(20, 18, 31, 0.5)' : Colors.neutral[50],
+    borderWidth: 1,
+    borderColor: isDark ? Colors.neutral[700] : Colors.neutral[200],
+    minWidth: 76,
+  },
+  moodChipSelected: {
+    backgroundColor: isDark ? 'rgba(150, 131, 240, 0.16)' : Colors.primary[50],
+    borderColor: isDark ? Colors.primary[400] : Colors.primary[500],
+  },
+  moodEmoji: {
+    fontSize: 20,
+    marginBottom: 2,
+  },
+  analyzeButton: {
+    marginTop: spacing[5],
+  },
+});
+
+export default DreamInput;

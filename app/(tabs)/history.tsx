@@ -18,10 +18,15 @@ const HistoryScreen: React.FC = () => {
   const { isDark } = useTheme();
   const router = useRouter();
 
-  // Load saved dreams whenever the screen comes into focus
+  // Load saved dreams whenever the screen comes into focus,
+  // and reset to the list view when leaving so returning always shows the list
   useFocusEffect(
     React.useCallback(() => {
       loadDreams();
+      return () => {
+        setSelectedDream(null);
+        setActiveView('history');
+      };
     }, [])
   );
 
@@ -95,7 +100,7 @@ const HistoryScreen: React.FC = () => {
                 description: String(a.description || 'No description available'),
                 significance: String(a.significance || 'No significance provided')
               })).filter(a => a.type && a.description && a.significance),
-              timestamp: String(selectedDream.timestamp || Date.now()),
+              timestamp: new Date(selectedDream.timestamp || Date.now()).toISOString(),
               theme: {
                 primary: String(selectedDream.analysis.theme || 'General'),
                 secondary: (selectedDream.analysis.secondaryThemes || []).map(t => String(t || '')).filter(Boolean),
@@ -103,6 +108,7 @@ const HistoryScreen: React.FC = () => {
               }
             }}
             dreamText={String(selectedDream.content || '')}
+            mood={selectedDream.analysis.mood}
             isAnalyzing={false}
             onSave={handleBackToHistory}
             onNewDream={handleNewDream}
