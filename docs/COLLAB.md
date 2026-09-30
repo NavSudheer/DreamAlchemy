@@ -21,9 +21,9 @@ Read it before starting work and update the assigned handoff before and after ch
 
 | ID | From -> To | Owned files | Task | Status |
 | --- | --- | --- | --- | --- |
-| H-001 | Codex -> Gemini | `src/components/dream-techniques/techniques.ts` | Add four evidence-conscious written guides: SSILD, dream incubation, morning recall routine, and nightmare aftercare. Preserve the existing `Technique` contract and do not alter UI files. | done (uncommitted) |
-| H-002 | Codex -> Codex | `src/components/DreamPatterns.tsx`, `app/(tabs)/_layout.tsx`, `app/(tabs)/explore.tsx` | Add day/week/month activity selection, promote Patterns to tab three, and show Patterns first in Explore. | in progress |
-| H-003 | Codex -> Gemini | `src/data/dreamSymbols.ts` | Audit and improve internal `relatedSymbols` links so every reference points to an existing symbol id; add only useful, non-duplicative relationships. | in progress |
+| H-001 | Codex -> Gemini | `src/components/dream-techniques/techniques.ts` | Add four evidence-conscious written guides: SSILD, dream incubation, morning recall routine, and nightmare aftercare. Preserve the existing `Technique` contract and do not alter UI files. | done `1fe03d0` |
+| H-002 | Codex -> Codex | `src/components/DreamPatterns.tsx`, `app/(tabs)/_layout.tsx`, `app/(tabs)/explore.tsx` | Add day/week/month activity selection, promote Patterns to tab three, and show Patterns first in Explore. | done `1fe03d0` |
+| H-003 | Codex -> Gemini | `src/data/dreamSymbols.ts` | Audit and improve internal `relatedSymbols` links so every reference points to an existing symbol id; add only useful, non-duplicative relationships. | accepted; pending checkpoint |
 
 ## Completion format
 
@@ -41,3 +41,17 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Existing IDs `1`–`5` and data types preserved completely.
 - **Follow-up:** Ready for Codex integration and commit.
+
+### H-003 Completion Notes (Gemini)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dreamSymbols.ts`
+- **Summary of Audit & Improvements:**
+  - Audited all 17 symbols in `DREAM_SYMBOLS`.
+  - Removed 35+ dangling/invalid `relatedSymbols` references that did not exist in the dataset.
+  - Connected under-connected symbols with 1–3 non-duplicative links to existing symbols in `DREAM_SYMBOLS`.
+  - Every referenced ID in `relatedSymbols` now strictly exists within the dataset, with 0 duplicates and 0 self-references.
+  - Kept object schemas, IDs, categories, descriptions, meanings, examples, history, and popularity unchanged; no medical, predictive, or guaranteed claims added.
+- **Validation:**
+  - Automated graph check passed: 0 invalid references, 0 duplicate references, 0 self-references across all 17 symbols.
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+- **Follow-up:** Ready for Codex review and integration.

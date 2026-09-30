@@ -27,7 +27,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Independence and freedom',
       'Fear of being threatened or pursued'
     ],
-    relatedSymbols: ['dog', 'forest', 'moon'],
+    relatedSymbols: ['forest', 'fear', 'cat'],
     examples: [
       'Being chased by a wolf might represent running from your own instincts or fears',
       'Becoming a wolf could symbolize embracing your wild nature',
@@ -48,7 +48,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Desire to escape limitations',
       'Soul or spiritual journey'
     ],
-    relatedSymbols: ['flying', 'sky', 'feather'],
+    relatedSymbols: ['flying', 'forest'],
     examples: [
       'Flying with birds may represent freedom and transcendence',
       'A caged bird might symbolize feeling trapped or restricted',
@@ -68,7 +68,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Sexual energy or desire',
       'Deception or hidden threats'
     ],
-    relatedSymbols: ['water', 'garden', 'transformation'],
+    relatedSymbols: ['water', 'fear', 'forest'],
     examples: [
       'A snake shedding its skin might represent personal transformation',
       'Being bitten by a snake could symbolize a sudden insight or awakening',
@@ -89,7 +89,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Feminine energy and grace',
       'Patience and careful observation'
     ],
-    relatedSymbols: ['night', 'moon', 'shadow'],
+    relatedSymbols: ['house', 'wolf', 'mirror'],
     examples: [
       'A friendly cat may represent your intuitive side',
       'Being scratched by a cat might symbolize fears about feminine power',
@@ -109,7 +109,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Nobility and grace',
       'The journey of life'
     ],
-    relatedSymbols: ['journey', 'speed', 'strength'],
+    relatedSymbols: ['forest', 'flying', 'wolf'],
     examples: [
       'Riding a horse might represent taking control of your own power',
       'A wild horse could symbolize untamed aspects of yourself',
@@ -131,7 +131,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Undeveloped aspects of yourself',
       'Past memories or regression'
     ],
-    relatedSymbols: ['birth', 'play', 'school'],
+    relatedSymbols: ['teacher', 'house', 'love'],
     examples: [
       'Finding a child might represent discovering a new part of yourself',
       'A lost child could symbolize neglected aspects of your personality',
@@ -151,7 +151,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Fear of the unknown',
       'New opportunities or relationships'
     ],
-    relatedSymbols: ['mask', 'mirror', 'door'],
+    relatedSymbols: ['mirror', 'fear', 'teacher'],
     examples: [
       'A threatening stranger might represent a feared aspect of yourself',
       'A helpful stranger could symbolize unexpected resources',
@@ -171,7 +171,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Learning and personal development',
       'Spiritual or emotional growth'
     ],
-    relatedSymbols: ['book', 'classroom', 'path'],
+    relatedSymbols: ['child', 'stranger', 'key'],
     examples: [
       'A teacher giving advice might represent your inner wisdom',
       'Being tested by a teacher could symbolize life challenges',
@@ -193,7 +193,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Family relationships and history',
       'Different phases in your life'
     ],
-    relatedSymbols: ['door', 'room', 'basement'],
+    relatedSymbols: ['key', 'mirror', 'child'],
     examples: [
       'An abandoned house might represent neglected aspects of yourself',
       'A childhood home could relate to past memories or influences',
@@ -214,7 +214,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Intuition and spiritual insight',
       'Transitions and change'
     ],
-    relatedSymbols: ['ocean', 'river', 'rain'],
+    relatedSymbols: ['falling', 'snake', 'fear'],
     examples: [
       'Calm water might represent emotional peace',
       'Turbulent or stormy water could symbolize emotional turmoil',
@@ -235,7 +235,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Primitive instincts and intuition',
       'Mystery and wonder'
     ],
-    relatedSymbols: ['tree', 'animals', 'path'],
+    relatedSymbols: ['wolf', 'bird', 'horse'],
     examples: [
       'Being lost in a forest might represent confusion or uncertainty',
       'Finding a path through a forest could symbolize navigating life challenges',
@@ -257,7 +257,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Power and authority',
       'Transitions between life phases'
     ],
-    relatedSymbols: ['door', 'lock', 'treasure'],
+    relatedSymbols: ['house', 'mirror', 'teacher'],
     examples: [
       'Finding a key might represent discovering a solution',
       'Losing a key could symbolize missed opportunities',
@@ -277,7 +277,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Vanity or concern with appearance',
       'Reflection of inner feelings and thoughts'
     ],
-    relatedSymbols: ['reflection', 'glass', 'face'],
+    relatedSymbols: ['stranger', 'house', 'key'],
     examples: [
       'A broken mirror might represent a distorted self-image',
       'Looking into a mirror and seeing someone else could symbolize hidden aspects of yourself',
@@ -300,7 +300,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Spiritual ascension',
       'Confidence and empowerment'
     ],
-    relatedSymbols: ['bird', 'sky', 'falling'],
+    relatedSymbols: ['bird', 'falling'],
     examples: [
       'Flying effortlessly might represent success and confidence',
       'Struggling to stay airborne could symbolize obstacles or insecurities',
@@ -320,7 +320,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Major life transitions',
       'Release of tension'
     ],
-    relatedSymbols: ['cliff', 'flying', 'height'],
+    relatedSymbols: ['flying', 'fear', 'water'],
     examples: [
       'Falling without landing may represent ongoing anxiety',
       'Falling and then flying could symbolize overcoming fears',
@@ -342,7 +342,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Spiritual fulfillment and divine love',
       'Creative inspiration and passion'
     ],
-    relatedSymbols: ['heart', 'wedding', 'embrace'],
+    relatedSymbols: ['child', 'fear', 'mirror'],
     examples: [
       'Falling in love might represent discovering a new aspect of yourself',
       'Being loved unconditionally could symbolize self-acceptance',
@@ -362,7 +362,7 @@ export const DREAM_SYMBOLS: DreamSymbol[] = [
       'Challenge to face or overcome',
       'Shadow aspects of personality'
     ],
-    relatedSymbols: ['darkness', 'monster', 'chase'],
+    relatedSymbols: ['falling', 'wolf', 'stranger'],
     examples: [
       'Being paralyzed with fear might represent feeling stuck in life',
       'Overcoming a fearful situation could symbolize personal growth',
