@@ -91,7 +91,7 @@ interface PatternsScreenProps {
 }
 
 interface PatternDrilldown {
-  type: 'symbol' | 'theme';
+  type: 'symbol' | 'theme' | 'tag';
   value: string;
 }
 
@@ -170,6 +170,19 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
+    const tagCounts: Record<string, number> = {};
+    dreams.forEach(dream => {
+      [...new Set(dream.tags ?? [])].forEach(tag => {
+        const normalizedTag = tag.trim().toLowerCase();
+        if (normalizedTag) tagCounts[normalizedTag] = (tagCounts[normalizedTag] || 0) + 1;
+      });
+    });
+
+    const topTags = Object.entries(tagCounts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
     // Get dream themes
     const themeCounts: Record<string, number> = {};
     dreams.forEach(dream => {
@@ -216,6 +229,7 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
       totalDreams: dreams.length,
       totalSymbols,
       topSymbols,
+      topTags,
       topThemes,
       themeData
     };
@@ -232,6 +246,10 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
     return dreams.filter(dream => {
       if (drilldown.type === 'theme') {
         return dream.analysis?.theme?.toLowerCase() === target;
+      }
+
+      if (drilldown.type === 'tag') {
+        return dream.tags?.some(tag => tag.toLowerCase() === target);
       }
 
       return dream.analysis?.symbols?.some(symbol => symbol.symbol.toLowerCase() === target);
@@ -302,7 +320,9 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
   if (drilldown) {
     const title = drilldown.type === 'symbol'
       ? `Dreams with ${drilldown.value}`
-      : `${drilldown.value} dreams`;
+      : drilldown.type === 'tag'
+        ? `Dreams tagged ${drilldown.value}`
+        : `${drilldown.value} dreams`;
 
     return (
       <View style={[
@@ -589,6 +609,39 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
           </View>
         </Card>
 
+        <Card
+          variant="elevated"
+          style={styles.card}
+          backgroundColor={isDark ? Colors.neutral[800] : Colors.neutral[50]}
+        >
+          <View style={styles.cardHeader}>
+            <Ionicons name="pricetags-outline" size={28} color={isDark ? Colors.neutral[100] : Colors.primary[700]} />
+            <Text variant="h4" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.cardTitle}>
+              Your Dream Tags
+            </Text>
+          </View>
+          {patternMetrics?.topTags && patternMetrics.topTags.length > 0 ? (
+            <View style={styles.tagsList}>
+              {patternMetrics.topTags.map(tag => (
+                <TouchableOpacity
+                  key={tag.name}
+                  accessibilityRole="button"
+                  accessibilityLabel={`View dreams tagged ${tag.name}`}
+                  onPress={() => setDrilldown({ type: 'tag', value: tag.name })}
+                  style={[styles.tagButton, { backgroundColor: isDark ? Colors.neutral[700] : Colors.neutral[100] }]}
+                >
+                  <Text variant="body2" color={isDark ? Colors.accent[200] : Colors.primary[700]}>#{tag.name}</Text>
+                  <Text variant="caption" color={isDark ? Colors.neutral[400] : Colors.neutral[600]}>{tag.count}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          ) : (
+            <Text variant="body2" color={isDark ? Colors.neutral[400] : Colors.neutral[600]} style={styles.emptyText}>
+              Add private tags when saving a dream to spot your own recurring topics here.
+            </Text>
+          )}
+        </Card>
+
         {/* Dream Themes Card */}
         <Card
           variant="elevated"
@@ -783,6 +836,19 @@ const styles = StyleSheet.create({
   },
   symbolsList: {
     marginTop: spacing[2],
+  },
+  tagsList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing[2],
+  },
+  tagButton: {
+    alignItems: 'center',
+    borderRadius: BorderRadius.pill,
+    flexDirection: 'row',
+    gap: spacing[2],
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
   },
   symbolItem: {
     flexDirection: 'row',
