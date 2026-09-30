@@ -10,6 +10,7 @@ Read it before starting work and update the assigned handoff before and after ch
 3. Run the focused validation named in the handoff, then `npx tsc --noEmit` before marking work done.
 4. Keep user data local unless a task explicitly introduces a backend.
 5. Do not add claims that audio, techniques, or patterns guarantee lucid dreams, sleep outcomes, or medical benefits.
+6. Keep Gemini's queue non-empty: when a Gemini handoff is reviewed and accepted, create its next isolated, low-risk handoff before closing the check-in.
 
 ## Current release scope
 
