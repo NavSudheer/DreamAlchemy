@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import { useTheme } from '@/providers/ThemeProvider';
@@ -95,7 +95,11 @@ export function MeditationTimer() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
+    >
       <Text
         variant="body1"
         color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
@@ -163,12 +167,13 @@ export function MeditationTimer() {
           })}
         </View>
       </Card>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: spacing[4], paddingBottom: 110 },
+  container: { flex: 1 },
+  contentContainer: { padding: spacing[4], paddingBottom: 110 },
   intro: { marginBottom: spacing[4], textAlign: 'center' },
   card: { marginBottom: spacing[4], padding: spacing[4] },
   timerHeader: { alignItems: 'center', flexDirection: 'row', marginBottom: spacing[4] },
