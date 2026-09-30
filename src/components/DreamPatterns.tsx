@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -7,7 +7,7 @@ import {
   Dimensions, 
   ActivityIndicator 
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getDreams } from '../utils/storage';
 import { Dream } from '../types';
@@ -103,11 +103,7 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
   const { isDark } = useTheme();
   const router = useRouter();
 
-  useEffect(() => {
-    loadDreams();
-  }, []);
-
-  const loadDreams = async () => {
+  const loadDreams = useCallback(async () => {
     setLoading(true);
     try {
       const loadedDreams = await getDreams();
@@ -117,7 +113,13 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadDreams();
+    }, [loadDreams])
+  );
 
   const handleBack = () => {
     if (onBack) {

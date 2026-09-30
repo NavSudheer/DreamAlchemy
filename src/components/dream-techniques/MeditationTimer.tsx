@@ -144,17 +144,17 @@ export function MeditationTimer() {
         <View style={styles.audioHeader}>
           <View style={styles.audioTitleRow}>
             <Ionicons name="headset-outline" size={22} color={isDark ? Colors.accent[300] : Colors.primary[600]} />
-            <Text variant="h5" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.audioTitle}>Optional theta audio</Text>
+            <Text variant="h5" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.audioTitle}>Lucid Dream Audio</Text>
           </View>
           <TouchableOpacity onPress={toggleAudio} style={[styles.audioToggle, audioEnabled && styles.audioToggleActive]} accessibilityRole="switch" accessibilityState={{ checked: audioEnabled }} accessibilityLabel="Toggle theta audio">
             <Text variant="caption" color={audioEnabled ? Colors.neutral[50] : isDark ? Colors.neutral[300] : Colors.neutral[600]}>{audioEnabled ? 'On' : 'Off'}</Text>
           </TouchableOpacity>
         </View>
         <Text variant="body2" color={isDark ? Colors.neutral[400] : Colors.neutral[600]} style={styles.audioDescription}>
-          This loop uses a 6 Hz difference between tones, in the theta range. Headphones are recommended because each ear receives a different tone.
+          This loop uses a 6 Hz difference between tones in the theta range. Put on headphones, settle into your intention, and let the sound support a focused wind-down.
         </Text>
         <Text variant="body2" color={isDark ? Colors.neutral[400] : Colors.neutral[600]} style={styles.audioDescription}>
-          Some people use theta-style audio to support a calm wind-down. Evidence that binaural beats reliably change brain activity or cause lucid dreams is mixed, so treat it as an optional relaxation aid—not a guarantee.
+          Use this session to rehearse your preferred dream scenario, repeat a simple lucid-dream intention, or relax into sleep with awareness. Consistent practice builds a stronger personal ritual.
         </Text>
         <View style={styles.volumeRow}>
           {VOLUMES.map(option => {
