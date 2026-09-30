@@ -4,6 +4,7 @@ export interface Dream {
   id: string;
   content: string;
   timestamp: number;
+  tags?: string[];
   analysis?: {
     interpretation: string;
     symbols: Array<{
@@ -145,4 +146,4 @@ export const DREAM_THEMES = {
     name: 'Abstract',
     subtypes: ['Surreal', 'Recurring', 'Lucid', 'Prophetic']
   }
-} as const; 
+} as const;

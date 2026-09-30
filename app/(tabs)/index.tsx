@@ -20,6 +20,7 @@ import SubscriptionPaywall from '@/components/ui/SubscriptionPaywall';
 function Index() {
   const [dreamText, setDreamText] = useState('');
   const [dreamMood, setDreamMood] = useState<DreamMood>('neutral');
+  const [dreamTags, setDreamTags] = useState<string[]>([]);
   const [analysis, setAnalysis] = useState<DreamAnalysisType | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -100,7 +101,7 @@ function Index() {
     }
   };
 
-  const handleDreamSubmit = async (text: string, mood: DreamMood) => {
+  const handleDreamSubmit = async (text: string, mood: DreamMood, tags: string[]) => {
     // Check if user can perform analysis
     const canAnalyze = await trialTrackingService.canPerformAnalysis();
 
@@ -111,6 +112,7 @@ function Index() {
 
     setDreamText(text);
     setDreamMood(mood);
+    setDreamTags(tags);
     runAnalysis(text);
   };
 
@@ -126,6 +128,7 @@ function Index() {
         id: generateId(),
         content: dreamText,
         timestamp: Date.now(),
+        tags: dreamTags,
         analysis: {
           interpretation: analysis.interpretation,
           symbols: analysis.symbols.map(s => ({
@@ -155,6 +158,7 @@ function Index() {
   const handleNewDream = () => {
     setDreamText('');
     setDreamMood('neutral');
+    setDreamTags([]);
     setAnalysis(null);
     setAnalysisError(null);
     setActiveView('input');

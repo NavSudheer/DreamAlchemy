@@ -34,13 +34,14 @@ const DREAM_PROMPTS = [
 ];
 
 interface DreamInputProps {
-  onSubmit: (text: string, mood: DreamMood) => void;
+  onSubmit: (text: string, mood: DreamMood, tags: string[]) => void;
   isLoading: boolean;
 }
 
 const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
   const [dreamText, setDreamText] = useState('');
   const [mood, setMood] = useState<DreamMood>('neutral');
+  const [tagsInput, setTagsInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [voiceState, setVoiceState] = useState<VoiceRecognitionState>(initialState);
   const [voiceAvailable, setVoiceAvailable] = useState(false);
@@ -143,7 +144,8 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
     if (isLoading) return;
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    onSubmit(dreamText, mood);
+    const tags = [...new Set(tagsInput.split(',').map(tag => tag.trim().toLowerCase()).filter(Boolean))].slice(0, 8);
+    onSubmit(dreamText, mood, tags);
   };
 
   const handleClear = () => {
@@ -383,6 +385,24 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
           })}
         </ScrollView>
 
+        <Text
+          variant="subtitle2"
+          color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
+          style={styles.tagsLabel}
+        >
+          Add private tags (optional)
+        </Text>
+        <TextInput
+          style={styles.tagsInput}
+          placeholder="For example: travel, school, recurring house"
+          placeholderTextColor={isDark ? Colors.neutral[500] : Colors.neutral[400]}
+          value={tagsInput}
+          onChangeText={setTagsInput}
+          autoCapitalize="none"
+          returnKeyType="done"
+          accessibilityLabel="Private dream tags, separated by commas"
+        />
+
         <Button
           onPress={handleSubmit}
           disabled={dreamText.trim().length < MIN_DREAM_LENGTH || isLoading}
@@ -523,6 +543,19 @@ const getStyles = (isDark: boolean) => StyleSheet.create({
   moodEmoji: {
     fontSize: 20,
     marginBottom: 2,
+  },
+  tagsLabel: {
+    marginTop: spacing[5],
+    marginBottom: spacing[2],
+  },
+  tagsInput: {
+    borderColor: isDark ? Colors.neutral[700] : Colors.neutral[200],
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    color: isDark ? Colors.neutral[200] : Colors.neutral[800],
+    fontSize: 14,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[3],
   },
   analyzeButton: {
     marginTop: spacing[5],

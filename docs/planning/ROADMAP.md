@@ -10,9 +10,12 @@ Status: feature selection and local development; release scope remains open.
 - No additional roadmap feature is approved merely by appearing in this document.
 - Defer T1–T3 (practice history, favorites, and technique discovery/troubleshooting).
 - Select P1 (pattern-to-journal drilldowns) for the update.
-- Treat T4 as a content-library expansion to decide after idea review.
-- Re-scope T5 as a meditation/visualization timer, not a timer for the current text techniques.
+- Select T4 as a written content-library expansion: SSILD, dream incubation, morning recall routine, and nightmare aftercare.
+- Select T5 as a meditation/visualization timer with optional, cautiously framed relaxation audio; it is not a timer for the current text techniques.
 - Prioritize larger backlog areas in this order: Techniques, Patterns, Community without expert Q&A, Psychology, Dictionary, Cross-section, Platform.
+- Promote Dream Patterns to the third bottom-navigation tab and the first Explore card; Dictionary remains available from Explore.
+- Make Dream Activity selectable by day, week, or month rather than static monthly totals.
+- Defer Community, astrology, dream image generation, Accounts/sync, Android completion, health integrations, and T1/T3 to a future update. Treat T2 as conditional polish after core scope is stable.
 
 ## Implemented baseline
 Implementation is not a claim of production readiness or deployment.

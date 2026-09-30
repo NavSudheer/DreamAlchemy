@@ -20,14 +20,86 @@ import { EmptyState } from '../components/ui/EmptyState';
 import { LineChart, PieChart } from 'react-native-chart-kit';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+type ActivityRange = 'day' | 'week' | 'month';
+
+const activityRangeOptions: Array<{ value: ActivityRange; label: string; subtitle: string }> = [
+  { value: 'day', label: 'Day', subtitle: 'Last 7 days' },
+  { value: 'week', label: 'Week', subtitle: 'Last 8 weeks' },
+  { value: 'month', label: 'Month', subtitle: 'Last 6 months' },
+];
+
+const startOfDay = (date: Date) => {
+  const start = new Date(date);
+  start.setHours(0, 0, 0, 0);
+  return start;
+};
+
+const startOfWeek = (date: Date) => {
+  const start = startOfDay(date);
+  const day = start.getDay();
+  start.setDate(start.getDate() - (day === 0 ? 6 : day - 1));
+  return start;
+};
+
+const startOfMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth(), 1);
+
+const buildActivityTimeline = (dreams: Dream[], range: ActivityRange) => {
+  const now = new Date();
+  const buckets = Array.from({ length: range === 'day' ? 7 : range === 'week' ? 8 : 6 }, (_, index) => {
+    const offset = (range === 'day' ? 6 : range === 'week' ? 7 : 5) - index;
+    const date = new Date(now);
+
+    if (range === 'day') {
+      date.setDate(date.getDate() - offset);
+      const start = startOfDay(date);
+      return { key: start.getTime(), label: `${start.getMonth() + 1}/${start.getDate()}` };
+    }
+
+    if (range === 'week') {
+      date.setDate(date.getDate() - offset * 7);
+      const start = startOfWeek(date);
+      return { key: start.getTime(), label: `${start.getMonth() + 1}/${start.getDate()}` };
+    }
+
+    date.setMonth(date.getMonth() - offset);
+    const start = startOfMonth(date);
+    return { key: start.getTime(), label: start.toLocaleString('en-US', { month: 'short' }) };
+  });
+
+  const counts = new Map(buckets.map(bucket => [bucket.key, 0]));
+  dreams.forEach(dream => {
+    const dreamDate = new Date(dream.timestamp);
+    if (Number.isNaN(dreamDate.getTime())) return;
+
+    const bucketStart = range === 'day'
+      ? startOfDay(dreamDate)
+      : range === 'week'
+        ? startOfWeek(dreamDate)
+        : startOfMonth(dreamDate);
+    const bucketKey = bucketStart.getTime();
+    if (counts.has(bucketKey)) counts.set(bucketKey, (counts.get(bucketKey) ?? 0) + 1);
+  });
+
+  return {
+    labels: buckets.map(bucket => bucket.label),
+    datasets: [{ data: buckets.map(bucket => counts.get(bucket.key) ?? 0) }],
+  };
+};
 
 interface PatternsScreenProps {
   onBack?: () => void;
 }
 
+interface PatternDrilldown {
+  type: 'symbol' | 'theme';
+  value: string;
+}
+
 export default function PatternsScreen({ onBack }: PatternsScreenProps) {
   const [dreams, setDreams] = useState<Dream[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activityRange, setActivityRange] = useState<ActivityRange>('month');
+  const [drilldown, setDrilldown] = useState<PatternDrilldown | null>(null);
   const { isDark } = useTheme();
   const router = useRouter();
 
@@ -98,35 +170,6 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    // Count dream frequency by month
-    const dreamsByMonth: Record<string, number> = {};
-    dreams.forEach(dream => {
-      const date = new Date(dream.timestamp);
-      const monthKey = `${date.getMonth() + 1}/${date.getFullYear()}`;
-      dreamsByMonth[monthKey] = (dreamsByMonth[monthKey] || 0) + 1;
-    });
-
-    // Sort months chronologically
-    const sortedMonths = Object.keys(dreamsByMonth).sort((a, b) => {
-      const [aMonth, aYear] = a.split('/').map(Number);
-      const [bMonth, bYear] = b.split('/').map(Number);
-      if (aYear !== bYear) return aYear - bYear;
-      return aMonth - bMonth;
-    });
-
-    // Get last 6 months or less if not enough data
-    const recentMonths = sortedMonths.slice(-6);
-    
-    // Format months for display
-    const monthLabels = recentMonths.map(key => {
-      const [month] = key.split('/');
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      return monthNames[parseInt(month) - 1];
-    });
-
-    // Get dream count for each month
-    const monthData = recentMonths.map(key => dreamsByMonth[key]);
-
     // Get dream themes
     const themeCounts: Record<string, number> = {};
     dreams.forEach(dream => {
@@ -173,14 +216,27 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
       totalDreams: dreams.length,
       totalSymbols,
       topSymbols,
-      dreamsByMonth: {
-        labels: monthLabels,
-        datasets: [{ data: monthData }]
-      },
       topThemes,
       themeData
     };
   }, [dreams, isDark]);
+
+  const activityTimeline = useMemo(
+    () => buildActivityTimeline(dreams, activityRange),
+    [dreams, activityRange]
+  );
+
+  const drilldownDreams = useMemo(() => {
+    if (!drilldown) return [];
+    const target = drilldown.value.toLowerCase();
+    return dreams.filter(dream => {
+      if (drilldown.type === 'theme') {
+        return dream.analysis?.theme?.toLowerCase() === target;
+      }
+
+      return dream.analysis?.symbols?.some(symbol => symbol.symbol.toLowerCase() === target);
+    });
+  }, [dreams, drilldown]);
 
   if (loading) {
     return (
@@ -189,9 +245,8 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
         { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }
       ]}>
         <Header 
-          title="Dream Patterns" 
-          leftIcon="arrow-back"
-          onLeftPress={handleBack} 
+          title="Dream Patterns"
+          {...(onBack ? { leftIcon: 'arrow-back' as const, onLeftPress: handleBack } : {})}
         />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={isDark ? Colors.accent[300] : Colors.accent[500]} />
@@ -208,9 +263,8 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
         { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }
       ]}>
         <Header 
-          title="Dream Patterns" 
-          leftIcon="arrow-back"
-          onLeftPress={handleBack}  
+          title="Dream Patterns"
+          {...(onBack ? { leftIcon: 'arrow-back' as const, onLeftPress: handleBack } : {})}
         />
         <ScrollView 
           contentContainerStyle={styles.emptyStateContainer}
@@ -245,15 +299,89 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
     }
   };
 
+  if (drilldown) {
+    const title = drilldown.type === 'symbol'
+      ? `Dreams with ${drilldown.value}`
+      : `${drilldown.value} dreams`;
+
+    return (
+      <View style={[
+        styles.container,
+        { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }
+      ]}>
+        <Header
+          title={title}
+          leftIcon="arrow-back"
+          onLeftPress={() => setDrilldown(null)}
+        />
+        <ScrollView
+          style={styles.content}
+          contentContainerStyle={styles.drilldownContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text
+            variant="body1"
+            color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
+            style={styles.drilldownDescription}
+          >
+            {drilldownDreams.length} matching saved dream{drilldownDreams.length === 1 ? '' : 's'}
+          </Text>
+          {drilldownDreams.length > 0 ? drilldownDreams.map(dream => (
+            <TouchableOpacity
+              key={dream.id}
+              accessibilityRole="button"
+              accessibilityLabel={`Open dream from ${new Date(dream.timestamp).toLocaleDateString()}`}
+              accessibilityHint="Opens the original dream analysis"
+              activeOpacity={0.8}
+              onPress={() => router.push({ pathname: '/(tabs)/history', params: { dreamId: dream.id } })}
+              style={[
+                styles.drilldownDream,
+                { backgroundColor: isDark ? Colors.neutral[800] : Colors.neutral[50] }
+              ]}
+            >
+              <Text
+                variant="caption"
+                color={isDark ? Colors.neutral[400] : Colors.neutral[600]}
+              >
+                {new Date(dream.timestamp).toLocaleDateString()}
+              </Text>
+              <Text
+                variant="body1"
+                color={isDark ? Colors.neutral[100] : Colors.neutral[800]}
+                numberOfLines={3}
+                style={styles.drilldownDreamText}
+              >
+                {dream.content}
+              </Text>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={isDark ? Colors.accent[300] : Colors.primary[600]}
+                style={styles.drilldownChevron}
+              />
+            </TouchableOpacity>
+          )) : (
+            <Text
+              variant="body1"
+              color={isDark ? Colors.neutral[400] : Colors.neutral[600]}
+              style={styles.emptyText}
+            >
+              No matching dreams are available. They may have been deleted since this pattern was calculated.
+            </Text>
+          )}
+        </ScrollView>
+      </View>
+    );
+  }
+
   return (
     <View style={[
       styles.container,
       { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }
     ]}>
       <Header 
-        title="Dream Patterns" 
-        leftIcon="arrow-back"
-        onLeftPress={handleBack} 
+        title="Dream Patterns"
+        {...(onBack ? { leftIcon: 'arrow-back' as const, onLeftPress: handleBack } : {})}
       />
       
       <ScrollView 
@@ -289,6 +417,46 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
               Dream Activity
             </Text>
           </View>
+
+          <View
+            style={[
+              styles.rangeSelector,
+              { backgroundColor: isDark ? Colors.neutral[700] : Colors.neutral[200] }
+            ]}
+          >
+            {activityRangeOptions.map(option => {
+              const selected = option.value === activityRange;
+              return (
+                <TouchableOpacity
+                  key={option.value}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected }}
+                  accessibilityLabel={`Show dream activity by ${option.label.toLowerCase()}`}
+                  onPress={() => setActivityRange(option.value)}
+                  style={[
+                    styles.rangeOption,
+                    selected && {
+                      backgroundColor: isDark ? Colors.accent[600] : Colors.primary[600],
+                    },
+                  ]}
+                >
+                  <Text
+                    variant="body2"
+                    color={selected ? Colors.neutral[50] : isDark ? Colors.neutral[200] : Colors.neutral[700]}
+                  >
+                    {option.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+          <Text
+            variant="body2"
+            color={isDark ? Colors.neutral[400] : Colors.neutral[600]}
+            style={styles.rangeSubtitle}
+          >
+            {activityRangeOptions.find(option => option.value === activityRange)?.subtitle}
+          </Text>
           
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
@@ -313,9 +481,9 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
           </View>
           
           {/* Dream timeline chart */}
-          {patternMetrics?.dreamsByMonth && patternMetrics.dreamsByMonth.labels.length > 0 ? (
+          {activityTimeline.labels.length > 0 ? (
             <LineChart
-              data={patternMetrics.dreamsByMonth}
+              data={activityTimeline}
               width={SCREEN_WIDTH - 2 * spacing[4] - 2 * spacing[4]}
               height={220}
               chartConfig={chartConfig}
@@ -362,7 +530,15 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
           <View style={styles.symbolsList}>
             {patternMetrics?.topSymbols && patternMetrics.topSymbols.length > 0 ? (
               patternMetrics.topSymbols.map((symbol, index) => (
-                <View key={index} style={styles.symbolItem}>
+                <TouchableOpacity
+                  key={symbol.name}
+                  accessibilityRole="button"
+                  accessibilityLabel={`View dreams with ${symbol.name}`}
+                  accessibilityHint="Shows matching saved dreams"
+                  activeOpacity={0.75}
+                  onPress={() => setDrilldown({ type: 'symbol', value: symbol.name })}
+                  style={styles.symbolItem}
+                >
                   <View style={styles.symbolRank}>
                     <Text 
                       variant="body2" 
@@ -399,7 +575,7 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
                       Appeared in {symbol.count} dream{symbol.count !== 1 ? 's' : ''}
                     </Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               ))
             ) : (
               <Text 
@@ -465,7 +641,15 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
           <View style={styles.themesList}>
             {patternMetrics?.topThemes && patternMetrics.topThemes.length > 0 ? (
               patternMetrics.topThemes.map((theme, index) => (
-                <View key={index} style={styles.themeItem}>
+                <TouchableOpacity
+                  key={theme.name}
+                  accessibilityRole="button"
+                  accessibilityLabel={`View ${theme.name} dreams`}
+                  accessibilityHint="Shows matching saved dreams"
+                  activeOpacity={0.75}
+                  onPress={() => setDrilldown({ type: 'theme', value: theme.name })}
+                  style={styles.themeItem}
+                >
                   <Text 
                     variant="subtitle1" 
                     color={isDark ? Colors.neutral[200] : Colors.neutral[700]}
@@ -478,7 +662,7 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
                   >
                     {theme.count} dream{theme.count !== 1 ? 's' : ''}
                   </Text>
-                </View>
+                </TouchableOpacity>
               ))
             ) : (
               <Text 
@@ -523,6 +707,44 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     marginLeft: spacing[3],
+  },
+  drilldownContent: {
+    flexGrow: 1,
+    padding: spacing[4],
+    paddingBottom: 100,
+  },
+  drilldownDescription: {
+    marginBottom: spacing[4],
+  },
+  drilldownDream: {
+    borderRadius: BorderRadius.md,
+    marginBottom: spacing[3],
+    padding: spacing[4],
+    paddingRight: spacing[8],
+  },
+  drilldownDreamText: {
+    marginTop: spacing[2],
+  },
+  drilldownChevron: {
+    position: 'absolute',
+    right: spacing[3],
+    top: '50%',
+  },
+  rangeSelector: {
+    flexDirection: 'row',
+    borderRadius: BorderRadius.md,
+    padding: 3,
+    marginBottom: spacing[2],
+  },
+  rangeOption: {
+    alignItems: 'center',
+    borderRadius: BorderRadius.sm,
+    flex: 1,
+    paddingVertical: spacing[2],
+  },
+  rangeSubtitle: {
+    marginBottom: spacing[3],
+    textAlign: 'center',
   },
   statsContainer: {
     flexDirection: 'row',
@@ -618,4 +840,4 @@ const styles = StyleSheet.create({
     marginTop: spacing[4],
     opacity: 0.7,
   },
-}); 
+});

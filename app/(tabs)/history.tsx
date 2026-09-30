@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, SafeAreaView, StatusBar } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { useRouter, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import DreamHistory from '@/components/DreamHistory';
 import DreamAnalysis from '@/components/DreamAnalysis';
 import { getDreams, deleteDream, clearDreams } from '@/utils/storage';
@@ -17,6 +17,7 @@ const HistoryScreen: React.FC = () => {
   const [activeView, setActiveView] = useState<'history' | 'analysis'>('history');
   const { isDark } = useTheme();
   const router = useRouter();
+  const { dreamId } = useLocalSearchParams<{ dreamId?: string }>();
 
   // Load saved dreams whenever the screen comes into focus,
   // and reset to the list view when leaving so returning always shows the list
@@ -27,12 +28,19 @@ const HistoryScreen: React.FC = () => {
         setSelectedDream(null);
         setActiveView('history');
       };
-    }, [])
+    }, [dreamId])
   );
 
   const loadDreams = async () => {
     const loadedDreams = await getDreams();
     setDreams(loadedDreams);
+    if (dreamId) {
+      const requestedDream = loadedDreams.find(dream => dream.id === dreamId);
+      if (requestedDream?.analysis) {
+        setSelectedDream(requestedDream);
+        setActiveView('analysis');
+      }
+    }
   };
 
   const handleSelectDream = (dream: Dream) => {
@@ -59,6 +67,7 @@ const HistoryScreen: React.FC = () => {
   const handleBackToHistory = () => {
     setSelectedDream(null);
     setActiveView('history');
+    if (dreamId) router.setParams({ dreamId: '' });
   };
 
   const handleNewDream = () => {
@@ -139,4 +148,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HistoryScreen; 
+export default HistoryScreen;

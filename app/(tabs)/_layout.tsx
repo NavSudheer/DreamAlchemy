@@ -109,13 +109,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="dictionary"
+        name="patterns"
         options={{
-          title: 'Dictionary',
+          title: 'Patterns',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="book" size={size} color={color} />
+            <Ionicons name="stats-chart" size={size} color={color} />
           ),
         }}
+      />
+      <Tabs.Screen
+        name="dictionary"
+        options={{ href: null }}
       />
       <Tabs.Screen
         name="explore"
