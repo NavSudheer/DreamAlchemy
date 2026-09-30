@@ -1,5 +1,7 @@
 # Dream Psychology Feature Implementation Roadmap
 
+> **Planning status (2026-09-29):** Reference backlog — not committed release scope. The current roadmap records what is implemented, proposed, and selected. See the [planning index](../docs/planning/README.md) and [current roadmap](../docs/planning/ROADMAP.md). Complete the selected feature set before device testing and submission.
+
 ## 1. Core Components Structure
 
 ### DreamPsychologyHub
@@ -203,4 +205,4 @@ interface DreamPsychologyState {
    - Sleep tracking device integration
    - External psychology resources
    - Professional therapy platforms
-   - Research institution partnerships 
+   - Research institution partnerships

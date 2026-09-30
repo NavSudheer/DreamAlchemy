@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '@/providers/ThemeProvider';
 import { Colors, spacing, BorderRadius, Shadows } from '@/utils/theme';
 import Text from '@/components/ui/Text';
@@ -14,7 +14,11 @@ import { DreamTechniques } from '@/components/dream-techniques/DreamTechniques';
 export default function ExploreScreen() {
   const { isDark } = useTheme();
   const router = useRouter();
+  const { section } = useLocalSearchParams<{ section?: string }>();
   const [activeScreen, setActiveScreen] = useState<'explore' | 'patterns' | 'techniques'>('explore');
+  useEffect(() => {
+    if (section === 'techniques') setActiveScreen('techniques');
+  }, [section]);
 
   if (activeScreen === 'patterns') {
     return <PatternsScreen onBack={() => setActiveScreen('explore')} />;
@@ -29,7 +33,10 @@ export default function ExploreScreen() {
         <Header 
           title="Dream Techniques" 
           leftIcon="arrow-back"
-          onLeftPress={() => setActiveScreen('explore')}
+          onLeftPress={() => {
+            setActiveScreen('explore');
+            router.setParams({ section: '' });
+          }}
         />
         <DreamTechniques />
       </View>

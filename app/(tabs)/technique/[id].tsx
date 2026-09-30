@@ -1,126 +1,18 @@
-import React from 'react';
-import { View, ScrollView, StyleSheet, TouchableOpacity, Platform, Animated } from 'react-native';
+import React, { useState } from 'react';
+import { View, ScrollView, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from '@/providers/ThemeProvider';
 import { Colors, spacing, Shadows, BorderRadius } from '@/utils/theme';
 import Text from '@/components/ui/Text';
 import Header from '@/components/ui/Header';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { createNavigation } from '@/navigation/routes';
+import { TECHNIQUE_DATA } from '@/components/dream-techniques/techniques';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-// Sample technique data - In a real app, this would come from an API or database
-const TECHNIQUE_DATA = {
-  '1': {
-    title: 'Reality Testing',
-    description: 'Train your mind to recognize dream states by questioning reality throughout the day.',
-    difficulty: 1,
-    duration: '5-10 min',
-    icon: 'hand-pointing-up',
-    steps: [
-      'Set regular reminders throughout the day',
-      'When reminded, ask yourself "Am I dreaming?"',
-      'Look for dream signs or inconsistencies',
-      'Try to push your hand through a solid surface',
-      'Check text or numbers, look away, and check again',
-    ],
-    tips: [
-      'Be consistent with your reality checks',
-      'Combine multiple reality checks for better results',
-      'Practice with genuine curiosity',
-      'Don\'t rush through the checks',
-    ],
-    expectedResults: 'With regular practice, you should start performing reality checks in your dreams, leading to lucid dream experiences.',
-  },
-  '2': {
-    title: 'Wake Back to Bed (WBTB)',
-    description: 'Wake up during REM sleep and return to bed to increase lucid dream probability.',
-    difficulty: 2,
-    duration: '30 min',
-    icon: 'alarm',
-    steps: [
-      'Set an alarm for 5-6 hours after bedtime',
-      'When alarm sounds, get out of bed',
-      'Stay awake for 15-30 minutes',
-      'Return to bed with lucid dream intention',
-      'Use visualization while falling asleep',
-    ],
-    tips: [
-      'Don\'t use bright lights during wake period',
-      'Keep a dream journal by your bed',
-      'Focus on lucid dreaming during wake period',
-      'Maintain a regular sleep schedule',
-    ],
-    expectedResults: 'This technique can significantly increase your chances of having a lucid dream as you re-enter REM sleep with heightened awareness.',
-  },
-  '3': {
-    title: 'Dream Journaling',
-    description: 'Maintain a detailed record of your dreams to improve dream recall and identify dream signs.',
-    difficulty: 1,
-    duration: '10-15 min',
-    icon: 'book-open-page-variant',
-    steps: [
-      'Keep a journal and pen by your bed',
-      'Write down dreams immediately upon waking',
-      'Record as many details as possible',
-      'Note emotions and sensations',
-      'Review your journal regularly to identify patterns'
-    ],
-    tips: [
-      'Use voice recording if writing is difficult',
-      'Draw sketches to capture visual elements',
-      'Tag recurring themes and symbols',
-      'Write in present tense for better recall'
-    ],
-    expectedResults: 'Regular dream journaling will significantly improve your dream recall, help identify dream signs, and increase your chances of achieving lucidity.',
-  },
-  '4': {
-    title: 'MILD (Mnemonic Induction of Lucid Dreams)',
-    description: 'Program your mind to recognize dream states by setting a strong intention before sleep.',
-    difficulty: 2,
-    duration: '15-20 min',
-    icon: 'brain',
-    steps: [
-      'Recall a recent dream in detail',
-      'Identify a dream sign from that dream',
-      'Visualize yourself becoming lucid',
-      'Set a clear intention to recognize dreams',
-      'Repeat intention while falling asleep'
-    ],
-    tips: [
-      'Practice during your natural wake periods',
-      'Combine with WBTB for better results',
-      'Keep your intention clear and simple',
-      'Maintain a consistent sleep schedule'
-    ],
-    expectedResults: 'With consistent practice, MILD can help you develop a habit of recognizing dream signs and achieving lucidity multiple times per week.',
-  },
-  '5': {
-    title: 'WILD (Wake-Initiated Lucid Dreams)',
-    description: 'Enter a dream state directly from wakefulness while maintaining consciousness.',
-    difficulty: 3,
-    duration: '20-30 min',
-    icon: 'meditation',
-    steps: [
-      'Lie still in a comfortable position',
-      'Relax your body completely',
-      'Maintain gentle awareness as you drift off',
-      'Observe hypnagogic imagery',
-      'Allow dream scenes to form around you'
-    ],
-    tips: [
-      'Practice during natural periods of sleepiness',
-      'Stay relaxed but mentally alert',
-      'Don\'t force the process',
-      'Be patient with sleep paralysis sensations'
-    ],
-    expectedResults: 'While challenging to master, WILD allows you to enter lucid dreams consciously and can result in extremely vivid and controlled dream experiences.',
-  }
-};
 
 export default function TechniqueDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const [practiceStep, setPracticeStep] = useState<number | null>(null);
   const { isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const technique = TECHNIQUE_DATA[id as keyof typeof TECHNIQUE_DATA];
@@ -139,7 +31,7 @@ export default function TechniqueDetail() {
   
   // Handle back button navigation
   const handleBackPress = () => {
-    router.push('/(tabs)/explore');
+    router.navigate({ pathname: '/(tabs)/explore', params: { section: 'techniques' } });
   };
   
   if (!technique) {
@@ -250,18 +142,40 @@ export default function TechniqueDetail() {
           </Text>
         </View>
 
+        {practiceStep !== null && (
+          <View style={[styles.section, { backgroundColor: cardColor }]}>
+            <Text variant="h4" accessibilityLiveRegion="polite" style={{ color: accentColor }}>
+              {practiceStep < technique.steps.length ? `Step ${practiceStep + 1} of ${technique.steps.length}` : 'Practice complete'}
+            </Text>
+            <Text style={{ color: textColor, marginVertical: 16 }}>
+              {practiceStep < technique.steps.length ? technique.steps[practiceStep] : 'Take a moment to reflect. Finishing the guide is enough; there is no dream outcome to achieve.'}
+            </Text>
+            {practiceStep > 0 && practiceStep < technique.steps.length && (
+              <TouchableOpacity accessibilityRole="button" onPress={() => setPracticeStep(practiceStep - 1)} style={styles.startButton}>
+                <Text color={accentColor}>Previous step</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
         <TouchableOpacity
-          style={[styles.startButton, { backgroundColor: isDark ? Colors.neutral[600] : Colors.neutral[400] }]}
-          activeOpacity={0.8}
-          onPress={() => {
-            // Show coming soon message
-            alert('🔮 Coming Soon!\n\nGuided practice sessions are currently in development. Stay tuned for this exciting feature!');
-          }}
+          accessibilityRole="button"
+          style={[styles.startButton, { backgroundColor: accentColor }]}
+          onPress={() => setPracticeStep(practiceStep === null || practiceStep >= technique.steps.length ? 0 : practiceStep + 1)}
         >
-          <Text variant="button" style={styles.startButtonText}>
-            🔮 Coming Soon - Guided Practice
+          <Text style={styles.startButtonText}>
+            {practiceStep === null ? 'Start guided practice' : practiceStep >= technique.steps.length ? 'Practice again' : practiceStep === technique.steps.length - 1 ? 'Finish practice' : 'Next step'}
           </Text>
         </TouchableOpacity>
+        {practiceStep !== null && (
+          <TouchableOpacity accessibilityRole="button" style={styles.startButton} onPress={() => setPracticeStep(null)}>
+            <Text color={accentColor}>Close practice</Text>
+          </TouchableOpacity>
+        )}
+        {id === '3' && (
+          <TouchableOpacity accessibilityRole="button" style={styles.startButton} onPress={() => router.push('/(tabs)')}>
+            <Text color={accentColor}>Open your dream journal</Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </View>
   );
@@ -367,4 +281,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-}); 
+});

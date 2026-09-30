@@ -1,4 +1,6 @@
 # Dream Alchemy - Simple Launch Strategy with Free Trial + Subscription
+
+> **Planning status (2026-09-29):** Historical reference — superseded for current planning. Original statuses, deadlines, pricing proposals, and release instructions below may be outdated. See the [planning index](../docs/planning/README.md) and [current roadmap](../docs/planning/ROADMAP.md). Complete the selected feature set before device testing and submission.
 *Get to market in 1-2 weeks with subscription model*
 
 ## 🎯 **Core Strategy: Free Trial + Simple Subscription**
@@ -337,4 +339,4 @@ const SubscriptionPrompt = ({ visible, onClose, onSubscribe }) => (
 
 **Bottom Line**: Launch fast with your existing functionality + simple subscription system, validate the market with recurring revenue, then scale based on real user data and MRR growth.
 
-*This approach gets you to recurring revenue in weeks, with much higher lifetime value than one-time purchases.* 
+*This approach gets you to recurring revenue in weeks, with much higher lifetime value than one-time purchases.*

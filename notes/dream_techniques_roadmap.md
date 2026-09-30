@@ -1,5 +1,7 @@
 # Dream Techniques Roadmap
 
+> **Planning status (2026-09-29):** Reference backlog — not committed release scope. The current roadmap records what is implemented, proposed, and selected. See the [planning index](../docs/planning/README.md) and [current roadmap](../docs/planning/ROADMAP.md). Complete the selected feature set before device testing and submission.
+
 This document outlines the detailed implementation plan and features for the Dream Techniques section of the Explore tab.
 
 ## 1. Core Features
@@ -195,4 +197,4 @@ This document outlines the detailed implementation plan and features for the Dre
 - Performance monitoring
 - Error tracking
 - Usage analytics
-- Security audits 
+- Security audits

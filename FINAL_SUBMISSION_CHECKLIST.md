@@ -1,5 +1,7 @@
 # 🚀 FINAL APP STORE SUBMISSION CHECKLIST
 
+> **Planning status (2026-09-29):** Historical reference — superseded for current planning. Original statuses, deadlines, pricing proposals, and release instructions below may be outdated. See the [planning index](docs/planning/README.md) and [current roadmap](docs/planning/ROADMAP.md). Complete the selected feature set before device testing and submission.
+
 ## ✅ **BEFORE SUBMISSION - COMPLETE THESE STEPS**
 
 ### **📱 App Store Connect Setup**
@@ -182,4 +184,4 @@
 
 **🚀 YOU'RE READY TO LAUNCH!**
 
-Follow this checklist step by step, and you'll have your app on the App Store within 24-48 hours! 
+Follow this checklist step by step, and you'll have your app on the App Store within 24-48 hours!

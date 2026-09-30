@@ -1,5 +1,7 @@
 # RevenueCat Implementation Plan
 
+> **Planning status (2026-09-29):** Historical reference — superseded for current planning. Original statuses, deadlines, pricing proposals, and release instructions below may be outdated. See the [planning index](../docs/planning/README.md) and [current roadmap](../docs/planning/ROADMAP.md). Complete the selected feature set before device testing and submission.
+
 1. **Setup**
    - Sign up for RevenueCat account
    - Create an app in RevenueCat dashboard
@@ -35,4 +37,4 @@
 
 8. **User Management**
    - Implement user identification for cross-platform purchases
-   - Ensure subscription state persists across sessions 
+   - Ensure subscription state persists across sessions

@@ -48,7 +48,7 @@ try {
   // This will throw an error in Expo Go but work in development builds
   const VoiceModule = require('@react-native-voice/voice');
   Voice = VoiceModule.default;
-  isVoiceAvailable = true;
+  isVoiceAvailable = Platform.OS !== 'web';
 } catch (error) {
   // Silently fail - this is expected in Expo Go
   isVoiceAvailable = false;
@@ -173,7 +173,7 @@ class VoiceRecognitionService {
 
   // Get available speech recognition services
   public async getSpeechRecognitionServices(): Promise<string[]> {
-    if (!isVoiceAvailable || !Voice) {
+    if (Platform.OS !== 'android' || !isVoiceAvailable || !Voice) {
       return [];
     }
     
@@ -198,8 +198,7 @@ class VoiceRecognitionService {
     }
     
     try {
-      const services = await this.getSpeechRecognitionServices();
-      return services.length > 0;
+      return Boolean(await Voice.isAvailable());
     } catch (e) {
       console.error('Error checking voice recognition availability:', e);
       return false;
@@ -219,4 +218,4 @@ class VoiceRecognitionService {
 }
 
 // Export a singleton instance
-export default new VoiceRecognitionService(); 
+export default new VoiceRecognitionService();

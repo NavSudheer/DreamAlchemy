@@ -1,5 +1,7 @@
 # Dream Alchemy - Jungian Dream Analysis App
 
+For current feature scope, implementation status, and release sequencing, start with the [planning index](docs/planning/README.md).
+
 Dream Alchemy is a mobile application that helps you analyze and interpret your dreams using principles from Jungian psychology and AI. The app allows you to record your dreams, receive detailed analyses of the symbols and archetypes present in your dreams, and save your dream interpretations for future reference.
 
 ## Features

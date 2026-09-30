@@ -1,4 +1,6 @@
 # 🚀 DREAM ALCHEMY - STRATEGIC LAUNCH POLISH PLAN
+
+> **Planning status (2026-09-29):** Historical reference — superseded for current planning. Original statuses, deadlines, pricing proposals, and release instructions below may be outdated. See the [planning index](docs/planning/README.md) and [current roadmap](docs/planning/ROADMAP.md). Complete the selected feature set before device testing and submission.
 *Ranked by Business Impact & Launch Urgency*
 
 ## 🎯 **MISSION: Launch in 1-2 Weeks with Maximum Revenue Potential**
@@ -201,4 +203,4 @@
 ---
 
 *Last Updated: December 2024 - After Major Subscription Implementation*
-*Next Review: After RevenueCat setup completion* 
+*Next Review: After RevenueCat setup completion*

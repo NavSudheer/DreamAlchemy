@@ -1,5 +1,7 @@
 # Dream Patterns Feature Roadmap
 
+> **Planning status (2026-09-29):** Reference backlog — not committed release scope. The current roadmap records what is implemented, proposed, and selected. See the [planning index](../docs/planning/README.md) and [current roadmap](../docs/planning/ROADMAP.md). Complete the selected feature set before device testing and submission.
+
 ## Phase 1 (Completed)
 - Basic pattern dashboard with dream frequency timeline
 - Simple lists of recurring symbols and themes
@@ -64,4 +66,4 @@
 - Implement data caching for faster visualization rendering
 - Design modular components that can be reused across screens
 - Ensure accessibility of all visualization components
-- Add help/tutorial system for advanced analysis features 
+- Add help/tutorial system for advanced analysis features

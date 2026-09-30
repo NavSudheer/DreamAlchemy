@@ -1,5 +1,7 @@
 # Explore Dreams Tab Roadmap
 
+> **Planning status (2026-09-29):** Reference backlog — not committed release scope. The current roadmap records what is implemented, proposed, and selected. See the [planning index](../docs/planning/README.md) and [current roadmap](../docs/planning/ROADMAP.md). Complete the selected feature set before device testing and submission.
+
 This document outlines the content and implementation plan for each section of the Explore Dreams tab.
 
 ## 1. Dream Dictionary
@@ -137,4 +139,4 @@ This document outlines the content and implementation plan for each section of t
 - Ensure accessibility for all content types
 - Create intuitive navigation between related sections
 - Optimize performance for media-rich content
-- Develop offline access for core content 
+- Develop offline access for core content

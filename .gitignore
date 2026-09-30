@@ -36,6 +36,9 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# Local agent configuration
+.claude/
 # Logs
 logs
 *.log

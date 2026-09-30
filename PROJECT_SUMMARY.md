@@ -1,5 +1,7 @@
 # Dream Alchemy - Project Summary & Current State
 
+> **Planning status (2026-09-29):** Historical reference — superseded for current planning. Original statuses, deadlines, pricing proposals, and release instructions below may be outdated. See the [planning index](docs/planning/README.md) and [current roadmap](docs/planning/ROADMAP.md). Complete the selected feature set before device testing and submission.
+
 ## 📋 Project Overview
 
 **Dream Alchemy** is a mobile application that provides AI-powered dream analysis using Jungian psychology principles. The app helps users interpret their dreams, identify symbols and archetypes, track dream patterns, and learn about dream psychology.

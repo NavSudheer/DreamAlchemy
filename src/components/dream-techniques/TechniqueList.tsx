@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import { TechniqueCard } from './TechniqueCard';
+import Text from '../ui/Text';
+import { useTheme } from '../../providers/ThemeProvider';
 
 export interface Technique {
   id: string;
@@ -22,6 +24,7 @@ export const TechniqueList: React.FC<TechniqueListProps> = ({
   techniques,
   onTechniquePress,
 }) => {
+  const { theme } = useTheme();
   return (
     <FlatList
       data={techniques}
@@ -33,12 +36,16 @@ export const TechniqueList: React.FC<TechniqueListProps> = ({
           difficulty={item.difficulty}
           duration={item.duration}
           icon={item.icon as any} // We'll need to ensure icons match MaterialCommunityIcons
-          progress={item.progress}
-          isCompleted={item.isCompleted}
           onPress={() => onTechniquePress(item)}
         />
       )}
       contentContainerStyle={styles.container}
+      ListHeaderComponent={
+        <View style={{ padding: 20 }}>
+          <Text color={theme.colors.text} variant="h3">Build a gentle dream practice</Text>
+          <Text color={theme.colors.text}>Start with Dream Journaling or Reality Testing. Follow the steps at your own pace. Protect your sleep and stop any exercise that feels uncomfortable.</Text>
+        </View>
+      }
       showsVerticalScrollIndicator={false}
     />
   );
@@ -46,8 +53,9 @@ export const TechniqueList: React.FC<TechniqueListProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 8,
+    paddingTop: 8,
+    paddingBottom: 120,
   },
 });
 
-export default TechniqueList; 
+export default TechniqueList;

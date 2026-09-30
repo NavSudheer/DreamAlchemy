@@ -3,6 +3,7 @@ import { View, StyleSheet, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Text from '../ui/Text';
+import { useTheme } from '../../providers/ThemeProvider';
 
 interface TechniqueCardProps {
   title: string;
@@ -26,15 +27,18 @@ export const TechniqueCard: React.FC<TechniqueCardProps> = ({
   onPress,
 }) => {
   // New indigo and gold color scheme
-  const gradientStart = '#242852';  // Darker indigo
-  const gradientEnd = '#343b7c';    // Lighter indigo
-  const iconColor = '#FFD700';      // Gold
-  const titleColor = '#FFFFFF';     // White
-  const descriptionColor = '#E1E6FF'; // Light lavender
+  const { isDark, theme } = useTheme();
+  const gradientStart = theme.colors.card;
+  const gradientEnd = theme.colors.card;
+  const iconColor = theme.colors.primary;
+  const titleColor = theme.colors.text;
+  const descriptionColor = isDark ? '#E1E6FF' : '#514B65';
   const progressColor = '#FFD700';  // Gold
 
   return (
     <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={title + ', ' + ['Beginner', 'Intermediate', 'Advanced'][difficulty - 1] + ', ' + duration}
       style={({ pressed }) => [
         styles.container,
         pressed && styles.pressed,
@@ -173,4 +177,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TechniqueCard; 
+export default TechniqueCard;

@@ -1,4 +1,6 @@
 # 🚀 DREAM ALCHEMY - FINAL LAUNCH CHECKLIST
+
+> **Planning status (2026-09-29):** Historical reference — superseded for current planning. Original statuses, deadlines, pricing proposals, and release instructions below may be outdated. See the [planning index](docs/planning/README.md) and [current roadmap](docs/planning/ROADMAP.md). Complete the selected feature set before device testing and submission.
 *Everything needed to launch in the next 48-72 hours*
 
 ## ✅ **COMPLETED - MAJOR WINS!**
@@ -266,4 +268,4 @@
 
 ---
 
-*🚀 You're 48-72 hours away from a revenue-generating app in the App Store!* 
+*🚀 You're 48-72 hours away from a revenue-generating app in the App Store!*

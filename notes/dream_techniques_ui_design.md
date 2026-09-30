@@ -1,5 +1,7 @@
 # Dream Techniques UI/UX Design - Phase 1
 
+> **Planning status (2026-09-29):** Historical reference — superseded for current planning. Original statuses, deadlines, pricing proposals, and release instructions below may be outdated. See the [planning index](../docs/planning/README.md) and [current roadmap](../docs/planning/ROADMAP.md). Complete the selected feature set before device testing and submission.
+
 ## Design Philosophy
 - **Minimalist & Serene**: Calming color palette with deep purples, soft blues, and gentle gradients
 - **Intuitive Navigation**: Clear visual hierarchy and seamless transitions
@@ -164,4 +166,4 @@
 - Color application rules
 - Animation principles
 - Accessibility standards
-- Responsive patterns 
+- Responsive patterns
