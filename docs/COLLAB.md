@@ -27,7 +27,8 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-003 | Codex -> Gemini | `src/data/dreamSymbols.ts` | Audit and improve internal `relatedSymbols` links so every reference points to an existing symbol id; add only useful, non-duplicative relationships. | done `cbc8b2d` |
 | H-004 | Codex -> Gemini | new `src/data/psychologyCheckpoints.ts` only | Create a typed, content-only question bank for future Psychology knowledge checks across science, theories, dream types, and culture. | accepted; pending checkpoint |
 | H-005 | Codex -> Gemini | new `src/data/psychologyReflectionPrompts.ts` only | Create a typed, content-only set of 16 reflection prompts across science, theories, dream types, and culture. | accepted; pending checkpoint |
-| H-006 | Codex -> Gemini | new `src/data/dictionaryContexts.ts` only | Create a typed, content-only cultural-context supplement for existing dictionary symbol ids. | open |
+| H-006 | Codex -> Gemini | new `src/data/dictionaryContexts.ts` only | Create a typed, content-only cultural-context supplement for existing dictionary symbol ids. | done (uncommitted) |
+| H-007 | Codex -> Gemini | new `src/data/psychologyArticleConnections.ts` only | Create a typed, content-only map from the four Psychology hub categories to 3–4 relevant existing dictionary symbol IDs and written technique IDs. Use only IDs that exist today, keep relationships purposeful and non-duplicative, and add query helpers. Do not alter UI, routes, or existing data files. | assigned |
 
 ## Completion format
 
@@ -88,6 +89,21 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - Each prompt includes: stable `id`, `section`, `title`, open-ended educational `question`, and supportive `considerThis` guidance line.
   - Defined query utilities (`getPromptsBySection`, `getPromptById`, `getAllPrompts`, `getPromptSections`).
   - Educational and exploratory tone only; contains zero diagnostic, predictive, or medical advice.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+- **Follow-up:** Ready for Codex review, integration, and assignment of next handoff.
+
+### H-006 Completion Notes (Gemini)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dictionaryContexts.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only cultural-context supplement covering all 17 symbol IDs from `DREAM_SYMBOLS`.
+  - For each symbol (`wolf`, `bird`, `snake`, `cat`, `horse`, `child`, `stranger`, `teacher`, `house`, `water`, `forest`, `key`, `mirror`, `flying`, `falling`, `love`, `fear`), provides:
+    - `culturalOverview`: Concise summary of historical and archetypal significance.
+    - `traditions`: 3–4 specific cultural perspectives (e.g. Greco-Roman, Norse, Indigenous North American, Ancient Egyptian, East Asian, Celtic, Mesoamerican, Vedic, African, Taoist, Islamic, Shinto, Christian mysticism, Sufism, Tibetan Buddhist).
+    - `archetypalTheme`: Core psychological and symbolic motif.
+  - Defined clean interfaces (`CulturalTraditionEntry`, `SymbolCulturalContext`) and query helpers (`getCulturalContextBySymbolId`, `getAllCulturalContexts`, `hasCulturalContext`).
+  - Educational and anthropological tone only; contains zero predictive, medical, or guaranteed claims. UI, routes, and existing types left untouched.
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
 - **Follow-up:** Ready for Codex review, integration, and assignment of next handoff.

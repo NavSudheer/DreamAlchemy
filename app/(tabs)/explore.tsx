@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '@/providers/ThemeProvider';
@@ -11,12 +11,15 @@ import { Ionicons } from '@expo/vector-icons';
 import PatternsScreen from '@/components/DreamPatterns';
 import { DreamTechniques } from '@/components/dream-techniques/DreamTechniques';
 import { MeditationTimer } from '@/components/dream-techniques/MeditationTimer';
+import { searchExploreContent } from '@/data/exploreSearch';
 
 export default function ExploreScreen() {
   const { isDark } = useTheme();
   const router = useRouter();
   const { section } = useLocalSearchParams<{ section?: string }>();
   const [activeScreen, setActiveScreen] = useState<'explore' | 'patterns' | 'techniques' | 'meditation'>('explore');
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchResults = searchExploreContent(searchQuery);
   useEffect(() => {
     if (section === 'techniques') setActiveScreen('techniques');
   }, [section]);
@@ -79,6 +82,15 @@ export default function ExploreScreen() {
         >
           Discover the meaning behind your dreams
         </Text>
+        <View style={[styles.searchBox, { backgroundColor: isDark ? Colors.neutral[800] : Colors.neutral[100] }]}>
+          <Ionicons name="search" size={18} color={isDark ? Colors.neutral[400] : Colors.neutral[500]} />
+          <TextInput value={searchQuery} onChangeText={setSearchQuery} placeholder="Search symbols, techniques, psychology…" placeholderTextColor={isDark ? Colors.neutral[500] : Colors.neutral[400]} style={[styles.searchInput, { color: isDark ? Colors.neutral[100] : Colors.neutral[800] }]} />
+        </View>
+        {searchQuery.trim().length > 0 && (
+          <View style={styles.results}>
+            {searchResults.map(result => <TouchableOpacity key={result.id} style={[styles.result, { backgroundColor: isDark ? Colors.neutral[800] : Colors.neutral[50] }]} onPress={() => result.kind === 'dictionary' ? router.push({ pathname: '/symbol/[id]', params: { id: result.target } }) : result.kind === 'technique' ? (setActiveScreen('techniques'), router.setParams({ section: 'techniques' })) : router.push(result.target as any)}><Text variant="subtitle2" color={isDark ? Colors.neutral[100] : Colors.neutral[800]}>{result.title}</Text><Text variant="caption" color={isDark ? Colors.neutral[400] : Colors.neutral[600]}>{result.description}</Text></TouchableOpacity>)}
+          </View>
+        )}
         
         <Card
           variant="gradient"
@@ -255,6 +267,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing[6],
     textAlign: 'center',
   },
+  searchBox: { alignItems: 'center', borderRadius: BorderRadius.lg, flexDirection: 'row', marginBottom: spacing[4], paddingHorizontal: spacing[3] },
+  searchInput: { flex: 1, fontSize: 15, paddingHorizontal: spacing[2], paddingVertical: spacing[3] },
+  results: { gap: spacing[2], marginBottom: spacing[4] },
+  result: { borderRadius: BorderRadius.md, padding: spacing[3] },
   card: {
     marginBottom: spacing[6],
   },
