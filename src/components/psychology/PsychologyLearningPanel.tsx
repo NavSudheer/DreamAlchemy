@@ -7,6 +7,7 @@ import Card from '../ui/Card';
 import { getCheckpointsByCategory, PsychologyCategory as CheckpointCategory } from '../../data/psychologyCheckpoints';
 import { getConnectionsByCategory, PsychologyCategory } from '../../data/psychologyArticleConnections';
 import { getPromptsBySection, PsychologyPromptSection } from '../../data/psychologyReflectionPrompts';
+import { getGlossaryTermsByCategory, PsychologyCategory as GlossaryCategory } from '../../data/psychologyGlossary';
 import { getSymbolById } from '../../data/dreamSymbols';
 import { TECHNIQUE_DATA } from '../dream-techniques/techniques';
 
@@ -26,6 +27,13 @@ const promptSections: Record<LearningCategory, PsychologyPromptSection> = {
   cultural: 'cultural',
 };
 
+const glossaryCategories: Record<LearningCategory, GlossaryCategory> = {
+  scientific: 'scientific',
+  theories: 'theories',
+  types: 'types',
+  cultural: 'cultural',
+};
+
 interface PsychologyLearningPanelProps {
   category: LearningCategory;
 }
@@ -36,6 +44,7 @@ export default function PsychologyLearningPanel({ category }: PsychologyLearning
   const [answerId, setAnswerId] = useState<string | null>(null);
   const connections = getConnectionsByCategory(category);
   const prompts = getPromptsBySection(promptSections[category]);
+  const glossaryTerms = getGlossaryTermsByCategory(glossaryCategories[category]);
   const checkpoint = useMemo(
     () => getCheckpointsByCategory(checkpointCategories[category])[0],
     [category],
@@ -90,6 +99,18 @@ export default function PsychologyLearningPanel({ category }: PsychologyLearning
           </Text>
         )}
 
+        {glossaryTerms.length > 0 && (
+          <>
+            <Text variant="h4" style={[styles.sectionTitle, { color: textColor }]}>Key terms</Text>
+            {glossaryTerms.slice(0, 3).map(term => (
+              <View key={term.id} style={[styles.term, { backgroundColor: optionSurface }]}>
+                <Text variant="body2" style={[styles.termTitle, { color: textColor }]}>{term.term}</Text>
+                <Text variant="body2" style={{ color: mutedColor }}>{term.definition}</Text>
+              </View>
+            ))}
+          </>
+        )}
+
         <Text variant="h4" style={[styles.sectionTitle, { color: textColor }]}>Explore related content</Text>
         <View style={styles.links}>
           {connections.relatedSymbolIds.map(symbolId => {
@@ -127,6 +148,8 @@ const styles = StyleSheet.create({
   correctOption: { backgroundColor: '#B7E4C7' },
   incorrectOption: { backgroundColor: '#FFD6D6' },
   feedback: { lineHeight: 20, marginTop: 2 },
+  term: { borderRadius: 10, gap: 4, marginBottom: 8, padding: 12 },
+  termTitle: { fontWeight: '700' },
   links: { gap: 10 },
   link: { textDecorationLine: 'underline' },
 });
