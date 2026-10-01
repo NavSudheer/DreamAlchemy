@@ -39,6 +39,12 @@ export const searchExploreContent = (query: string): ExploreSearchResult[] => {
   })).filter(result => result.searchable.includes(normalizedQuery));
 
   return [...dictionaryResults, ...techniqueResults, ...psychologyResults.filter(result => `${result.title} ${result.description}`.toLowerCase().includes(normalizedQuery))]
-    .map(({ searchable, ...result }) => result)
+    .map(result => ({
+      id: result.id,
+      title: result.title,
+      description: result.description,
+      kind: result.kind,
+      target: result.target,
+    }))
     .slice(0, 12);
 };
