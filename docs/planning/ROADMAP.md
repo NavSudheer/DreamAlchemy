@@ -1,6 +1,18 @@
 # Current update roadmap
-Updated: 2026-09-29
-Status: feature selection and local development; release scope remains open.
+Updated: 2026-10-01
+Status: approved release scope is implemented locally; preparing the owner Mac/iOS smoke-test candidate.
+
+## Release sprint completion
+
+- [x] Dream Patterns: prioritized Explore entry, selectable day/week/month activity, drilldowns, and malformed-data safeguards.
+- [x] Dream Techniques: expanded written guides, guided practice cues, and safe outcome framing.
+- [x] Meditation/visualization: offline timer, local optional ambience, silent mode, presets, and cues.
+- [x] Cross-section tools: unified search, exact routing, saved items, Psychology and dictionary links.
+- [x] Psychology: checkpoints, reflections, glossary, study notes, related links, and reusable learning panels.
+- [x] Dictionary: cultural context, reflection prompts, keyword search, and related-symbol search links.
+- [x] Launch hardening: static lint setup, voice-unavailable handling, local Expo config verification.
+
+Remaining before user testing: final static validation, clean working tree, then the device checklist. Excluded scope remains excluded.
 
 ## Decisions
 - Complete the desired feature set before the owner's device-testing pass and App Store submission.

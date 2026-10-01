@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../src/providers/ThemeProvider';
@@ -12,6 +12,7 @@ import { DreamSymbol } from '../../src/types/dictionary';
 import SaveItemButton from '../../src/components/ui/SaveItemButton';
 import { getCulturalContextBySymbolId } from '../../src/data/dictionaryContexts';
 import { getPromptsBySymbolId } from '../../src/data/dictionaryReflectionPrompts';
+import { getRelatedSearchesForSymbol } from '../../src/data/dictionaryRelatedSearches';
 
 export default function SymbolDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -22,6 +23,7 @@ export default function SymbolDetailScreen() {
   const relatedSymbols = symbol ? getRelatedSymbols(symbol.id) : [];
   const culturalContext = symbol ? getCulturalContextBySymbolId(symbol.id) : undefined;
   const reflectionPrompts = symbol ? getPromptsBySymbolId(symbol.id) : [];
+  const relatedSearches = symbol ? getRelatedSearchesForSymbol(symbol.id) : [];
   
   useEffect(() => {
     if (!symbol) {
@@ -211,6 +213,20 @@ export default function SymbolDetailScreen() {
                 <Text variant="body1" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.promptQuestion}>{prompt.question}</Text>
                 <Text variant="body2" color={isDark ? Colors.neutral[300] : Colors.neutral[600]}>{prompt.considerThis}</Text>
               </View>
+            ))}
+          </View>
+        )}
+
+        {relatedSearches.length > 0 && (
+          <View style={styles.section}>
+            <Text variant="h4" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.sectionTitle}>
+              Explore Related Symbols
+            </Text>
+            {relatedSearches.map(suggestion => (
+              <TouchableOpacity key={suggestion.targetSymbolId} accessibilityRole="link" onPress={() => router.push({ pathname: '/symbol/[id]', params: { id: suggestion.targetSymbolId } })} style={[styles.contextItem, { backgroundColor: isDark ? Colors.neutral[800] : Colors.neutral[100] }]}>
+                <Text variant="subtitle2" color={isDark ? Colors.primary[200] : Colors.primary[700]}>{suggestion.targetSymbolName}</Text>
+                <Text variant="body2" color={isDark ? Colors.neutral[300] : Colors.neutral[600]} style={styles.contextCopy}>{suggestion.context}</Text>
+              </TouchableOpacity>
             ))}
           </View>
         )}

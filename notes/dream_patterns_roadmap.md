@@ -1,6 +1,6 @@
 # Dream Patterns Feature Roadmap
 
-> **Planning status (2026-09-29):** Reference backlog — not committed release scope. The current roadmap records what is implemented, proposed, and selected. See the [planning index](../docs/planning/README.md) and [current roadmap](../docs/planning/ROADMAP.md). Complete the selected feature set before device testing and submission.
+> **Planning status (2026-10-01):** Reference backlog. The approved Patterns priority, selectable activity ranges, drilldowns, and local-data hardening are implemented locally; advanced interpretation and predictive features remain excluded.
 
 ## Phase 1 (Completed)
 - Basic pattern dashboard with dream frequency timeline

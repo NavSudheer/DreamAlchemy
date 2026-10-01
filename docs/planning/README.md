@@ -1,5 +1,5 @@
 # Planning index
-Updated: 2026-09-29
+Updated: 2026-10-01
 
 Start here for the current update. These documents supersede conflicting timelines, statuses, pricing proposals, and release instructions in older plans.
 
@@ -9,8 +9,8 @@ Start here for the current update. These documents supersede conflicting timelin
 
 ## Working agreement
 1. Collect the owner's remaining ideas and select the update's feature scope.
-2. Build and test the selected features locally, including browser checks where supported.
-3. When the selected scope is complete, the owner performs device testing.
+2. The selected release scope is implemented locally and awaiting final static validation.
+3. The owner performs Mac/iOS device testing using the release checklist.
 4. Fix device findings, prepare final assets, and submit the completed update.
 Do not split features into additional releases merely to meet the old launch deadlines. Proposed items are not commitments until selected.
 

@@ -1,6 +1,6 @@
 # Dream Techniques Roadmap
 
-> **Planning status (2026-09-29):** Reference backlog — not committed release scope. The current roadmap records what is implemented, proposed, and selected. See the [planning index](../docs/planning/README.md) and [current roadmap](../docs/planning/ROADMAP.md). Complete the selected feature set before device testing and submission.
+> **Planning status (2026-10-01):** Reference backlog. The approved written-guide expansion, guided practice, and offline meditation/visualization timer are implemented locally; advanced personalization and media remain out of scope.
 
 This document outlines the detailed implementation plan and features for the Dream Techniques section of the Explore tab.
 

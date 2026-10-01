@@ -1,6 +1,6 @@
 # Dream Psychology Feature Implementation Roadmap
 
-> **Planning status (2026-09-29):** Reference backlog — not committed release scope. The current roadmap records what is implemented, proposed, and selected. See the [planning index](../docs/planning/README.md) and [current roadmap](../docs/planning/ROADMAP.md). Complete the selected feature set before device testing and submission.
+> **Planning status (2026-10-01):** Reference backlog. The approved Psychology panels, reflections, checkpoints, glossary, study notes, saved items, and related links are implemented locally; personalized insights and community features remain excluded.
 
 ## 1. Core Components Structure
 

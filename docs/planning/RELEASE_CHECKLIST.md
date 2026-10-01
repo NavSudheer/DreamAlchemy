@@ -1,5 +1,5 @@
 # Update completion and release checklist
-Updated: 2026-09-29
+Updated: 2026-10-01
 
 Use after selecting features in [the roadmap](ROADMAP.md). This replaces the old initial-launch checklists. No submission date is imposed.
 
@@ -15,7 +15,7 @@ Use after selecting features in [the roadmap](ROADMAP.md). This replaces the old
 - [ ] Review remaining console errors; distinguish unsupported web integrations from native defects.
 - [ ] Review final content and remove unimplemented feature claims.
 
-Current evidence: TypeScript passed after technique changes. Guided completion/restart/close and technique return navigation were checked in the browser. This evidence does not mark the whole checklist complete.
+Current evidence: approved release implementation is complete locally. TypeScript, whitespace, and lint have passed during the sprint; lint has zero errors (warnings remain for follow-up). Expo public config resolves locally. Device validation remains the release gate.
 
 ## 2. Owner device testing — after feature completion
 - [ ] Prepare one feature-complete candidate build; confirm unused version/build values.

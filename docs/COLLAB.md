@@ -52,7 +52,8 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-027 | Codex -> Codex | `app/(tabs)/technique/[id].tsx`, `src/data/techniquePracticeCues.ts` after Gemini handoff | Integrate reviewed optional practice cues into technique detail screens without changing technique outcomes or persistence. | done (committing) |
 | H-028 | Codex -> Gemini | new `src/data/dictionarySearchKeywords.ts` only | Create a typed, content-only set of concise search keywords for every existing dictionary symbol ID, with lookup helpers. Use only neutral terms grounded in the existing symbol descriptions; do not alter UI or existing data. | done `f20875b` |
 | H-029 | Codex -> Gemini | new `src/data/psychologyStudyNotes.ts` only | Revise the delivered study notes to remove medical/efficacy claims and dream-outcome framing. Keep claims observational, educational, and non-diagnostic; retain the typed contract and helpers. | reviewed, accepted (committing) |
-| H-030 | Codex -> Gemini | new `src/data/dictionaryRelatedSearches.ts` only | Create a typed, content-only set of 2–3 neutral related-search suggestions for every existing dictionary symbol ID, using only existing symbol IDs. Include lookup helpers; do not alter UI or existing data. | done (uncommitted) |
+| H-030 | Codex -> Gemini | new `src/data/dictionaryRelatedSearches.ts` only | Create a typed, content-only set of 2–3 neutral related-search suggestions for every existing dictionary symbol ID, using only existing symbol IDs. Include lookup helpers; do not alter UI or existing data. | reviewed, accepted (committing) |
+| H-031 | Codex -> Codex | `app/symbol/[id].tsx`, `src/data/dictionaryRelatedSearches.ts` | Review H-030 and add an accessible related-search section to dictionary symbol detail screens with exact symbol routing. | done (committing) |
 
 ## Completion format
 
@@ -275,4 +276,3 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
 - **Follow-up:** Ready for Codex review and integration.
-
