@@ -149,8 +149,9 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
         }
 
         dream.analysis.symbols.forEach(symbol => {
+          if (!symbol?.symbol?.trim()) return;
           // Normalize symbol name to lowercase for case-insensitive matching
-          const normalizedSymbol = symbol.symbol.toLowerCase();
+          const normalizedSymbol = symbol.symbol.trim().toLowerCase();
           
           // Only count each symbol once per dream
           if (!dreamSymbolTracker[dreamId].has(normalizedSymbol)) {
@@ -188,9 +189,9 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
     // Get dream themes
     const themeCounts: Record<string, number> = {};
     dreams.forEach(dream => {
-      if (dream.analysis?.theme) {
+      if (dream.analysis?.theme?.trim()) {
         // Normalize theme name to lowercase
-        const normalizedTheme = dream.analysis.theme.toLowerCase();
+        const normalizedTheme = dream.analysis.theme.trim().toLowerCase();
         themeCounts[normalizedTheme] = (themeCounts[normalizedTheme] || 0) + 1;
       } else {
         themeCounts['other'] = (themeCounts['other'] || 0) + 1;
@@ -247,14 +248,14 @@ export default function PatternsScreen({ onBack }: PatternsScreenProps) {
     const target = drilldown.value.toLowerCase();
     return dreams.filter(dream => {
       if (drilldown.type === 'theme') {
-        return dream.analysis?.theme?.toLowerCase() === target;
+        return dream.analysis?.theme?.trim().toLowerCase() === target;
       }
 
       if (drilldown.type === 'tag') {
         return dream.tags?.some(tag => tag.toLowerCase() === target);
       }
 
-      return dream.analysis?.symbols?.some(symbol => symbol.symbol.toLowerCase() === target);
+      return dream.analysis?.symbols?.some(symbol => symbol?.symbol?.trim().toLowerCase() === target);
     });
   }, [dreams, drilldown]);
 
