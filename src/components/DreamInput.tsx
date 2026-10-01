@@ -89,7 +89,7 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
 
         // Show error message if not canceled by user and not a module unavailable error
         if (e.error?.code !== '7' && e.error?.code !== 'cancelled') {
-          if (e.error?.code === 'module_unavailable') {
+          if (e.error?.code === 'module_not_available') {
             // Hide voice feature if module is not available
             setShowVoiceFeature(false);
           } else {
