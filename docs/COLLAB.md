@@ -35,8 +35,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-010 | Codex -> Codex | new `src/components/ui/SaveItemButton.tsx`, `app/symbol/[id].tsx`, `app/(tabs)/technique/[id].tsx`, `src/components/psychology/*.tsx` | Add a consistent save control to dictionary, technique, and Psychology detail screens using H-009. Keep each screen's existing behavior intact. | done `e1367de` |
 | H-011 | Codex -> Codex | new `app/(tabs)/saved.tsx`, `app/(tabs)/_layout.tsx`, `app/(tabs)/explore.tsx` | Add a saved-items destination that resolves and routes saved dictionary, technique, and Psychology items from H-009. | done `0a9927d` |
 | H-013 | Codex -> Codex | `app/(tabs)/explore.tsx` | Route each unified Explore search result to its exact dictionary, technique, or Psychology detail destination. | done (committing) |
-| H-014 | Codex -> Codex | `app/symbol/[id].tsx` | Surface the reviewed dictionary cultural-context and reflection-prompt content on symbol detail screens. | in progress |
-| H-012 | Codex -> Gemini | new `src/data/techniqueConnections.ts` only | Create a typed, content-only map for every existing technique ID to 2–4 purposeful existing dictionary symbol IDs and Psychology category IDs. Include lookup helpers. Do not alter UI, routes, or existing data files. | in progress |
+| H-014 | Codex -> Codex | `app/symbol/[id].tsx` | Surface the reviewed dictionary cultural-context and reflection-prompt content on symbol detail screens. | done (committing) |
+| H-012 | Codex -> Gemini | new `src/data/techniqueConnections.ts` only | Create a typed, content-only map for every existing technique ID to 2–4 purposeful existing dictionary symbol IDs and Psychology category IDs. Include lookup helpers. Do not alter UI, routes, or existing data files. | done (committing) |
+| H-015 | Codex -> Gemini | new `src/data/psychologyGlossary.ts` only | Create a typed, content-only glossary of 15–20 clear terms already used in Psychology screens and their supporting data. Include category tags and lookup helpers. Do not alter UI, routes, or existing data files. | in progress |
 
 ## Completion format
 
@@ -135,6 +136,27 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
     - Gentle, exploratory `considerThis` guiding perspective
   - Defined clean data interfaces (`DictionaryReflectionPrompt`, `SymbolReflectionEntry`) and lookup helpers (`getPromptsBySymbolId`, `getPromptById`, `getReflectionEntryBySymbolId`, `hasPromptsForSymbol`, `getAllPromptSymbolIds`, `getAllDictionaryPrompts`, `getAllSymbolReflectionEntries`).
   - Strictly educational and introspective tone with zero diagnostic, predictive, or medical claims. No UI, routes, or existing data modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+- **Follow-up:** Ready for Codex review, integration, and assignment of next handoff.
+
+### H-012 Completion Notes (Gemini)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/techniqueConnections.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only connection index linking all 9 written technique IDs (`1` through `9`) to 2–3 purposeful existing dictionary symbol IDs and relevant Psychology categories (`scientific`, `theories`, `types`, `cultural`).
+  - For each technique, established clear symbolic and psychological rationales:
+    - `1` Reality Testing: linked to `mirror`, `flying`, `key` and categories `theories`, `types`.
+    - `2` WBTB: linked to `falling`, `flying`, `water` and categories `scientific`, `types`.
+    - `3` Dream Journaling: linked to `house`, `stranger`, `mirror` and categories `theories`, `types`, `cultural`.
+    - `4` MILD: linked to `flying`, `teacher`, `key` and categories `scientific`, `theories`, `types`.
+    - `5` WILD: linked to `water`, `falling`, `forest` and categories `scientific`, `types`.
+    - `6` SSILD: linked to `water`, `bird`, `mirror` and categories `scientific`, `cultural`.
+    - `7` Dream Incubation: linked to `child`, `snake`, `key` and categories `cultural`, `theories`.
+    - `8` Morning Recall: linked to `water`, `house`, `bird` and categories `scientific`, `cultural`.
+    - `9` Nightmare Aftercare: linked to `fear`, `wolf`, `house` and categories `types`, `scientific`.
+  - Defined clean data interfaces (`PsychologyCategory`, `TechniqueConnectionItem`, `TechniqueConnections`) and query utilities (`getTechniqueConnections`, `getRelatedSymbolIdsForTechnique`, `getRelatedCategoryIdsForTechnique`, `getAllTechniqueConnections`, `getTechniquesForSymbol`, `getTechniquesForCategory`, `hasTechniqueConnections`).
+  - Purely content and query helpers; zero diagnostic, medical, or guaranteed outcome claims. UI, routes, and existing data files left untouched.
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
 - **Follow-up:** Ready for Codex review, integration, and assignment of next handoff.

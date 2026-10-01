@@ -10,6 +10,8 @@ import SymbolCard from '../../src/components/dictionary/SymbolCard';
 import { getSymbolById, getRelatedSymbols } from '../../src/data/dreamSymbols';
 import { DreamSymbol } from '../../src/types/dictionary';
 import SaveItemButton from '../../src/components/ui/SaveItemButton';
+import { getCulturalContextBySymbolId } from '../../src/data/dictionaryContexts';
+import { getPromptsBySymbolId } from '../../src/data/dictionaryReflectionPrompts';
 
 export default function SymbolDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -18,6 +20,8 @@ export default function SymbolDetailScreen() {
   
   const symbol = getSymbolById(id);
   const relatedSymbols = symbol ? getRelatedSymbols(symbol.id) : [];
+  const culturalContext = symbol ? getCulturalContextBySymbolId(symbol.id) : undefined;
+  const reflectionPrompts = symbol ? getPromptsBySymbolId(symbol.id) : [];
   
   useEffect(() => {
     if (!symbol) {
@@ -175,6 +179,41 @@ export default function SymbolDetailScreen() {
             </Text>
           </View>
         )}
+
+        {culturalContext && (
+          <View style={styles.section}>
+            <Text variant="h4" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.sectionTitle}>
+              Cultural Perspectives
+            </Text>
+            <Text variant="body2" color={isDark ? Colors.neutral[300] : Colors.neutral[600]} style={styles.contextCopy}>
+              {culturalContext.culturalOverview}
+            </Text>
+            <Text variant="body2" color={isDark ? Colors.primary[300] : Colors.primary[600]} style={styles.archetype}>
+              Archetypal theme: {culturalContext.archetypalTheme}
+            </Text>
+            {culturalContext.traditions.map(tradition => (
+              <View key={tradition.tradition} style={[styles.contextItem, { backgroundColor: isDark ? Colors.neutral[800] : Colors.neutral[100] }]}>
+                <Text variant="subtitle2" color={isDark ? Colors.neutral[100] : Colors.neutral[800]}>{tradition.tradition}</Text>
+                <Text variant="body2" color={isDark ? Colors.neutral[300] : Colors.neutral[600]} style={styles.contextCopy}>{tradition.summary}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {reflectionPrompts.length > 0 && (
+          <View style={styles.section}>
+            <Text variant="h4" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.sectionTitle}>
+              Reflect on This Symbol
+            </Text>
+            {reflectionPrompts.map(prompt => (
+              <View key={prompt.id} style={[styles.promptItem, { backgroundColor: isDark ? Colors.primary[900] : Colors.primary[50] }]}>
+                <Text variant="subtitle2" color={isDark ? Colors.primary[200] : Colors.primary[700]}>{prompt.theme}</Text>
+                <Text variant="body1" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.promptQuestion}>{prompt.question}</Text>
+                <Text variant="body2" color={isDark ? Colors.neutral[300] : Colors.neutral[600]}>{prompt.considerThis}</Text>
+              </View>
+            ))}
+          </View>
+        )}
         
         {relatedSymbols.length > 0 && (
           <View style={styles.section}>
@@ -265,5 +304,27 @@ const styles = StyleSheet.create({
   relatedScrollView: {
     marginLeft: -spacing[1],
     paddingLeft: spacing[1],
+  },
+  archetype: {
+    marginBottom: spacing[3],
+    marginTop: spacing[2],
+  },
+  contextCopy: {
+    lineHeight: 20,
+  },
+  contextItem: {
+    borderRadius: BorderRadius.md,
+    gap: spacing[1],
+    marginTop: spacing[2],
+    padding: spacing[3],
+  },
+  promptItem: {
+    borderRadius: BorderRadius.md,
+    gap: spacing[2],
+    marginBottom: spacing[2],
+    padding: spacing[3],
+  },
+  promptQuestion: {
+    lineHeight: 22,
   },
 });
