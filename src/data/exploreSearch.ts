@@ -38,13 +38,19 @@ export const searchExploreContent = (query: string): ExploreSearchResult[] => {
     searchable: `${technique.title} ${technique.description} ${technique.tips.join(' ')}`.toLowerCase(),
   })).filter(result => result.searchable.includes(normalizedQuery));
 
-  return [...dictionaryResults, ...techniqueResults, ...psychologyResults.filter(result => `${result.title} ${result.description}`.toLowerCase().includes(normalizedQuery))]
+  const results = [...dictionaryResults, ...techniqueResults, ...psychologyResults.filter(result => `${result.title} ${result.description}`.toLowerCase().includes(normalizedQuery))]
     .map(result => ({
       id: result.id,
       title: result.title,
       description: result.description,
       kind: result.kind,
       target: result.target,
-    }))
-    .slice(0, 12);
+    }));
+
+  const seenIds = new Set<string>();
+  return results.filter(result => {
+    if (!result.id || !result.target || seenIds.has(result.id)) return false;
+    seenIds.add(result.id);
+    return true;
+  }).slice(0, 12);
 };
