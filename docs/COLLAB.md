@@ -50,7 +50,7 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-025 | Codex -> Gemini | new `src/data/techniquePracticeCues.ts` only | Create a typed, content-only set of optional cue lines for each existing written technique ID. Each cue must be brief, gentle, and non-guaranteeing; include lookup helpers. Do not alter UI, timer, routes, or existing data files. | reviewed, accepted (committing) |
 | H-026 | Codex -> Codex | `src/services/voiceRecognition.ts`, affected UI only if needed | Audit voice-recognition lifecycle and permission failure handling for iOS launch reliability; apply only a focused bug fix if warranted. | done (committing) |
 | H-027 | Codex -> Codex | `app/(tabs)/technique/[id].tsx`, `src/data/techniquePracticeCues.ts` after Gemini handoff | Integrate reviewed optional practice cues into technique detail screens without changing technique outcomes or persistence. | done (committing) |
-| H-028 | Codex -> Gemini | new `src/data/dictionarySearchKeywords.ts` only | Create a typed, content-only set of concise search keywords for every existing dictionary symbol ID, with lookup helpers. Use only neutral terms grounded in the existing symbol descriptions; do not alter UI or existing data. | in progress |
+| H-028 | Codex -> Gemini | new `src/data/dictionarySearchKeywords.ts` only | Create a typed, content-only set of concise search keywords for every existing dictionary symbol ID, with lookup helpers. Use only neutral terms grounded in the existing symbol descriptions; do not alter UI or existing data. | reviewed, accepted (committing) |
 
 ## Completion format
 
@@ -229,3 +229,15 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
 - **Follow-up:** Ready for Codex review and integration into `app/(tabs)/technique/[id].tsx` (H-027).
+
+### H-028 Completion Notes (Gemini)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dictionarySearchKeywords.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only search keyword dataset covering all 17 dictionary symbol IDs (`wolf`, `bird`, `snake`, `cat`, `horse`, `child`, `stranger`, `teacher`, `house`, `water`, `forest`, `key`, `mirror`, `flying`, `falling`, `love`, `fear`).
+  - Sourced 8–11 neutral, concise keywords per symbol directly grounded in their existing name, category, description, and meanings in `dreamSymbols.ts`.
+  - Defined clean interfaces (`SymbolSearchKeywords`) and query utilities (`getKeywordsForSymbol`, `getSymbolKeywordsEntry`, `getAllSymbolKeywords`, `hasKeywordsForSymbol`, `findSymbolsByKeyword`, `matchSymbolsByQuery`, `getAllUniqueKeywords`).
+  - Strictly neutral, non-prescriptive, and content-only; no UI, routes, or existing data files modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+- **Follow-up:** Ready for Codex review and integration.

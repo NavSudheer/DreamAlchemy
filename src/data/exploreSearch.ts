@@ -1,5 +1,6 @@
 import { DREAM_SYMBOLS } from './dreamSymbols';
 import { TECHNIQUE_DATA } from '@/components/dream-techniques/techniques';
+import { matchSymbolsByQuery } from './dictionarySearchKeywords';
 
 export type ExploreSearchResult = {
   id: string;
@@ -20,6 +21,7 @@ export const searchExploreContent = (query: string): ExploreSearchResult[] => {
   const normalizedQuery = query.trim().toLowerCase();
   if (!normalizedQuery) return [];
 
+  const keywordSymbolIds = new Set(matchSymbolsByQuery(normalizedQuery).map(entry => entry.symbolId));
   const dictionaryResults = DREAM_SYMBOLS.map(symbol => ({
     id: `dictionary-${symbol.id}`,
     title: symbol.name,
@@ -27,7 +29,7 @@ export const searchExploreContent = (query: string): ExploreSearchResult[] => {
     kind: 'dictionary' as const,
     target: symbol.id,
     searchable: `${symbol.name} ${symbol.description} ${symbol.meanings.join(' ')}`.toLowerCase(),
-  })).filter(result => result.searchable.includes(normalizedQuery));
+  })).filter(result => result.searchable.includes(normalizedQuery) || keywordSymbolIds.has(result.target));
 
   const techniqueResults = Object.entries(TECHNIQUE_DATA).map(([id, technique]) => ({
     id: `technique-${id}`,
