@@ -68,7 +68,7 @@ export default function ExploreScreen() {
       styles.container, 
       { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }
     ]}>
-      <Header title="Explore Dreams" showMoon={true} />
+      <Header title="Explore Dreams" rightIcon="bookmark-outline" onRightPress={() => router.push('/(tabs)/saved')} />
       
       <ScrollView 
         style={styles.content}
