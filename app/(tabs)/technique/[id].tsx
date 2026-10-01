@@ -9,6 +9,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { TECHNIQUE_DATA } from '@/components/dream-techniques/techniques';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SaveItemButton from '@/components/ui/SaveItemButton';
+import { getCuesForTechnique } from '@/data/techniquePracticeCues';
 
 export default function TechniqueDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -17,6 +18,7 @@ export default function TechniqueDetail() {
   const { isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const technique = TECHNIQUE_DATA[id as keyof typeof TECHNIQUE_DATA];
+  const practiceCues = getCuesForTechnique(id);
 
   // Enhanced theme colors
   const bgColor = isDark ? Colors.neutral[900] : Colors.neutral[50];
@@ -154,6 +156,12 @@ export default function TechniqueDetail() {
             <Text style={{ color: textColor, marginVertical: 16 }}>
               {practiceStep < technique.steps.length ? technique.steps[practiceStep] : 'Take a moment to reflect. Finishing the guide is enough; there is no dream outcome to achieve.'}
             </Text>
+            {practiceStep < technique.steps.length && practiceCues[practiceStep] && (
+              <View style={[styles.cue, { backgroundColor: isDark ? Colors.neutral[700] : Colors.neutral[200] }]}>
+                <Text variant="subtitle2" style={{ color: accentColor }}>{practiceCues[practiceStep].focus}</Text>
+                <Text variant="body2" style={[styles.cueText, { color: textColor }]}>{practiceCues[practiceStep].cue}</Text>
+              </View>
+            )}
             {practiceStep > 0 && practiceStep < technique.steps.length && (
               <TouchableOpacity accessibilityRole="button" onPress={() => setPracticeStep(practiceStep - 1)} style={styles.startButton}>
                 <Text color={accentColor}>Previous step</Text>
@@ -277,6 +285,8 @@ const styles = StyleSheet.create({
   expectedResults: {
     lineHeight: 24,
   },
+  cue: { borderRadius: BorderRadius.md, marginTop: spacing[2], padding: spacing[3] },
+  cueText: { lineHeight: 20, marginTop: spacing[1] },
   startButton: {
     marginTop: spacing[4],
     marginBottom: spacing[6],

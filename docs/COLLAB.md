@@ -47,9 +47,10 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-022 | Codex -> Codex | launch configuration and affected components only | Run release static checks, investigate any launch-blocking warnings or errors, and apply focused fixes that do not broaden release scope. | done (committing) |
 | H-023 | Codex -> Codex | `src/components/dream-techniques/MeditationTimer.tsx`, `src/data/meditationTimerPresets.ts` after Gemini handoff | Integrate the reviewed preset data into the offline timer and replace hard-coded duration choices with the release preset selection. | done (committing) |
 | H-024 | Codex -> Codex | `app.json`, `package.json`, launch configuration only | Audit iOS launch configuration and Expo package health for Mac-device testing; fix scoped release blockers only. | done (committing; `expo config --type public` passes locally; `expo-doctor` remains network-blocked) |
-| H-025 | Codex -> Gemini | new `src/data/techniquePracticeCues.ts` only | Create a typed, content-only set of optional cue lines for each existing written technique ID. Each cue must be brief, gentle, and non-guaranteeing; include lookup helpers. Do not alter UI, timer, routes, or existing data files. | in progress |
+| H-025 | Codex -> Gemini | new `src/data/techniquePracticeCues.ts` only | Create a typed, content-only set of optional cue lines for each existing written technique ID. Each cue must be brief, gentle, and non-guaranteeing; include lookup helpers. Do not alter UI, timer, routes, or existing data files. | reviewed, accepted (committing) |
 | H-026 | Codex -> Codex | `src/services/voiceRecognition.ts`, affected UI only if needed | Audit voice-recognition lifecycle and permission failure handling for iOS launch reliability; apply only a focused bug fix if warranted. | done (committing) |
-| H-027 | Codex -> Codex | `app/(tabs)/technique/[id].tsx`, `src/data/techniquePracticeCues.ts` after Gemini handoff | Integrate reviewed optional practice cues into technique detail screens without changing technique outcomes or persistence. | queued for Gemini H-025 |
+| H-027 | Codex -> Codex | `app/(tabs)/technique/[id].tsx`, `src/data/techniquePracticeCues.ts` after Gemini handoff | Integrate reviewed optional practice cues into technique detail screens without changing technique outcomes or persistence. | done (committing) |
+| H-028 | Codex -> Gemini | new `src/data/dictionarySearchKeywords.ts` only | Create a typed, content-only set of concise search keywords for every existing dictionary symbol ID, with lookup helpers. Use only neutral terms grounded in the existing symbol descriptions; do not alter UI or existing data. | in progress |
 
 ## Completion format
 
@@ -207,3 +208,24 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
 - **Follow-up:** Ready for Codex review and integration into `MeditationTimer.tsx` (H-023).
+
+### H-025 Completion Notes (Gemini)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/techniquePracticeCues.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only collection of optional practice cue lines for each of the 9 written dream technique guides (`1` through `9`).
+  - Each technique has 4 structured, unhurried cue lines covering preparation, mindful execution, and pressure-free closing:
+    - `1` Reality Testing: Grounding Pause, Genuine Curiosity, Physical Consistency, Calm Release.
+    - `2` WBTB: Dim Environment, Quiet Wakefulness, Effortless Return, Rest Priority.
+    - `3` Dream Journaling: Initial Stillness, Core Keywords, Present Tense, No Self-Judgement.
+    - `4` MILD: Scene Recall, Clear Intention, Mental Rehearsal, Peaceful Letting Go.
+    - `5` WILD: Deep Physical Rest, Passive Observation, Threshold Welcoming, Surrender to Sleep.
+    - `6` SSILD: Sight Window, Sound Window, Touch Window, Sleep Shift.
+    - `7` Dream Incubation: Theme Selection, Succinct Framing, Sensory Immersion, Trust and Drift.
+    - `8` Morning Recall Routine: Gentle Stillness, Reverse Tracing, Posture Reconnection, Gratitude for Process.
+    - `9` Nightmare Aftercare: Reality Grounding, Somatic Touch, Extended Exhale, Compassionate Care (with clear safety and medical disclaimers).
+  - Defined clean interfaces (`TechniquePracticeCue`, `TechniqueCuesGroup`) and lookup helpers (`getCuesForTechnique`, `getCueGroupForTechnique`, `getAllTechniqueCues`, `getAllTechniqueCueGroups`, `hasCuesForTechnique`, `getCueById`).
+  - Gentle, non-guaranteeing, evidence-conscious tone; zero diagnostic, predictive, or medical claims. UI, timer, routes, and existing data left untouched.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+- **Follow-up:** Ready for Codex review and integration into `app/(tabs)/technique/[id].tsx` (H-027).
