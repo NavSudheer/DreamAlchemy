@@ -5,6 +5,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTheme } from '../../hooks/useTheme';
 import Text from '../ui/Text';
 import Card from '../ui/Card';
+import SaveItemButton from '../ui/SaveItemButton';
 
 const PsychologicalTheories = () => {
   const { colors, isDark } = useTheme();
@@ -72,9 +73,12 @@ const PsychologicalTheories = () => {
         ]}
       >
         <View style={styles.header}>
-          <Text variant="h2" style={[styles.title, { color: textColor }]}>
-            Psychological Theories
-          </Text>
+          <View style={styles.titleRow}>
+            <Text variant="h2" style={[styles.title, { color: textColor }]}>
+              Psychological Theories
+            </Text>
+            <SaveItemButton itemId="theories" type="psychology" />
+          </View>
           <Text variant="body1" style={[styles.subtitle, { color: subtitleColor }]}>
             Different approaches to understanding dreams
           </Text>
@@ -132,8 +136,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
+    flex: 1,
     textAlign: 'center',
     marginBottom: 8,
+  },
+  titleRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: 12,
   },
   subtitle: {
     textAlign: 'center',
@@ -174,4 +184,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PsychologicalTheories; 
+export default PsychologicalTheories;

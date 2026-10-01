@@ -4,6 +4,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTheme } from '../../hooks/useTheme';
 import Text from '../ui/Text';
 import Card from '../ui/Card';
+import SaveItemButton from '../ui/SaveItemButton';
 
 const DreamTypes = () => {
   const { colors, isDark } = useTheme();
@@ -66,9 +67,12 @@ const DreamTypes = () => {
         ]}
       >
         <View style={styles.header}>
-          <Text variant="h2" style={[styles.title, { color: textColor }]}>
-            Dream Types
-          </Text>
+          <View style={styles.titleRow}>
+            <Text variant="h2" style={[styles.title, { color: textColor }]}>
+              Dream Types
+            </Text>
+            <SaveItemButton itemId="types" type="psychology" />
+          </View>
           <Text variant="body1" style={[styles.subtitle, { color: subtitleColor }]}>
             Understanding different categories of dreams
           </Text>
@@ -131,8 +135,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
+    flex: 1,
     textAlign: 'center',
     marginBottom: 8,
+  },
+  titleRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: 12,
   },
   subtitle: {
     textAlign: 'center',
@@ -182,4 +192,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DreamTypes; 
+export default DreamTypes;

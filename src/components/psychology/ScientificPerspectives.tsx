@@ -6,6 +6,7 @@ import { useTheme } from '../../hooks/useTheme';
 import Text from '../ui/Text';
 import Card from '../ui/Card';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import SaveItemButton from '../ui/SaveItemButton';
 
 const ScientificPerspectives = () => {
   const { colors, isDark } = useTheme();
@@ -56,9 +57,12 @@ const ScientificPerspectives = () => {
         ]}
       >
         <View style={styles.header}>
-          <Text variant="h2" style={[styles.title, { color: textColor }]}>
-            Scientific Perspectives
-          </Text>
+          <View style={styles.titleRow}>
+            <Text variant="h2" style={[styles.title, { color: textColor }]}>
+              Scientific Perspectives
+            </Text>
+            <SaveItemButton itemId="scientific" type="psychology" />
+          </View>
           <Text variant="body1" style={[styles.subtitle, { color: subtitleColor }]}>
             Understanding the neuroscience of dreaming
           </Text>
@@ -133,8 +137,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
+    flex: 1,
     textAlign: 'center',
     marginBottom: 8,
+  },
+  titleRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: 12,
   },
   subtitle: {
     textAlign: 'center',
@@ -170,4 +180,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ScientificPerspectives; 
+export default ScientificPerspectives;

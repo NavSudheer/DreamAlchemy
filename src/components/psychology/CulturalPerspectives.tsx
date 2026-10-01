@@ -5,6 +5,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTheme } from '../../hooks/useTheme';
 import Text from '../ui/Text';
 import Card from '../ui/Card';
+import SaveItemButton from '../ui/SaveItemButton';
 
 const CulturalPerspectives = () => {
   const { colors, isDark } = useTheme();
@@ -88,9 +89,12 @@ const CulturalPerspectives = () => {
         ]}
       >
         <View style={styles.header}>
-          <Text variant="h2" style={[styles.title, { color: textColor }]}>
-            Cultural Perspectives
-          </Text>
+          <View style={styles.titleRow}>
+            <Text variant="h2" style={[styles.title, { color: textColor }]}>
+              Cultural Perspectives
+            </Text>
+            <SaveItemButton itemId="cultural" type="psychology" />
+          </View>
           <Text variant="body1" style={[styles.subtitle, { color: subtitleColor }]}>
             How different cultures understand dreams
           </Text>
@@ -158,8 +162,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
+    flex: 1,
     textAlign: 'center',
     marginBottom: 8,
+  },
+  titleRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: 12,
   },
   subtitle: {
     textAlign: 'center',
@@ -215,4 +225,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CulturalPerspectives; 
+export default CulturalPerspectives;

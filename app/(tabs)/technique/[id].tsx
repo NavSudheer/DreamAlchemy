@@ -8,6 +8,7 @@ import Header from '@/components/ui/Header';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { TECHNIQUE_DATA } from '@/components/dream-techniques/techniques';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import SaveItemButton from '@/components/ui/SaveItemButton';
 
 export default function TechniqueDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -71,9 +72,12 @@ export default function TechniqueDetail() {
           />
         </View>
 
-        <Text variant="h3" style={[styles.title, {color: accentColor}]}>
-          {technique.title}
-        </Text>
+        <View style={styles.titleRow}>
+          <Text variant="h3" style={[styles.title, {color: accentColor}]}>
+            {technique.title}
+          </Text>
+          <SaveItemButton itemId={id} type="technique" />
+        </View>
 
         <Text variant="body1" style={[styles.description, {color: textColor}]}>
           {technique.description}
@@ -199,8 +203,14 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   title: {
+    flex: 1,
     textAlign: 'center',
     marginBottom: spacing[2],
+  },
+  titleRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: spacing[3],
   },
   description: {
     textAlign: 'center',

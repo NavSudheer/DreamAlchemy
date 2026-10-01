@@ -9,6 +9,7 @@ import Header from '../../src/components/ui/Header';
 import SymbolCard from '../../src/components/dictionary/SymbolCard';
 import { getSymbolById, getRelatedSymbols } from '../../src/data/dreamSymbols';
 import { DreamSymbol } from '../../src/types/dictionary';
+import SaveItemButton from '../../src/components/ui/SaveItemButton';
 
 export default function SymbolDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -63,13 +64,16 @@ export default function SymbolDetailScreen() {
           </Text>
         </View>
         
-        <Text 
-          variant="h3" 
-          color={isDark ? Colors.neutral[100] : Colors.neutral[800]}
-          style={styles.name}
-        >
-          {symbol.name}
-        </Text>
+        <View style={styles.titleRow}>
+          <Text
+            variant="h3"
+            color={isDark ? Colors.neutral[100] : Colors.neutral[800]}
+            style={styles.name}
+          >
+            {symbol.name}
+          </Text>
+          <SaveItemButton itemId={symbol.id} type="dictionary" />
+        </View>
         
         <Text 
           variant="body1" 
@@ -222,7 +226,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   name: {
+    flex: 1,
     marginBottom: spacing[3],
+  },
+  titleRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: spacing[3],
   },
   description: {
     marginBottom: spacing[6],
@@ -256,4 +266,4 @@ const styles = StyleSheet.create({
     marginLeft: -spacing[1],
     paddingLeft: spacing[1],
   },
-}); 
+});
