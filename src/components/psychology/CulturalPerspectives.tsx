@@ -6,6 +6,7 @@ import { useTheme } from '../../hooks/useTheme';
 import Text from '../ui/Text';
 import Card from '../ui/Card';
 import SaveItemButton from '../ui/SaveItemButton';
+import PsychologyLearningPanel from './PsychologyLearningPanel';
 
 const CulturalPerspectives = () => {
   const { colors, isDark } = useTheme();
@@ -142,6 +143,7 @@ const CulturalPerspectives = () => {
             </View>
           </Card>
         ))}
+        <PsychologyLearningPanel category="cultural" />
       </ScrollView>
     </SafeAreaView>
   );

@@ -7,6 +7,7 @@ import Text from '../ui/Text';
 import Card from '../ui/Card';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SaveItemButton from '../ui/SaveItemButton';
+import PsychologyLearningPanel from './PsychologyLearningPanel';
 
 const ScientificPerspectives = () => {
   const { colors, isDark } = useTheme();
@@ -117,6 +118,7 @@ const ScientificPerspectives = () => {
             ))}
           </View>
         </Card>
+        <PsychologyLearningPanel category="scientific" />
       </ScrollView>
     </SafeAreaView>
   );

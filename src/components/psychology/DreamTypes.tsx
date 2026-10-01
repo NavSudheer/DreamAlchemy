@@ -5,6 +5,7 @@ import { useTheme } from '../../hooks/useTheme';
 import Text from '../ui/Text';
 import Card from '../ui/Card';
 import SaveItemButton from '../ui/SaveItemButton';
+import PsychologyLearningPanel from './PsychologyLearningPanel';
 
 const DreamTypes = () => {
   const { colors, isDark } = useTheme();
@@ -115,6 +116,7 @@ const DreamTypes = () => {
               </View>
           </Card>
         ))}
+        <PsychologyLearningPanel category="types" />
       </ScrollView>
     </SafeAreaView>
   );
