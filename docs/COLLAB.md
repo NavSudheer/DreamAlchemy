@@ -39,13 +39,15 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-012 | Codex -> Gemini | new `src/data/techniqueConnections.ts` only | Create a typed, content-only map for every existing technique ID to 2–4 purposeful existing dictionary symbol IDs and Psychology category IDs. Include lookup helpers. Do not alter UI, routes, or existing data files. | done `f4c68f5` |
 | H-016 | Codex -> Codex | new `src/components/psychology/PsychologyLearningPanel.tsx`, `src/components/psychology/*.tsx` | Add a reusable Psychology learning panel that presents existing reflection prompts, knowledge checkpoints, and relevant cross-section links on category screens. | done (committing) |
 | H-015 | Codex -> Gemini | new `src/data/psychologyGlossary.ts` only | Create a typed, content-only glossary of 15–20 clear terms already used in Psychology screens and their supporting data. Include category tags and lookup helpers. Do not alter UI, routes, or existing data files. | reviewed, accepted (committing) |
-| H-017 | Codex -> Gemini | new `src/data/meditationTimerPresets.ts` only | Create a typed, content-only set of 4–6 gentle meditation/visualization timer presets for the upcoming timer: stable id, title, duration in seconds, short description, cue labels, and optional safe audio ambience key. Keep language non-medical and do not claim sleep, lucid-dream, or health outcomes. Do not alter UI, routes, audio, or existing data files. | in progress |
+| H-017 | Codex -> Gemini | new `src/data/meditationTimerPresets.ts` only | Create a typed, content-only set of 4–6 gentle meditation/visualization timer presets for the upcoming timer: stable id, title, duration in seconds, short description, cue labels, and optional safe audio ambience key. Keep language non-medical and do not claim sleep, lucid-dream, or health outcomes. Do not alter UI, routes, audio, or existing data files. | reviewed, accepted (committing) |
 | H-018 | Codex -> Codex | `src/components/psychology/PsychologyLearningPanel.tsx`, `src/components/psychology/*.tsx` | Add a concise, category-filtered glossary section to the reusable Psychology learning panel using H-015, with no new routes or storage. | done (committing) |
 | H-019 | Codex -> Codex | `src/components/dream-techniques/MeditationTimer.tsx`, `app/(tabs)/explore.tsx` | Harden the existing release meditation/visualization timer copy and optional local ambience controls so the feature remains offline, non-medical, and usable without audio. | done (committing) |
 | H-020 | Codex -> Codex | `src/components/DreamPatterns.tsx`, supporting local helpers only | Audit the Patterns dashboard for empty-state, malformed local data, and date-range edge cases; fix any release-blocking handling and keep personal data local. | done (committing) |
 | H-021 | Codex -> Codex | `src/data/exploreSearch.ts`, `app/(tabs)/explore.tsx`, related content resolver only | Harden unified Explore search for whitespace, duplicate results, and unavailable targets; keep result routing exact and local. | done (committing) |
 | H-022 | Codex -> Codex | launch configuration and affected components only | Run release static checks, investigate any launch-blocking warnings or errors, and apply focused fixes that do not broaden release scope. | done (committing) |
-| H-023 | Codex -> Codex | `src/components/dream-techniques/MeditationTimer.tsx`, `src/data/meditationTimerPresets.ts` after Gemini handoff | Integrate the reviewed preset data into the offline timer and replace hard-coded duration choices with the release preset selection. | queued for Gemini H-017 |
+| H-023 | Codex -> Codex | `src/components/dream-techniques/MeditationTimer.tsx`, `src/data/meditationTimerPresets.ts` after Gemini handoff | Integrate the reviewed preset data into the offline timer and replace hard-coded duration choices with the release preset selection. | done (committing) |
+| H-024 | Codex -> Codex | `app.json`, `package.json`, launch configuration only | Audit iOS launch configuration and Expo package health for Mac-device testing; fix scoped release blockers only. | in progress |
+| H-025 | Codex -> Gemini | new `src/data/techniquePracticeCues.ts` only | Create a typed, content-only set of optional cue lines for each existing written technique ID. Each cue must be brief, gentle, and non-guaranteeing; include lookup helpers. Do not alter UI, timer, routes, or existing data files. | in progress |
 
 ## Completion format
 
@@ -185,3 +187,21 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
 - **Follow-up:** Ready for Codex review, integration, and assignment of next handoff.
+
+### H-017 Completion Notes (Gemini)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/meditationTimerPresets.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only set of 5 gentle meditation and visualization timer presets (`gentle-settle`, `breath-stillness`, `pre-sleep-incubation`, `deep-relaxation`, `silent-contemplation`).
+  - Each preset provides:
+    - Stable unique `id`
+    - Human-readable `title`
+    - Exact `durationSeconds` (300s / 5m, 600s / 10m, 900s / 15m, 1200s / 20m, 600s / 10m)
+    - Calm, non-medical `description`
+    - Structured `cueLabels` outlining milestone guidepoints
+    - Optional safe audio ambience key (`theta-6hz` or omitted for silent contemplation)
+  - Defined clean interfaces (`MeditationTimerPreset`) and lookup utilities (`getPresetById`, `getAllPresets`, `getDefaultPreset`, `getPresetsByAmbience`, `formatPresetDuration`).
+  - Strictly self-care and reflective framing; zero diagnostic, medical, sleep-outcome, or lucid-dreaming claims. UI, routes, audio assets, and existing data files left untouched.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+- **Follow-up:** Ready for Codex review and integration into `MeditationTimer.tsx` (H-023).

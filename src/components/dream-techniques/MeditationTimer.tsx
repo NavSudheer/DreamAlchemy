@@ -6,9 +6,11 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { BorderRadius, Colors, spacing } from '@/utils/theme';
 import Text from '@/components/ui/Text';
 import Card from '@/components/ui/Card';
+import { formatPresetDuration, getDefaultPreset, getAllPresets, MeditationTimerPreset } from '@/data/meditationTimerPresets';
 
 const AUDIO_SOURCE = require('../../../assets/audio/theta-6hz-loop.wav');
-const PRESETS = [5, 10, 20];
+const TIMER_PRESETS = getAllPresets();
+const DEFAULT_PRESET = getDefaultPreset();
 const VOLUMES = [
   { label: 'Low', value: 0.18 },
   { label: 'Medium', value: 0.35 },
@@ -23,17 +25,21 @@ const formatTime = (seconds: number) => {
 
 export function MeditationTimer() {
   const { isDark } = useTheme();
-  const [durationMinutes, setDurationMinutes] = useState(10);
-  const [remainingSeconds, setRemainingSeconds] = useState(10 * 60);
+  const [selectedPreset, setSelectedPreset] = useState<MeditationTimerPreset>(DEFAULT_PRESET);
+  const [remainingSeconds, setRemainingSeconds] = useState(DEFAULT_PRESET.durationSeconds);
   const [isRunning, setIsRunning] = useState(false);
-  const [audioEnabled, setAudioEnabled] = useState(true);
+  const [audioEnabled, setAudioEnabled] = useState(DEFAULT_PRESET.ambienceKey === 'theta-6hz');
   const [volume, setVolume] = useState(0.35);
   const player = useAudioPlayer(AUDIO_SOURCE);
 
   const progress = useMemo(
-    () => 1 - remainingSeconds / (durationMinutes * 60),
-    [durationMinutes, remainingSeconds]
+    () => 1 - remainingSeconds / selectedPreset.durationSeconds,
+    [selectedPreset.durationSeconds, remainingSeconds]
   );
+  const activeCue = selectedPreset.cueLabels[Math.min(
+    selectedPreset.cueLabels.length - 1,
+    Math.floor(progress * selectedPreset.cueLabels.length),
+  )];
 
   useEffect(() => {
     player.loop = true;
@@ -61,15 +67,16 @@ export function MeditationTimer() {
     return () => clearInterval(interval);
   }, [isRunning, player]);
 
-  const selectDuration = (minutes: number) => {
+  const selectPreset = (preset: MeditationTimerPreset) => {
     setIsRunning(false);
     player.pause();
-    setDurationMinutes(minutes);
-    setRemainingSeconds(minutes * 60);
+    setSelectedPreset(preset);
+    setRemainingSeconds(preset.durationSeconds);
+    setAudioEnabled(preset.ambienceKey === 'theta-6hz');
   };
 
   const toggleSession = () => {
-    if (remainingSeconds === 0) setRemainingSeconds(durationMinutes * 60);
+    if (remainingSeconds === 0) setRemainingSeconds(selectedPreset.durationSeconds);
 
     if (isRunning) {
       player.pause();
@@ -85,7 +92,7 @@ export function MeditationTimer() {
     player.pause();
     player.seekTo(0).catch(() => undefined);
     setIsRunning(false);
-    setRemainingSeconds(durationMinutes * 60);
+    setRemainingSeconds(selectedPreset.durationSeconds);
   };
 
   const toggleAudio = () => {
@@ -118,21 +125,23 @@ export function MeditationTimer() {
 
         <View style={[styles.clock, { borderColor: isDark ? Colors.accent[400] : Colors.primary[500] }]}>
           <Text variant="h1" color={isDark ? Colors.neutral[50] : Colors.neutral[800]}>{formatTime(remainingSeconds)}</Text>
+          <Text variant="body2" color={isDark ? Colors.neutral[300] : Colors.neutral[600]} style={styles.cueLabel}>{activeCue}</Text>
           <View style={[styles.progressTrack, { backgroundColor: isDark ? Colors.neutral[700] : Colors.neutral[200] }]}>
             <View style={[styles.progressFill, { width: `${Math.max(0, progress) * 100}%`, backgroundColor: isDark ? Colors.accent[400] : Colors.primary[500] }]} />
           </View>
         </View>
 
         <View style={styles.presetRow}>
-          {PRESETS.map(minutes => {
-            const selected = durationMinutes === minutes;
+          {TIMER_PRESETS.map(preset => {
+            const selected = selectedPreset.id === preset.id;
             return (
-              <TouchableOpacity key={minutes} onPress={() => selectDuration(minutes)} style={[styles.chip, selected && styles.chipActive]} accessibilityRole="button" accessibilityState={{ selected }}>
-                <Text variant="body2" color={selected ? Colors.neutral[50] : isDark ? Colors.neutral[200] : Colors.neutral[700]}>{minutes} min</Text>
+              <TouchableOpacity key={preset.id} onPress={() => selectPreset(preset)} style={[styles.chip, selected && styles.chipActive]} accessibilityRole="button" accessibilityState={{ selected }} accessibilityLabel={`${preset.title}, ${formatPresetDuration(preset.durationSeconds)}`}>
+                <Text variant="body2" color={selected ? Colors.neutral[50] : isDark ? Colors.neutral[200] : Colors.neutral[700]}>{preset.title}</Text>
               </TouchableOpacity>
             );
           })}
         </View>
+        <Text variant="body2" color={isDark ? Colors.neutral[400] : Colors.neutral[600]} style={styles.presetDescription}>{selectedPreset.title}: {selectedPreset.description}</Text>
 
         <TouchableOpacity onPress={toggleSession} style={[styles.primaryButton, { backgroundColor: isDark ? Colors.accent[600] : Colors.primary[600] }]} accessibilityRole="button">
           <Ionicons name={isRunning ? 'pause' : 'play'} size={20} color={Colors.neutral[50]} />
@@ -179,9 +188,11 @@ const styles = StyleSheet.create({
   timerHeader: { alignItems: 'center', flexDirection: 'row', marginBottom: spacing[4] },
   timerTitle: { marginLeft: spacing[2] },
   clock: { alignItems: 'center', borderRadius: BorderRadius.xl, borderWidth: 2, padding: spacing[5] },
+  cueLabel: { marginTop: spacing[2], textAlign: 'center' },
   progressTrack: { borderRadius: BorderRadius.pill, height: 6, marginTop: spacing[3], overflow: 'hidden', width: '100%' },
   progressFill: { height: '100%' },
-  presetRow: { flexDirection: 'row', gap: spacing[2], justifyContent: 'center', marginTop: spacing[4] },
+  presetRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2], justifyContent: 'center', marginTop: spacing[4] },
+  presetDescription: { lineHeight: 20, marginTop: spacing[3], textAlign: 'center' },
   chip: { borderColor: Colors.neutral[300], borderRadius: BorderRadius.pill, borderWidth: 1, paddingHorizontal: spacing[3], paddingVertical: spacing[2] },
   chipActive: { backgroundColor: Colors.primary[600], borderColor: Colors.primary[600] },
   primaryButton: { alignItems: 'center', borderRadius: BorderRadius.lg, flexDirection: 'row', justifyContent: 'center', marginTop: spacing[4], paddingVertical: spacing[3] },
