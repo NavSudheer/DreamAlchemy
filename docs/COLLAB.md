@@ -11,6 +11,7 @@ Read it before starting work and update the assigned handoff before and after ch
 4. Keep user data local unless a task explicitly introduces a backend.
 5. Do not add claims that audio, techniques, or patterns guarantee lucid dreams, sleep outcomes, or medical benefits.
 6. Keep Gemini's queue non-empty: when a Gemini handoff is reviewed and accepted, create its next isolated, low-risk handoff before closing the check-in.
+7. On every wake-up or user-triggered work cycle: finish and verify the active task, commit it, review Gemini's completed work, update all handoff statuses, assign one next task to Gemini and one next task to Codex, then begin the next Codex task before responding.
 
 ## Current release scope
 
