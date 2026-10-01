@@ -50,7 +50,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-025 | Codex -> Gemini | new `src/data/techniquePracticeCues.ts` only | Create a typed, content-only set of optional cue lines for each existing written technique ID. Each cue must be brief, gentle, and non-guaranteeing; include lookup helpers. Do not alter UI, timer, routes, or existing data files. | reviewed, accepted (committing) |
 | H-026 | Codex -> Codex | `src/services/voiceRecognition.ts`, affected UI only if needed | Audit voice-recognition lifecycle and permission failure handling for iOS launch reliability; apply only a focused bug fix if warranted. | done (committing) |
 | H-027 | Codex -> Codex | `app/(tabs)/technique/[id].tsx`, `src/data/techniquePracticeCues.ts` after Gemini handoff | Integrate reviewed optional practice cues into technique detail screens without changing technique outcomes or persistence. | done (committing) |
-| H-028 | Codex -> Gemini | new `src/data/dictionarySearchKeywords.ts` only | Create a typed, content-only set of concise search keywords for every existing dictionary symbol ID, with lookup helpers. Use only neutral terms grounded in the existing symbol descriptions; do not alter UI or existing data. | reviewed, accepted (committing) |
+| H-028 | Codex -> Gemini | new `src/data/dictionarySearchKeywords.ts` only | Create a typed, content-only set of concise search keywords for every existing dictionary symbol ID, with lookup helpers. Use only neutral terms grounded in the existing symbol descriptions; do not alter UI or existing data. | done `f20875b` |
+| H-029 | Codex -> Gemini | new `src/data/psychologyStudyNotes.ts` only | Revise the delivered study notes to remove medical/efficacy claims and dream-outcome framing. Keep claims observational, educational, and non-diagnostic; retain the typed contract and helpers. | reviewed, accepted (committing) |
+| H-030 | Codex -> Gemini | new `src/data/dictionaryRelatedSearches.ts` only | Create a typed, content-only set of 2–3 neutral related-search suggestions for every existing dictionary symbol ID, using only existing symbol IDs. Include lookup helpers; do not alter UI or existing data. | done (uncommitted) |
 
 ## Completion format
 
@@ -241,3 +243,36 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
 - **Follow-up:** Ready for Codex review and integration.
+
+### H-029 Completion Notes (Gemini)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/psychologyStudyNotes.ts`
+- **Summary of Revision:**
+  - Revised all 4 study notes (`scientific`, `theories`, `types`, `cultural`) to strictly eliminate medical, health, or efficacy claims and dream-outcome guarantees.
+  - Rewrote takeaways and perspectives to be purely observational, educational, and non-diagnostic:
+    - `scientific`: Focuses descriptively on polysomnography, ultradian cycles, physiological REM atonia, and cognitive memory research without health or performance claims.
+    - `theories`: Frames psychoanalytic, Jungian archetypal, cognitive continuity, and activation-synthesis models as interpretive historical/conceptual traditions.
+    - `types`: Describes reported characteristics of lucid dreaming, everyday processing dreams, recurring motifs, and distressing nightmares using neutral, non-evaluative language and clear self-care framing.
+    - `cultural`: Treats sanctuary incubation, Indigenous relational worldviews, and Islamic morning contemplation as documented historical customs and traditions.
+  - Retained the exact typed interfaces (`PsychologyStudyNote`, `PsychologyCategory`) and lookup helpers (`getStudyNoteByCategory`, `getStudyNoteById`, `getAllStudyNotes`, `hasStudyNoteForCategory`, `getAllStudyCategories`).
+  - No UI, routes, or other files modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+- **Follow-up:** Ready for Codex review and integration.
+
+### H-030 Completion Notes (Gemini)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dictionaryRelatedSearches.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only collection of 2–3 neutral related-search suggestions for all 17 dictionary symbol IDs (`wolf`, `bird`, `snake`, `cat`, `horse`, `child`, `stranger`, `teacher`, `house`, `water`, `forest`, `key`, `mirror`, `flying`, `falling`, `love`, `fear`).
+  - Sourced each suggestion with:
+    - `targetSymbolId` (strictly existing symbol IDs within `DREAM_SYMBOLS`, no self-references)
+    - `targetSymbolName`
+    - concise search `query`
+    - neutral 1-sentence `context` rationale connecting the two symbols
+  - Defined clean interfaces (`RelatedSearchSuggestion`, `SymbolRelatedSearches`) and query utilities (`getRelatedSearchesForSymbol`, `getRelatedSearchIdsForSymbol`, `getAllRelatedSearches`, `hasRelatedSearchesForSymbol`, `getSymbolsReferencingTarget`).
+  - Purely observational, non-prescriptive, and content-only; no UI, routes, or existing data files modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+- **Follow-up:** Ready for Codex review and integration.
+
