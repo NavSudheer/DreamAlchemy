@@ -46,8 +46,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-021 | Codex -> Codex | `src/data/exploreSearch.ts`, `app/(tabs)/explore.tsx`, related content resolver only | Harden unified Explore search for whitespace, duplicate results, and unavailable targets; keep result routing exact and local. | done (committing) |
 | H-022 | Codex -> Codex | launch configuration and affected components only | Run release static checks, investigate any launch-blocking warnings or errors, and apply focused fixes that do not broaden release scope. | done (committing) |
 | H-023 | Codex -> Codex | `src/components/dream-techniques/MeditationTimer.tsx`, `src/data/meditationTimerPresets.ts` after Gemini handoff | Integrate the reviewed preset data into the offline timer and replace hard-coded duration choices with the release preset selection. | done (committing) |
-| H-024 | Codex -> Codex | `app.json`, `package.json`, launch configuration only | Audit iOS launch configuration and Expo package health for Mac-device testing; fix scoped release blockers only. | in progress |
+| H-024 | Codex -> Codex | `app.json`, `package.json`, launch configuration only | Audit iOS launch configuration and Expo package health for Mac-device testing; fix scoped release blockers only. | done (committing; `expo config --type public` passes locally; `expo-doctor` remains network-blocked) |
 | H-025 | Codex -> Gemini | new `src/data/techniquePracticeCues.ts` only | Create a typed, content-only set of optional cue lines for each existing written technique ID. Each cue must be brief, gentle, and non-guaranteeing; include lookup helpers. Do not alter UI, timer, routes, or existing data files. | in progress |
+| H-026 | Codex -> Codex | `src/services/voiceRecognition.ts`, affected UI only if needed | Audit voice-recognition lifecycle and permission failure handling for iOS launch reliability; apply only a focused bug fix if warranted. | in progress |
 
 ## Completion format
 
