@@ -24,7 +24,7 @@ Implementation is not a claim of production readiness or deployment.
 | --- | --- | --- |
 | Dream entry and analysis | Text input, mood selection, API integration, results | Needs final end-to-end and network-failure checks; deployed backend model not independently verified |
 | Journal history | Local saved dreams, search, theme filters, result reopening | Existing-data and storage-failure regression checks remain |
-| Dictionary | Symbol browsing, search, categories, detail screens | Content and navigation regression checks remain |
+| Dictionary | Symbol browsing, search, categories, detail screens; cultural-context supplement is available for future UI integration | Personal meanings and detail-screen integration remain |
 | Patterns | Basic frequency, symbol, and theme dashboard | Detailed drilldowns and advanced trends remain backlog |
 | Psychology | Scientific, theoretical, dream-type, and cultural reading sections | Interactive learning and saved reading progress remain backlog |
 | Techniques | Five shared guides: reality testing, WBTB, journaling, MILD, WILD; guided steps, previous/next, completion/restart, journal shortcut | Practice progress is session-only; no saved completions, favorites, timer, or reminders |
@@ -61,7 +61,7 @@ These are available ideas, not automatically deferred to a later release. The ow
 | Patterns | Emotion/theme detail analysis, custom tags, relationship graphs, long-term trends, personalized summaries | Data model, adequate journal history, interpretation design |
 | Psychology | Quizzes, theory comparisons, sleep-cycle/brain visuals, reading progress, personal insights | Content design and validation; persistence |
 | Dictionary | Personal symbol meanings, richer cultural context, related-symbol navigation | Content and local data model |
-| Cross-section | Unified search, personal notes, related content, export | Shared content indexing; export/privacy UX |
+| Cross-section | Unified Explore search across dictionary, techniques, and Psychology | Saved-dream search, notes/bookmarks, export, and UI/device verification remain |
 | Platform | Accounts, backup/sync, Android completion, health integrations | Backend/platform setup and additional testing |
 | Community | Sharing, discussion, coaching, expert Q&A | **Third backlog priority.** Exclude expert Q&A for now. Begin only after deciding identity, moderation, reporting, consent, and public/private boundaries. |
 
@@ -72,7 +72,7 @@ These work across two or more Explore areas rather than belonging to one feature
 
 | Feature | What the user sees | Why it is later |
 | --- | --- | --- |
-| Unified Explore search | One search field returning dictionary symbols, psychology articles, techniques, and possibly saved dreams | Needs a shared content index and results design |
+| Unified Explore search | One search field returning dictionary symbols, psychology articles, and techniques | **Implemented:** shared index and routing; saved-dream results and UI/device verification remain |
 | Related content | A symbol, technique, or article links to the most relevant next reading | Needs deliberate content relationships |
 | Personal notes | Private notes attached to a symbol, article, technique, or pattern | Needs a shared local-data model and editing UX |
 | Shared bookmarks | One saved-items view across psychology, techniques, and dictionary | Needs common persistence and migration rules |
