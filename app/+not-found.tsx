@@ -22,14 +22,14 @@ export default function NotFoundScreen() {
           style={styles.icon}
         />
         <Text variant="h3" color={isDark ? Colors.neutral[200] : Colors.neutral[700]}>
-          This dream doesn't exist
+          This dream doesn&apos;t exist
         </Text>
         <Text
           variant="body1"
           color={isDark ? Colors.neutral[400] : Colors.neutral[500]}
           style={styles.subtitle}
         >
-          The screen you're looking for drifted away.
+          The screen you&apos;re looking for drifted away.
         </Text>
         <Link href="/" style={styles.link}>
           <Text variant="body1" color={isDark ? Colors.primary[300] : Colors.primary[600]}>

@@ -115,7 +115,7 @@ export default function DictionaryScreen() {
                 color={isDark ? Colors.neutral[400] : Colors.neutral[500]}
                 style={styles.emptyText}
               >
-                No symbols found for "{searchQuery}"
+                No symbols found for &quot;{searchQuery}&quot;
               </Text>
             )}
           </View>
@@ -226,4 +226,4 @@ const styles = StyleSheet.create({
     marginVertical: spacing[6],
     fontStyle: 'italic',
   }
-}); 
+});

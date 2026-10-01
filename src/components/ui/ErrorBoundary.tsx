@@ -51,7 +51,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError 
             { color: isDark ? Colors.neutral[400] : Colors.neutral[600] }
           ]}
         >
-          We encountered an unexpected error. Don't worry, your data is safe.
+          We encountered an unexpected error. Don&apos;t worry, your data is safe.
         </Text>
         
         {__DEV__ && error && (
@@ -158,4 +158,4 @@ const styles = StyleSheet.create({
 });
 
 export default ErrorBoundary;
-export type { ErrorFallbackProps }; 
+export type { ErrorFallbackProps };
