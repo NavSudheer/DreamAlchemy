@@ -105,14 +105,14 @@ export function MeditationTimer() {
         color={isDark ? Colors.neutral[300] : Colors.neutral[600]}
         style={styles.intro}
       >
-        Use this quiet session for relaxation, visualization, or setting a dream-incubation intention before sleep.
+        Use this quiet session for relaxation, visualization, or a gentle pre-sleep intention. It is optional: a quiet timer works just as well.
       </Text>
 
       <Card variant="elevated" style={styles.card} backgroundColor={isDark ? Colors.neutral[800] : Colors.neutral[50]}>
         <View style={styles.timerHeader}>
           <Ionicons name="timer-outline" size={24} color={isDark ? Colors.accent[300] : Colors.primary[600]} />
           <Text variant="h4" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.timerTitle}>
-            Visualization session
+            Quiet visualization session
           </Text>
         </View>
 
@@ -148,17 +148,17 @@ export function MeditationTimer() {
         <View style={styles.audioHeader}>
           <View style={styles.audioTitleRow}>
             <Ionicons name="headset-outline" size={22} color={isDark ? Colors.accent[300] : Colors.primary[600]} />
-            <Text variant="h5" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.audioTitle}>Lucid Dream Audio</Text>
+          <Text variant="h5" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.audioTitle}>Optional ambience</Text>
           </View>
           <TouchableOpacity onPress={toggleAudio} style={[styles.audioToggle, audioEnabled && styles.audioToggleActive]} accessibilityRole="switch" accessibilityState={{ checked: audioEnabled }} accessibilityLabel="Toggle theta audio">
             <Text variant="caption" color={audioEnabled ? Colors.neutral[50] : isDark ? Colors.neutral[300] : Colors.neutral[600]}>{audioEnabled ? 'On' : 'Off'}</Text>
           </TouchableOpacity>
         </View>
         <Text variant="body2" color={isDark ? Colors.neutral[400] : Colors.neutral[600]} style={styles.audioDescription}>
-          This loop uses a 6 Hz difference between tones in the theta range. Put on headphones, settle into your intention, and let the sound support a focused wind-down.
+          This is a quiet, looping tone bed. Keep it at a comfortable volume, use headphones only if that feels comfortable, and turn it off whenever you prefer silence.
         </Text>
         <Text variant="body2" color={isDark ? Colors.neutral[400] : Colors.neutral[600]} style={styles.audioDescription}>
-          Use this session to rehearse your preferred dream scenario, repeat a simple lucid-dream intention, or relax into sleep with awareness. Consistent practice builds a stronger personal ritual.
+          You might settle on an image, a simple intention, or simply notice your breathing. Audio and visualization do not guarantee sleep or dream outcomes.
         </Text>
         <View style={styles.volumeRow}>
           {VOLUMES.map(option => {
