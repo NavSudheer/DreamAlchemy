@@ -88,7 +88,7 @@ export default function ExploreScreen() {
         </View>
         {searchQuery.trim().length > 0 && (
           <View style={styles.results}>
-            {searchResults.map(result => <TouchableOpacity key={result.id} style={[styles.result, { backgroundColor: isDark ? Colors.neutral[800] : Colors.neutral[50] }]} onPress={() => result.kind === 'dictionary' ? router.push({ pathname: '/symbol/[id]', params: { id: result.target } }) : result.kind === 'technique' ? (setActiveScreen('techniques'), router.setParams({ section: 'techniques' })) : router.push(result.target as any)}><Text variant="subtitle2" color={isDark ? Colors.neutral[100] : Colors.neutral[800]}>{result.title}</Text><Text variant="caption" color={isDark ? Colors.neutral[400] : Colors.neutral[600]}>{result.description}</Text></TouchableOpacity>)}
+            {searchResults.map(result => <TouchableOpacity key={result.id} style={[styles.result, { backgroundColor: isDark ? Colors.neutral[800] : Colors.neutral[50] }]} onPress={() => result.kind === 'dictionary' ? router.push({ pathname: '/symbol/[id]', params: { id: result.target } }) : result.kind === 'technique' ? router.push({ pathname: '/(tabs)/technique/[id]', params: { id: result.target } }) : router.push(result.target as any)}><Text variant="subtitle2" color={isDark ? Colors.neutral[100] : Colors.neutral[800]}>{result.title}</Text><Text variant="caption" color={isDark ? Colors.neutral[400] : Colors.neutral[600]}>{result.description}</Text></TouchableOpacity>)}
           </View>
         )}
         
