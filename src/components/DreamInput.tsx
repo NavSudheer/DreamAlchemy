@@ -36,12 +36,15 @@ const DREAM_PROMPTS = [
 interface DreamInputProps {
   onSubmit: (text: string, mood: DreamMood, tags: string[]) => void;
   isLoading: boolean;
+  initialText?: string;
+  initialMood?: DreamMood;
+  initialTags?: string[];
 }
 
-const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading }) => {
-  const [dreamText, setDreamText] = useState('');
-  const [mood, setMood] = useState<DreamMood>('neutral');
-  const [tagsInput, setTagsInput] = useState('');
+const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading, initialText = '', initialMood = 'neutral', initialTags = [] }) => {
+  const [dreamText, setDreamText] = useState(initialText);
+  const [mood, setMood] = useState<DreamMood>(initialMood);
+  const [tagsInput, setTagsInput] = useState(initialTags.join(', '));
   const [isRecording, setIsRecording] = useState(false);
   const [voiceState, setVoiceState] = useState<VoiceRecognitionState>(initialState);
   const [voiceAvailable, setVoiceAvailable] = useState(false);

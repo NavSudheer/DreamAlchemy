@@ -3,6 +3,8 @@ import { DreamAnalysis, DreamTheme } from '../types';
 // Environment flag to switch between local and production API calls
 const USE_LOCAL_API = process.env.EXPO_PUBLIC_USE_LOCAL_API === 'true';
 const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
+const ANALYSIS_API_URL = process.env.EXPO_PUBLIC_ANALYSIS_API_URL
+  || 'https://nextjs-boilerplate-eight-topaz-22.vercel.app/api/analyze-dream';
 const REQUEST_TIMEOUT_MS = 60_000;
 
 export class DreamAnalysisError extends Error {
@@ -85,7 +87,6 @@ export const analyzeDream = async (
       analysisData = await analyzeWithVercelProxy(dreamText);
     }
   } catch (error) {
-    console.error("Error in analyzeDream:", error);
     if (error instanceof DreamAnalysisError) throw error;
     throw new DreamAnalysisError(
       error instanceof Error ? error.message : 'Failed to analyze dream. Please try again.'
@@ -129,7 +130,7 @@ async function analyzeWithVercelProxy(dreamText: string) {
 
   let response: Response;
   try {
-    response = await fetch('https://dream-analysis-navneethsudheer-gmailcoms-projects.vercel.app/api/analyze-dream', {
+    response = await fetch(ANALYSIS_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ dreamText }),
@@ -231,4 +232,4 @@ async function analyzeWithLocalAPI(dreamText: string) {
     analysis.timestamp = new Date().toISOString();
     return analysis;
   }
-} 
+}

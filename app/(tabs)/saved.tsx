@@ -71,7 +71,7 @@ export default function SavedItemsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }]}>
-      <Header title="Saved" leftIcon="arrow-back" onLeftPress={() => router.back()} />
+      <Header title="Saved" leftIcon="arrow-back" onLeftPress={() => router.navigate('/(tabs)/explore')} />
       <ScrollView contentContainerStyle={styles.content}>
         <Text variant="body1" color={isDark ? Colors.neutral[300] : Colors.neutral[600]} style={styles.subtitle}>
           Keep the dream ideas and practices you want to revisit.

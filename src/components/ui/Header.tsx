@@ -12,6 +12,7 @@ interface HeaderProps {
   leftIcon?: string;
   rightIcon?: string;
   rightText?: string;
+  rightAccessibilityLabel?: string;
   onLeftPress?: () => void;
   onRightPress?: () => void;
   showMoon?: boolean;
@@ -22,6 +23,7 @@ const Header: React.FC<HeaderProps> = ({
   leftIcon,
   rightIcon,
   rightText,
+  rightAccessibilityLabel,
   onLeftPress,
   onRightPress,
   showMoon = false
@@ -98,6 +100,7 @@ const Header: React.FC<HeaderProps> = ({
         {rightIcon ? (
           <TouchableOpacity
             style={styles.iconButton}
+            accessibilityLabel={rightAccessibilityLabel}
             onPress={onRightPress}
             disabled={!onRightPress}
             accessibilityRole="button"

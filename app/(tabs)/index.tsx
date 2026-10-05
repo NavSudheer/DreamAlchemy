@@ -71,10 +71,6 @@ function Index() {
     setActiveView('analysis');
 
     try {
-      // Record the analysis attempt
-      const newTrialStatus = await trialTrackingService.recordAnalysis();
-      setTrialStatus(newTrialStatus);
-
       const initialAnalysis: DreamAnalysisType = {
         symbols: [],
         archetypes: [],
@@ -88,8 +84,14 @@ function Index() {
       });
 
       setAnalysis(dreamAnalysis);
+      // Failed service requests must not consume a free analysis.
+      try {
+        setTrialStatus(await trialTrackingService.recordAnalysis());
+      } catch (error) {
+        console.warn('Could not update analysis usage:', error);
+      }
     } catch (error) {
-      console.error("Error analyzing dream:", error);
+      if (!(error instanceof DreamAnalysisError)) console.error('Error analyzing dream:', error);
       setAnalysis(null);
       setAnalysisError(
         error instanceof DreamAnalysisError
@@ -159,6 +161,12 @@ function Index() {
     setDreamText('');
     setDreamMood('neutral');
     setDreamTags([]);
+    setAnalysis(null);
+    setAnalysisError(null);
+    setActiveView('input');
+  };
+
+  const handleEditDream = () => {
     setAnalysis(null);
     setAnalysisError(null);
     setActiveView('input');
@@ -282,6 +290,9 @@ function Index() {
               <DreamInput
                 onSubmit={handleDreamSubmit}
                 isLoading={isAnalyzing}
+                initialText={dreamText}
+                initialMood={dreamMood}
+                initialTags={dreamTags}
               />
             </View>
           </>
@@ -293,6 +304,7 @@ function Index() {
             isAnalyzing={isAnalyzing}
             error={analysisError}
             onRetry={handleRetry}
+            onEdit={handleEditDream}
             onSave={handleSaveAnalysis}
             onNewDream={handleNewDream}
           />

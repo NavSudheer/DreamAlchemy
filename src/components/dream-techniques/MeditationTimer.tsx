@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
+import { useIsFocused } from '@react-navigation/native';
 import { useTheme } from '@/providers/ThemeProvider';
 import { BorderRadius, Colors, spacing } from '@/utils/theme';
 import Text from '@/components/ui/Text';
@@ -31,6 +32,8 @@ export function MeditationTimer() {
   const [audioEnabled, setAudioEnabled] = useState(DEFAULT_PRESET.ambienceKey === 'theta-6hz');
   const [volume, setVolume] = useState(0.35);
   const player = useAudioPlayer(AUDIO_SOURCE);
+  const isFocused = useIsFocused();
+  const hasTimeRemaining = remainingSeconds > 0;
 
   const progress = useMemo(
     () => 1 - remainingSeconds / selectedPreset.durationSeconds,
@@ -46,30 +49,32 @@ export function MeditationTimer() {
     player.volume = volume;
     setAudioModeAsync({ playsInSilentMode: true }).catch(() => undefined);
 
-    return () => player.pause();
+    // useAudioPlayer owns teardown and stops playback when it releases the native player.
+    // Calling pause in an effect cleanup can run after that release.
   }, [player, volume]);
 
   useEffect(() => {
-    if (!isRunning) return;
+    if (!isFocused) setIsRunning(false);
+    if (isFocused && isRunning && audioEnabled && hasTimeRemaining) player.play();
+    else player.pause();
+  }, [player, isFocused, isRunning, audioEnabled, hasTimeRemaining]);
+
+  useEffect(() => {
+    if (remainingSeconds === 0) setIsRunning(false);
+  }, [remainingSeconds]);
+
+  useEffect(() => {
+    if (!isRunning || !isFocused) return;
 
     const interval = setInterval(() => {
-      setRemainingSeconds(current => {
-        if (current <= 1) {
-          clearInterval(interval);
-          setIsRunning(false);
-          player.pause();
-          return 0;
-        }
-        return current - 1;
-      });
+      setRemainingSeconds(current => Math.max(0, current - 1));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isRunning, player]);
+  }, [isRunning, isFocused]);
 
   const selectPreset = (preset: MeditationTimerPreset) => {
     setIsRunning(false);
-    player.pause();
     setSelectedPreset(preset);
     setRemainingSeconds(preset.durationSeconds);
     setAudioEnabled(preset.ambienceKey === 'theta-6hz');
@@ -79,25 +84,20 @@ export function MeditationTimer() {
     if (remainingSeconds === 0) setRemainingSeconds(selectedPreset.durationSeconds);
 
     if (isRunning) {
-      player.pause();
       setIsRunning(false);
       return;
     }
 
-    if (audioEnabled) player.play();
     setIsRunning(true);
   };
 
   const resetSession = () => {
-    player.pause();
     player.seekTo(0).catch(() => undefined);
     setIsRunning(false);
     setRemainingSeconds(selectedPreset.durationSeconds);
   };
 
   const toggleAudio = () => {
-    if (audioEnabled) player.pause();
-    else if (isRunning) player.play();
     setAudioEnabled(current => !current);
   };
 

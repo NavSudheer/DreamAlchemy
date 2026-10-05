@@ -1,5 +1,4 @@
 import { OpenAI } from 'openai';
-import { ALL_DREAM_THEMES } from '../constants/dreamThemes';
 
 // Edge runtime allows us to run at the edge
 export const config = {
@@ -148,4 +147,3 @@ export default async function handler(request) {
     );
   }
 }
-

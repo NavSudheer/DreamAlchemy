@@ -487,7 +487,7 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
             variant="outline"
             size="md"
             leftIcon="create-outline"
-            onPress={handleNewDream}
+            onPress={onEdit ? handleEdit : handleNewDream}
             style={styles.actionButton}
             hapticFeedback
           >
@@ -923,4 +923,4 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
   );
 };
 
-export default DreamAnalysis; 
+export default DreamAnalysis;

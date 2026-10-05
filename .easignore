@@ -10,8 +10,6 @@ web-build/
 expo-env.d.ts
 
 # Native
-/ios/
-/android/
 *.orig.*
 *.jks
 *.p8
@@ -177,3 +175,9 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Generate clean native projects for cloud releases.
+/ios/
+/android/
+/storekit/
+/scripts/setup-storekit.js

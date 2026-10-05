@@ -73,7 +73,12 @@ export default function DictionaryScreen() {
       styles.container, 
       { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }
     ]}>
-      <Header title="Dream Dictionary" showMoon={true} />
+      <Header
+        title="Dream Dictionary"
+        rightIcon="arrow-back"
+        rightAccessibilityLabel="Back to Explore"
+        onRightPress={() => router.navigate('/(tabs)/explore')}
+      />
       
       <ScrollView 
         style={styles.content}

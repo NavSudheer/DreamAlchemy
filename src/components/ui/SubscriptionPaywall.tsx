@@ -94,6 +94,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
   ];
 
   const handlePurchase = async () => {
+    if (isLoading || isRestoring) return;
     setIsLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
@@ -150,6 +151,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
   };
 
   const handleRestore = async () => {
+    if (isLoading || isRestoring) return;
     setIsRestoring(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
@@ -165,6 +167,8 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
           'Your subscription has been restored successfully!',
           [{ text: 'Continue', onPress: onSuccess }]
         );
+      } else if (!result.success) {
+        Alert.alert('Restore Failed', result.error || 'Unable to restore purchases. Please try again.');
       } else {
         Alert.alert('No Purchases Found', 'No active subscriptions found to restore.');
       }
@@ -316,15 +320,16 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
               fullWidth
               onPress={handlePurchase}
               isLoading={isLoading}
+              disabled={isLoading || isRestoring}
               style={styles.subscribeButton}
             >
-              {isLoading ? 'Processing...' : `Subscribe ${subscriptionPlans.find(p => p.id === selectedPlan)?.price}/month`}
+              {isLoading ? 'Processing...' : `Subscribe ${subscriptionPlans.find(p => p.id === selectedPlan)?.price} ${subscriptionPlans.find(p => p.id === selectedPlan)?.period}`}
             </Button>
 
             <TouchableOpacity
               onPress={handleRestore}
               style={styles.restoreButton}
-              disabled={isRestoring}
+              disabled={isRestoring || isLoading}
             >
               {isRestoring ? (
                 <ActivityIndicator size="small" color={Colors.primary[500]} />
@@ -482,4 +487,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SubscriptionPaywall; 
+export default SubscriptionPaywall;
