@@ -79,7 +79,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-032 | Codex -> Codex | `docs/`, integration boundary only | Establish the next-build feature contracts and sequencing for Dream Images and Astrology; keep existing release flows untouched. | done `9a36af8` |
 | H-033 | Codex -> Antigravity | new `src/types/astrology.ts`, new `src/services/astrology.ts` only | Create provider-neutral, UI-free TypeScript contracts for optional local birth profiles, chart results, validation, and deletion-safe storage boundaries. Do not calculate charts, add a provider, collect user data, modify existing types, UI, routes, or storage. Include focused unit tests if the project test setup supports them; otherwise validate with `npx tsc --noEmit`. | done (pending commit) |
 | H-034 | Codex -> Codex | new `src/types/dreamImage.ts`, new `src/services/dreamImage.ts` only | Create a provider-neutral, UI-free client contract for an optional Dream Images server proxy. Accept only a curated visual reflection prompt (not raw dream text), expose unavailable/error states, and do not add a provider, endpoint, UI, storage, or credentials. | done (pending commit) |
-| H-035 | Codex -> Antigravity | new `src/services/__tests__/astrology.test.ts` only | Add focused Jest coverage for the provider-neutral Astrology validation and deletion helpers: valid/minimal profile, leap date, future date, partial time, timezone-without-time, invalid timezone, location length, and store deletion success/failure. Do not alter feature files, UI, routes, storage implementation, or add an astrology provider. | assigned |
+| H-035 | Codex -> Antigravity | new `src/services/__tests__/astrology.test.ts` only | Add focused Jest coverage for the provider-neutral Astrology validation and deletion helpers: valid/minimal profile, leap date, future date, partial time, timezone-without-time, invalid timezone, location length, and store deletion success/failure. Do not alter feature files, UI, routes, storage implementation, or add an astrology provider. | done `f1dd428` |
+| H-036 | Codex -> Antigravity | new `src/data/dreamImagePromptTemplates.ts` only | Create a typed, content-only set of 6–8 optional visual-reflection prompt templates. Each must be abstract, non-predictive, and explicitly avoid raw dream text; include lookup helpers. Do not alter UI, providers, routes, storage, or credentials. | done (uncommitted) |
+| H-037 | Codex -> Codex | `src/services/dreamImage.ts`, supporting tests only | Review and add focused tests for the provider-neutral Dream Images contract, preserving its no-provider/no-raw-dream-text boundary. | in progress |
 
 ## Completion format
 
@@ -302,3 +304,52 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
 - **Follow-up:** Ready for Codex review and integration.
+
+### H-035 Completion Notes (Antigravity)
+- **Status:** done (integrated in `f1dd428`)
+- **Changed files:** `src/services/__tests__/astrology.test.ts`
+- **Summary of Implementation:**
+  - Added focused Jest test coverage for the provider-neutral Astrology validation and deletion helpers in `src/services/astrology.ts`:
+    - Minimal, date-only profile validation and local profile normalization.
+    - Valid leap-day birth date (`2024-02-29`).
+    - Future birth date rejection (`future_date`).
+    - Partial birth time rejection (`incomplete_time`).
+    - Timezone provided without birth time rejection (`timezone_requires_time`).
+    - Invalid IANA timezone rejection when full time is supplied (`invalid_timezone`).
+    - Location label length boundary enforcement (`location_too_long` > 120 characters).
+    - Store deletion success (`{ ok: true, deleted: true }`).
+    - Store deletion failure handling on error (`{ ok: false, error: 'storage_error' }`).
+  - No feature files, UI, routes, storage implementations, or astrology providers were added or altered.
+- **Validation:**
+  - `npx jest src/services/__tests__/astrology.test.ts --watchAll=false` passed: 1 suite passed, 9 tests passed.
+  - Full suite `npx jest --watchAll=false` passed: 3 suites passed, 14 tests passed.
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+- **Follow-up:** Ready for Codex review and integration.
+
+### H-036 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dreamImagePromptTemplates.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only set of 7 abstract visual-reflection prompt templates across diverse symbolic motifs:
+    1. `threshold-passage` (Threshold): Luminous stone doorway in amber twilight fields.
+    2. `reflective-stillness` (Elemental): Glassy alpine lake reflecting silver crescent and constellations.
+    3. `canopy-sanctuary` (Atmospheric): Sheltered mossy clearing deep within ancient forest filtered with dawn light.
+    4. `celestial-ascent` (Metaphoric): Panoramic vantage above rolling morning cloudbanks under indigo skies.
+    5. `unfolding-labyrinth` (Archetypal): Concentric stone pathway winding toward a calm starlit reflecting pool.
+    6. `submerged-currents` (Elemental): Bioluminescent fluid ribbons drifting peacefully in deep aquatic currents.
+    7. `solitary-beacon` (Archetypal): Weathered bronze lantern illuminating a wooden footbridge over morning valley mist.
+  - Sourced each template with:
+    - Stable unique `id`
+    - Display `title`
+    - Symbolic `category` (`threshold`, `elemental`, `atmospheric`, `archetypal`, `metaphoric`)
+    - Contemplative `description`
+    - Curated abstract `promptText` (intentionally free of raw dream text or sensitive personal narrative)
+    - Recommended `recommendedStyle` (`DreamImageStyle`)
+    - Atmospheric mood descriptors `suggestedAtmosphere`
+  - Defined clean interfaces (`DreamImagePromptTemplate`, `DreamImagePromptTemplateCategory`) and query helpers (`getPromptTemplateById`, `getAllPromptTemplates`, `getPromptTemplatesByCategory`, `getPromptTemplatesByStyle`, `hasPromptTemplate`, `getAllPromptTemplateCategories`, `getDefaultPromptTemplate`).
+  - Zero diagnostic, medical, or predictive claims; completely offline and content-only. UI, providers, routes, storage, and credentials left untouched.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full test suite `npx jest --watchAll=false` passed with 3 suites and 14 tests passing.
+- **Follow-up:** Ready for Codex review and integration.
+
