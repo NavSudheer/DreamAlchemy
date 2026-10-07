@@ -19,6 +19,28 @@ Read it before starting work and update the assigned handoff before and after ch
 - Exclude: community, astrology, dream image generation, accounts/sync, Android completion, health integrations, and T1/T3.
 - Conditional: T2 (technique favorites) only after core scope is stable.
 
+## Next-build scope (post-deployment)
+
+### Dream Images
+
+**Goal:** Let a dreamer optionally turn the text they wrote into a clearly labelled, private-to-the-device visual reflection. The image must be an interpretation-inspired scene, not a claim that it depicts a dream's objective meaning.
+
+1. **Foundation:** introduce a provider-neutral image-generation client, typed request/result/error contracts, local AsyncStorage metadata, and an opt-in consent/cost notice. Do not put provider credentials in the app bundle.
+2. **Dream flow:** add a "Create dream image" action only after a successful saved analysis; allow regenerate, save to the dream record, share, and delete. Preserve a text-only experience if generation is unavailable.
+3. **Safety and release:** use a server-side proxy, moderated prompt construction that excludes personal data by default, retries/errors, loading states, accessibility text, image-cache limits, and an explicit generated-art disclosure.
+
+**Release gate:** server-side authenticated image endpoint, cost/rate-limit policy, privacy-policy update, iOS photo-library permission copy if exporting, and real-device verification of generation, failure, deletion, and offline behavior.
+
+### Astrology
+
+**Goal:** Add an optional, reflective astrology lens beside—not inside—the existing Jungian analysis. It should never present astrology as factual, predictive, medical, or authoritative.
+
+1. **Foundation:** build a birth-profile form (date, optional time, location/timezone), explicit consent and delete controls, client-side validation, and a provider-neutral chart-calculation interface. Collect the minimum data; time and location remain optional and their precision must be explained.
+2. **Experience:** create a dedicated Astrology destination with chart summary, placements/aspects, uncertainty notes for incomplete birth data, and an optional "reflect on this dream" prompt that is visually and semantically separate from the base analysis.
+3. **Safety and release:** store profile locally by default, never send it to dream analysis without a separate opt-in, cite/calibrate source data if using an ephemeris provider, add non-predictive disclaimers, and test timezone/DST, missing birth time, data deletion, and accessibility.
+
+**Release gate:** agreed ephemeris/provider and licensing, a reviewed privacy disclosure, timezone/DST test matrix, and content review for non-predictive language.
+
 ## Handoffs
 
 | ID | From -> To | Owned files | Task | Status |
@@ -54,6 +76,8 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-029 | Codex -> Gemini | new `src/data/psychologyStudyNotes.ts` only | Revise the delivered study notes to remove medical/efficacy claims and dream-outcome framing. Keep claims observational, educational, and non-diagnostic; retain the typed contract and helpers. | reviewed, accepted (committing) |
 | H-030 | Codex -> Gemini | new `src/data/dictionaryRelatedSearches.ts` only | Create a typed, content-only set of 2–3 neutral related-search suggestions for every existing dictionary symbol ID, using only existing symbol IDs. Include lookup helpers; do not alter UI or existing data. | reviewed, accepted (committing) |
 | H-031 | Codex -> Codex | `app/symbol/[id].tsx`, `src/data/dictionaryRelatedSearches.ts` | Review H-030 and add an accessible related-search section to dictionary symbol detail screens with exact symbol routing. | done (committing) |
+| H-032 | Codex -> Codex | `docs/`, integration boundary only | Establish the next-build feature contracts and sequencing for Dream Images and Astrology; keep existing release flows untouched. | active |
+| H-033 | Codex -> Antigravity | new `src/types/astrology.ts`, new `src/services/astrology.ts` only | Create provider-neutral, UI-free TypeScript contracts for optional local birth profiles, chart results, validation, and deletion-safe storage boundaries. Do not calculate charts, add a provider, collect user data, modify existing types, UI, routes, or storage. Include focused unit tests if the project test setup supports them; otherwise validate with `npx tsc --noEmit`. | assigned |
 
 ## Completion format
 
