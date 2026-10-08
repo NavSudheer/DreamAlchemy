@@ -106,10 +106,11 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-059 | Codex -> Antigravity | new `src/data/astrologyUncertaintyCopy.ts` only | Create typed, content-only uncertainty explanations for date-only, date-and-time, and date-time-timezone chart precision. Keep wording non-predictive and avoid accuracy guarantees; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | reviewed, corrected to match provider timezone behavior (committing) |
 | H-060 | Codex -> Antigravity | new `src/data/astrologyHouseGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for houses 1–12 with concise accessibility descriptions and lookup helpers. Frame every entry as a traditional symbolic metaphor; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | reviewed, accepted with health-language and lookup hardening (committing) |
 | H-061 | Codex -> Codex | optional Astrology chart UI and H-059 uncertainty copy only | Integrate the reviewed precision-specific uncertainty explanation into calculated and locally restored charts without changing calculation or storage behavior. | done (committing) |
-| H-062 | Codex -> Antigravity | new `src/data/dreamImageAltTextTemplates.ts` only | Create typed, content-only accessible alt-text templates for every existing curated Dream Image prompt template. Describe only visible scene, medium, lighting, and palette; avoid interpretation, emotion claims, and personal data. Include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
+| H-062 | Codex -> Antigravity | new `src/data/dreamImageAltTextTemplates.ts` only | Create typed, content-only accessible alt-text templates for every existing curated Dream Image prompt template. Describe only visible scene, medium, lighting, and palette; avoid interpretation, emotion claims, and personal data. Include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with accessibility-claim and objectivity edits (committing) |
 | H-063 | Codex -> Codex | optional Astrology placement UI and H-060 glossary only | Integrate reviewed house explanations into expanded placements while retaining uncertainty and non-predictive disclosures. | done (committing) |
-| H-064 | Codex -> Antigravity | new `src/data/astrologyBodyAliases.ts` only | Create a typed, content-only alias map from likely provider body labels, including spacing and case variants for nodes and minor bodies, to canonical glossary names. Include normalization and lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | queued after H-062 |
-| H-065 | Codex -> Codex | Dream Image preparation UI and H-062 alt-text templates only | Surface the reviewed accessible scene description in the prepared preview and add fallback-alt contract tests without adding a provider. | queued after H-062 |
+| H-064 | Codex -> Antigravity | new `src/data/astrologyBodyAliases.ts` only | Create a typed, content-only alias map from likely provider body labels, including spacing and case variants for nodes and minor bodies, to canonical glossary names. Include normalization and lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
+| H-065 | Codex -> Codex | Dream Image preparation UI and H-062 alt-text templates only | Surface the reviewed accessible scene description in the prepared preview and add fallback-alt contract tests without adding a provider. | in progress |
+| H-066 | Codex -> Antigravity | new `src/data/astrologyMinorBodyGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for provider-returned True Node, Chiron, Lilith, Ceres, Pallas, Juno, and Vesta labels. Frame each as a traditional symbolic metaphor and include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | queued after H-064 |
 
 ## Completion format
 
@@ -614,3 +615,37 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (10 suites, 41 tests passing).
 - **Follow-up:** Ready for Codex review and integration. H-062 is queued next for Antigravity.
+
+### H-062 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dreamImageAltTextTemplates.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only dataset of accessible alternative text templates corresponding to all 7 curated prompt templates in `src/data/dreamImagePromptTemplates.ts`:
+    1. **Luminous Threshold (`threshold-passage`):** Ancient stone doorway standing open in a meadow of tall grass, glowing with warm amber light beneath violet clouds and constellations.
+    2. **Mirror of Stillness (`reflective-stillness`):** Glassy alpine lake at dusk mirroring a slender crescent moon and silver constellations with shoreline river stones.
+    3. **Forest Sanctuary (`canopy-sanctuary`):** Ancient forest clearing with a smooth central resting stone beneath spiraling tree boughs and sunbeams filtering through mist.
+    4. **Celestial Ascent (`celestial-ascent`):** High-altitude horizon looking out across rolling white clouds at sunrise with warm golden light stretching toward an indigo sky and drifting feathers.
+    5. **Unfolding Pathway (`unfolding-labyrinth`):** Concentric spiral labyrinth of low weathered stones in mossy earth winding toward a circular reflecting pool beneath twilight stars.
+    6. **Oceanic Depths (`submerged-currents`):** Deep underwater scene with fluid currents carrying ribbons of soft aquamarine bioluminescence and shimmering silver particles through dark blue water.
+    7. **Guiding Beacon (`solitary-beacon`):** Weathered bronze lantern casting warm golden light onto a wooden footbridge spanning morning valley mist toward rolling hills.
+  - Sourced each template with:
+    - `templateId` matching `DreamImagePromptTemplate.id`
+    - `templateTitle`
+    - Objective `visibleScene` description detailing physical subjects and spatial layout
+    - Visible `lighting` qualities and direction
+    - Dominant `palette` colors
+    - Universal `baseAltText`
+    - Medium-tailored `styleAltText` map covering all 4 supported styles (`ethereal`, `surreal`, `watercolor`, `cinematic`)
+    - `recommendedStyle` key
+  - Defined clean interfaces (`DreamImageAltTextTemplate`), constants (`DREAM_IMAGE_ALT_TEXT_TEMPLATES`), and query/formatting helpers:
+    - `getAltTextTemplateByTemplateId(templateId)`
+    - `getAllAltTextTemplates()`
+    - `hasAltTextTemplate(templateId)`
+    - `getAltTextForTemplate(templateId, style?)` (resolves style-tailored variant or falls back gracefully)
+    - `getVisibleSceneDescription(templateId)`
+    - `composeAccessibleAltText(visibleScene, style)` (formats custom descriptions to WCAG standards)
+  - Strictly describes only visible physical scenes, medium, lighting, and palette; completely avoids psychological interpretations, emotion claims, or personal data. UI, routes, services, providers, storage, credentials, and existing data files left untouched.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (10 suites, 42 tests passing).
+- **Follow-up:** Ready for Codex review and integration. H-064 is queued next for Antigravity.
