@@ -118,8 +118,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-071 | Codex -> Codex | Astrology placement UI and H-068 angle glossary only | Integrate reviewed Ascendant and Midheaven explanations into alias-normalized placement expansion with regression coverage, without changing provider or stored chart data. | done (committing) |
 | H-072 | Codex -> Antigravity | new `src/data/dreamImageFailureCopy.ts` only | Create typed, content-only recovery copy for optional Dream Image offline, provider-unavailable, moderation-rejected, rate-limited, and retryable-failure states. Keep wording concise, privacy-preserving, non-interpretive, and free of provider promises; do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with privacy-claim precision edits (committing) |
 | H-073 | Codex -> Codex | Dream Image preparation UI and H-072 failure copy only | Integrate reviewed failure-specific recovery messages into the optional Dream Image preparation flow without adding a provider or accepting raw dream text. | done (committing) |
-| H-074 | Codex -> Antigravity | new `src/data/dreamImageResultActionsCopy.ts` only | Create typed, content-only labels, confirmations, and accessibility descriptions for future generated-image regenerate, save locally, share, and delete actions. Keep wording explicit that journal text is not embedded or shared automatically; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
+| H-074 | Codex -> Antigravity | new `src/data/dreamImageResultActionsCopy.ts` only | Create typed, content-only labels, confirmations, and accessibility descriptions for future generated-image regenerate, save locally, share, and delete actions. Keep wording explicit that journal text is not embedded or shared automatically; do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with platform-sharing and privacy-claim precision edits (committing) |
 | H-075 | Codex -> Codex | Dream Image result UI and H-074 action copy only | Integrate reviewed generated-image action labels and confirmations into provider-neutral result components without enabling a provider or adding storage behavior. | queued after H-074 |
+| H-076 | Codex -> Antigravity | new `src/data/dreamImageProgressCopy.ts` only | Create typed, content-only accessible progress labels for queued, moderating, rendering, and finalizing Dream Image states. Avoid timing promises and interpretation claims; reiterate that only curated scene/style inputs are processed. Do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
 
 ## Completion format
 
@@ -778,4 +779,36 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (11 suites, 50 tests passing).
+- **Follow-up:** Ready for Codex review and integration.
+
+### H-074 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dreamImageResultActionsCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only action and confirmation dataset for future generated Dream Image result flows:
+    1. **Regenerate (`regenerate`):** Explains creating another artistic interpretation of the current curated scene and chosen style; confirmation dialog verifies that the written dream entry remains unchanged; confirms personal dream text is never sent.
+    2. **Save Locally (`saveLocally`):** Explains saving the image directly to device photos; explicitly confirms that only the visual artwork is saved and no journal narratives, dates, or interpretations are embedded into file metadata.
+    3. **Share (`share`):** Explains opening system sharing with the artwork and descriptive alt text; explicitly guarantees that private dream journal text, interpretations, and notes are never attached or shared.
+    4. **Delete (`delete`):** Explains removing the image file from local device storage; confirmation dialog verifies that the written dream entry, tags, and Jungian analysis remain completely preserved.
+  - Sourced each action with:
+    - Action key `key` (`DreamImageResultActionKey`)
+    - Full button label `label`
+    - Short button label `shortLabel`
+    - Descriptive explanation `description`
+    - Screen-reader accessible label `accessibilityLabel`
+    - Screen-reader accessible hint `accessibilityHint`
+    - Local `privacyNotice` confirming that journal text is never embedded or shared
+    - User-facing `successNotice`
+    - Optional `confirmation` dialog copy (`dialogTitle`, `dialogMessage`, `confirmLabel`, `cancelLabel`) for regenerate and delete
+  - Defined clean interfaces (`DreamImageResultActionKey`, `DreamImageActionConfirmation`, `DreamImageResultActionCopy`, `DreamImageResultActionsBundle`), constants (`DREAM_IMAGE_RESULT_ACTIONS`, `DREAM_IMAGE_RESULT_ACTIONS_BUNDLE`, `DREAM_IMAGE_RESULT_ACTION_KEYS`), and query helpers:
+    - `getResultActionCopy(key)`
+    - `getAllResultActionKeys()`
+    - `getAllResultActionCopies()`
+    - `getResultActionAccessibilityLabel(key)`
+    - `getResultActionPrivacyNotice(key)`
+    - `isRecognizedResultActionKey(value)` (TypeScript type guard)
+  - Completely privacy-preserving and non-interpretive; zero modifications to UI, routes, services, providers, storage, credentials, or existing files.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (12 suites, 53 tests passing).
 - **Follow-up:** Ready for Codex review and integration.
