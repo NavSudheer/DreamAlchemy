@@ -86,6 +86,24 @@ export interface ChartCalculationRequest {
   consent: AstrologyConsent;
 }
 
+/** Coordinates are supplied only for an explicitly requested calculation. */
+export interface AstrologyCalculationLocation {
+  latitude: number;
+  longitude: number;
+}
+
+export interface AstrologyReflection {
+  reflection: string;
+  generatedAt: string;
+  disclosure: string;
+}
+
+export interface LocalAstrologyBundle {
+  profile: LocalBirthProfile;
+  chart?: AstrologyChart;
+  reflection?: AstrologyReflection;
+}
+
 export interface ChartBodyPlacement {
   body: string;
   sign: string;
