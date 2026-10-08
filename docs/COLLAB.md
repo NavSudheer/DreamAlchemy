@@ -88,15 +88,17 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-041 | Codex -> Codex | `api/astrology-chart.js`, `api/astrology-reflection.js`, `src/services/astrologyRemote.ts`, `src/services/astrologyStorage.ts`, `src/types/astrology.ts`, tests and setup docs | Implement the approved stateless Vercel hybrid: server-held provider/OpenAI keys, explicit consent, compact capped AI reflection, and local-only profile/chart/reflection storage. | done (committing) |
 | H-042 | Codex -> Codex | new optional Astrology route/components, Explore entry, existing H-041 services only | Build the explicit opt-in local Astrology UI without mixing astrology into base Jungian dream analysis. | done (committing) |
 | H-043 | Codex -> Codex | Astrology Vercel routes, provider adapter, focused tests only | Harden the optional Astrology server boundary with disabled-by-default rollout controls and endpoint/provider response contract tests. | done (committing) |
-| H-044 | Codex -> Antigravity | new `src/data/astrologyPlacementGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for the chart bodies and zodiac signs surfaced by the optional Astrology result. Include lookup helpers; do not alter UI, routes, services, providers, storage, or credentials. | reviewed, accepted (committing) |
+| H-044 | Codex -> Antigravity | new `src/data/astrologyPlacementGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for the chart bodies and zodiac signs surfaced by the optional Astrology result. Include lookup helpers; do not alter UI, routes, services, providers, storage, or credentials. | done `71c2223` |
 | H-045 | Codex -> Codex | optional Astrology UI/services, test and setup docs only | Run the Mac-test readiness pass for optional Astrology, including unavailable-state UX and a deploy smoke checklist; do not enable production without server secrets and rate controls. | done (committing) |
 | H-046 | Codex -> Codex | Vercel Preview environment and deployed optional Astrology routes only | Configure the server-only Astrology variables, verify the Preview endpoints, and run the documented Mac smoke pass. Never place provider or OpenAI secrets in the client bundle. | awaiting provider key and Vercel Preview access |
-| H-047 | Codex -> Antigravity | new `src/data/dreamImageConsentCopy.ts` only | Create typed, content-only copy for optional Dream Image privacy consent, provider-unavailable, generation-pending, and local-deletion states. Keep it concise, non-interpretive, and explicit that curated prompts—not raw dream text—may leave the device. Do not alter UI, routes, services, providers, storage, credentials, or existing data files. | in progress |
+| H-047 | Codex -> Antigravity | new `src/data/dreamImageConsentCopy.ts` only | Create typed, content-only copy for optional Dream Image privacy consent, provider-unavailable, generation-pending, and local-deletion states. Keep it concise, non-interpretive, and explicit that curated prompts—not raw dream text—may leave the device. Do not alter UI, routes, services, providers, storage, credentials, or existing data files. | reviewed, accepted (committing) |
 | H-048 | Codex -> Codex | optional Dream Images UI using existing provider-neutral contracts/data only | Build a provider-neutral, disabled-by-default Dream Image preparation screen that lets users choose a curated template and style without sending raw dream text or adding a provider. | done (committing) |
 | H-049 | Codex -> Codex | Dream Image server proxy/provider integration only after explicit provider approval | Add the optional server-held image provider integration, moderation, rate controls, and explicit consent without accepting raw dream text. | awaiting provider selection and approval |
 | H-050 | Codex -> Codex | optional Astrology screen and H-044 glossary only | Add concise, expandable body/sign explanations to calculated chart placements while retaining the non-predictive disclosure and local-only result storage. | done (committing) |
-| H-051 | Codex -> Antigravity | new `src/data/astrologyAspectGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for the five major aspect types returned by the current calculation provider. Include lookup helpers and concise accessibility descriptions; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | queued after H-047 |
+| H-051 | Codex -> Antigravity | new `src/data/astrologyAspectGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for the five major aspect types returned by the current calculation provider. Include lookup helpers and concise accessibility descriptions; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | in progress |
 | H-052 | Codex -> Codex | optional Astrology screen and H-051 glossary only | Integrate reviewed aspect explanations into the calculated-chart view with accessible expansion and the existing non-predictive disclosure. | queued after H-051 |
+| H-053 | Codex -> Codex | Dream Image preparation UI/service boundary and H-047 copy only | Integrate reviewed privacy/unavailable copy and ensure a future request sends only the curated prompt and style—not the local dream id or raw dream content. Do not add a provider. | in progress |
+| H-054 | Codex -> Antigravity | new `src/data/dreamImageSafetyGuidelines.ts` only | Create typed, content-only safety and accessibility guidance for future curated Dream Image generation: disallowed raw journal text, personal identifiers, medical/predictive claims, and inaccessible alt text. Include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | queued after H-051 |
 
 ## Completion format
 
@@ -413,7 +415,7 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Follow-up:** Ready for Codex review and integration. H-044 is queued next for Antigravity.
 
 ### H-044 Completion Notes (Antigravity)
-- **Status:** done (uncommitted; awaiting Codex integration)
+- **Status:** done (integrated in `71c2223`)
 - **Changed files:** `src/data/astrologyPlacementGlossary.ts`
 - **Summary of Implementation:**
   - Created a fully typed, content-only glossary of non-predictive, archetypal entries covering:
@@ -432,3 +434,19 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (8 suites, 33 tests passing).
 - **Follow-up:** Ready for Codex review and integration. H-047 is queued next for Antigravity.
+
+### H-047 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dreamImageConsentCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only copy bundle for optional Dream Image features across 4 critical user flows:
+    1. **Consent Flow (`consent`):** Explicit modal/sheet headers, summaries, checkboxes, network disclosures, non-interpretive disclaimers, and action buttons. Clearly emphasizes that curated abstract scene prompts—never personal dream narratives—leave the device.
+    2. **Provider Unavailable State (`unavailable`):** Informative preview badges, titles, descriptions, and safe local browsing reassurance.
+    3. **Generation Pending State (`pending`):** Calm activity titles, progress messaging, timing expectations, and privacy reassurance.
+    4. **Local Deletion State (`deletion`):** Confirmation dialog titles, clear scope warnings (deleting generated image only while preserving the dream entry/analysis), and confirmation/cancellation buttons.
+  - Defined clean interfaces (`DreamImageConsentCopy`, `DreamImageUnavailableCopy`, `DreamImagePendingCopy`, `DreamImageDeletionCopy`, `DreamImageCopyBundle`) and getters (`getDreamImageConsentCopy`, `getDreamImageUnavailableCopy`, `getDreamImagePendingCopy`, `getDreamImageDeletionCopy`, `getDreamImageCopyBundle`).
+  - Completely non-interpretive and privacy-focused; no UI, routes, services, providers, storage, credentials, or existing data files modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (8 suites, 33 tests passing).
+- **Follow-up:** Ready for Codex review and integration. H-051 is queued next for Antigravity.
