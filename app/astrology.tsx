@@ -8,11 +8,17 @@ import Card from '@/components/ui/Card';
 import { useTheme } from '@/providers/ThemeProvider';
 import { BorderRadius, Colors, spacing } from '@/utils/theme';
 import { createLocalBirthProfile } from '@/services/astrology';
-import { calculateAstrologyChart, generateAstrologyReflection } from '@/services/astrologyRemote';
+import { AstrologyRemoteError, calculateAstrologyChart, generateAstrologyReflection } from '@/services/astrologyRemote';
 import { deleteLocalAstrologyData, readLocalAstrologyBundle, writeLocalAstrologyBundle } from '@/services/astrologyStorage';
 import { AstrologyChart, AstrologyReflection, LocalAstrologyBundle } from '@/types/astrology';
 import { getBodyGlossaryEntry, getSignGlossaryEntry } from '@/data/astrologyPlacementGlossary';
 import { getAspectGlossaryEntry } from '@/data/astrologyAspectGlossary';
+import {
+  ASTROLOGY_CONSENT_COPY,
+  ASTROLOGY_DELETION_COPY,
+  ASTROLOGY_PENDING_COPY,
+  ASTROLOGY_UNAVAILABLE_COPY,
+} from '@/data/astrologyConsentCopy';
 
 const parseDate = (value: string) => {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
@@ -78,6 +84,7 @@ export default function AstrologyScreen() {
     if (!consented) return setMessage('Consent is required before sending birth details for calculation.');
 
     setBusy('chart');
+    setMessage(ASTROLOGY_PENDING_COPY.calculatingDescription);
     try {
       const nextChart = await calculateAstrologyChart(profile, { latitude: lat, longitude: lon }, consent);
       const bundle: LocalAstrologyBundle = { profile, chart: nextChart };
@@ -88,7 +95,9 @@ export default function AstrologyScreen() {
       setExpandedAspect(undefined);
       setMessage('Chart calculated and saved on this device.');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Could not calculate the chart.');
+      setMessage(error instanceof AstrologyRemoteError && error.code === 'not_available'
+        ? `${ASTROLOGY_UNAVAILABLE_COPY.title}. ${ASTROLOGY_UNAVAILABLE_COPY.description}`
+        : error instanceof Error ? error.message : 'Could not calculate the chart.');
     } finally {
       setBusy(null);
     }
@@ -97,7 +106,7 @@ export default function AstrologyScreen() {
   const createReflection = async () => {
     if (!chart || !consented) return;
     setBusy('reflection');
-    setMessage('');
+    setMessage(ASTROLOGY_PENDING_COPY.reflectionDescription);
     try {
       const nextReflection = await generateAstrologyReflection(chart, consent);
       const profile = buildProfile();
@@ -114,12 +123,12 @@ export default function AstrologyScreen() {
 
   const removeData = () => {
     Alert.alert(
-      'Delete local astrology data?',
-      'This removes the saved birth profile, chart, and reflection from this device.',
+      ASTROLOGY_DELETION_COPY.dialogTitle,
+      ASTROLOGY_DELETION_COPY.dialogMessage,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: ASTROLOGY_DELETION_COPY.cancelButtonLabel, style: 'cancel' },
         {
-          text: 'Delete',
+          text: ASTROLOGY_DELETION_COPY.confirmButtonLabel,
           style: 'destructive',
           onPress: () => {
             void deleteLocalAstrologyData().then(() => {
@@ -134,7 +143,7 @@ export default function AstrologyScreen() {
               setLatitude('');
               setLongitude('');
               setConsented(false);
-              setMessage('Local astrology data deleted.');
+              setMessage(ASTROLOGY_DELETION_COPY.successMessage);
             }).catch(() => setMessage('Local astrology data could not be deleted.'));
           },
         },
@@ -158,7 +167,8 @@ export default function AstrologyScreen() {
     <View style={[styles.container, { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }]}>
       <Header title="Optional Astrology" leftIcon="arrow-back" onLeftPress={() => router.back()} />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text variant="body1" color={muted} style={styles.intro}>A separate, optional reflection tool. Astrology is not used in your Jungian dream analysis and does not predict events.</Text>
+        <Text variant="body1" color={muted} style={styles.intro}>{ASTROLOGY_CONSENT_COPY.summary}</Text>
+        <Text variant="caption" color={muted} style={styles.intro}>{ASTROLOGY_CONSENT_COPY.nonPredictiveDisclaimer}</Text>
 
         <Card style={styles.card} backgroundColor={surface}>
           <Text variant="h4" color={textColor}>Local birth profile</Text>
@@ -173,9 +183,11 @@ export default function AstrologyScreen() {
           </View>
           <View style={styles.consentRow}>
             <Switch value={consented} onValueChange={setConsented} />
-            <Text variant="body2" color={muted} style={styles.consentText}>I understand this is reflective, not factual or predictive, and I consent to sending the calculation fields to external services.</Text>
+            <Text variant="body2" color={muted} style={styles.consentText}>{ASTROLOGY_CONSENT_COPY.consentCheckboxLabel}</Text>
           </View>
-          <Button fullWidth isLoading={busy === 'chart'} isDisabled={busy !== null} onPress={() => void calculate()}>Calculate chart</Button>
+          <Text variant="caption" color={muted} style={styles.disclosure}>{ASTROLOGY_CONSENT_COPY.externalProcessingNotice}</Text>
+          <Text variant="caption" color={muted} style={styles.localNotice}>{ASTROLOGY_CONSENT_COPY.localStorageReassurance}</Text>
+          <Button fullWidth isLoading={busy === 'chart'} isDisabled={busy !== null} onPress={() => void calculate()}>{ASTROLOGY_CONSENT_COPY.confirmButtonLabel}</Button>
         </Card>
 
         {chart && (
@@ -273,6 +285,7 @@ const styles = StyleSheet.create({
   symbolicNote: { fontStyle: 'italic', marginTop: spacing[2] },
   note: { marginTop: spacing[2] },
   disclosure: { lineHeight: 18, marginVertical: spacing[4] },
+  localNotice: { lineHeight: 18, marginBottom: spacing[4] },
   reflection: { lineHeight: 23, marginVertical: spacing[3] },
   message: { marginBottom: spacing[3], textAlign: 'center' },
 });
