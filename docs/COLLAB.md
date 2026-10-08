@@ -116,8 +116,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-069 | Codex -> Codex | Astrology placement lookup and H-066 minor-body glossary only | Integrate reviewed minor-body glossary entries into alias-normalized placement expansion and add regression coverage without changing stored chart data. | done (committing) |
 | H-070 | Codex -> Codex | Astrology validation UI and focused component tests only | Add focused regression coverage for field-specific birth-profile, timezone, and coordinate errors without changing provider or storage behavior. | done (committing) |
 | H-071 | Codex -> Codex | Astrology placement UI and H-068 angle glossary only | Integrate reviewed Ascendant and Midheaven explanations into alias-normalized placement expansion with regression coverage, without changing provider or stored chart data. | done (committing) |
-| H-072 | Codex -> Antigravity | new `src/data/dreamImageFailureCopy.ts` only | Create typed, content-only recovery copy for optional Dream Image offline, provider-unavailable, moderation-rejected, rate-limited, and retryable-failure states. Keep wording concise, privacy-preserving, non-interpretive, and free of provider promises; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
+| H-072 | Codex -> Antigravity | new `src/data/dreamImageFailureCopy.ts` only | Create typed, content-only recovery copy for optional Dream Image offline, provider-unavailable, moderation-rejected, rate-limited, and retryable-failure states. Keep wording concise, privacy-preserving, non-interpretive, and free of provider promises; do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with privacy-claim precision edits (committing) |
 | H-073 | Codex -> Codex | Dream Image preparation UI and H-072 failure copy only | Integrate reviewed failure-specific recovery messages into the optional Dream Image preparation flow without adding a provider or accepting raw dream text. | queued after H-072 |
+| H-074 | Codex -> Antigravity | new `src/data/dreamImageResultActionsCopy.ts` only | Create typed, content-only labels, confirmations, and accessibility descriptions for future generated-image regenerate, save locally, share, and delete actions. Keep wording explicit that journal text is not embedded or shared automatically; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
 
 ## Completion format
 
@@ -745,4 +746,35 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (11 suites, 49 tests passing).
+- **Follow-up:** Ready for Codex review and integration.
+
+### H-072 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dreamImageFailureCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only recovery and error message dataset covering all five failure states of the optional Dream Image flow:
+    1. **Offline (`offline`):** Explains that image generation requires an active network connection, instructs user to check Wi-Fi/mobile data, marks retryable, and reassures that local journal entries remain safe and private.
+    2. **Provider Unavailable (`provider-unavailable`):** Explains that the visual reflection service is temporarily offline or unconfigured, invites continued offline exploration of scene templates and styles, marks non-retryable, and confirms no data left the device.
+    3. **Moderation Rejected (`moderation-rejected`):** Explains that the scene description did not meet safety guidelines, recommends choosing a pre-curated catalog template that avoids personal identifiers, marks non-retryable, and confirms raw journal text remains strictly local.
+    4. **Rate Limited (`rate-limited`):** Explains that the request limit was reached for the session, recommends waiting a short while before requesting another reflection, and reassures preserved local entries.
+    5. **Retryable Failure (`retryable-failure`):** Explains a temporary network or server interruption, suggests waiting a moment and trying again, marks retryable, and reassures dream narrative privacy.
+  - Sourced each state entry with:
+    - State key `state` (`DreamImageFailureState`)
+    - Dialog/card `title`
+    - Educational `message`
+    - Actionable `recoveryAction`
+    - Boolean `retryable` flag
+    - Local `privacyReassurance` statement
+    - User-facing `actionButtonLabel`
+  - Defined clean interfaces (`DreamImageFailureState`, `DreamImageFailureEntry`), constants (`DREAM_IMAGE_FAILURE_COPY`, `DREAM_IMAGE_FAILURE_STATES`), and query/resolver helpers:
+    - `getDreamImageFailureCopy(state)`
+    - `getAllDreamImageFailureStates()`
+    - `getAllDreamImageFailureEntries()`
+    - `isRetryableFailure(state)`
+    - `isRecognizedFailureState(value)` (TypeScript type guard)
+    - `resolveDreamImageFailure(error)` (maps Error instances, HTTP status phrases, or strings to the matching failure entry)
+  - Concise, non-interpretive, privacy-focused, and free of provider promises; zero modifications to UI, routes, services, providers, storage, credentials, or existing files.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (11 suites, 50 tests passing).
 - **Follow-up:** Ready for Codex review and integration.
