@@ -130,8 +130,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-083 | Codex -> Codex | Astrology form UI and H-082 coordinate help copy only | Integrate reviewed coordinate guidance into an accessible expandable help panel without adding geocoding, location permissions, provider changes, or new storage. | done (committing) |
 | H-084 | Codex -> Antigravity | new `src/data/astrologyTimezoneHelpCopy.ts` only | Create typed, content-only help copy explaining IANA timezone identifiers, valid examples such as `Asia/Kolkata`, why country names like `India` are rejected, timezone-without-time behavior, and historical DST uncertainty. Do not add lookup APIs, geocoding, UI, providers, storage, credentials, or modify existing files. | reviewed, accepted with date-only, ambiguity, and historical-coverage corrections (committing) |
 | H-085 | Codex -> Codex | Astrology form UI and H-084 timezone help copy only | Integrate reviewed timezone guidance beside field-specific validation without adding timezone lookup, geocoding, provider changes, or new storage. | done (committing) |
-| H-086 | Codex -> Antigravity | new `src/data/astrologyBirthTimeHelpCopy.ts` only | Create typed, content-only guidance for optional birth time, 24-hour `HH:mm` format, unknown-time/date-only mode, recorded-time rounding, and avoiding guessed times. Keep wording non-predictive; do not add UI, providers, storage, credentials, or modify existing files. | in progress |
+| H-086 | Codex -> Antigravity | new `src/data/astrologyBirthTimeHelpCopy.ts` only | Create typed, content-only guidance for optional birth time, 24-hour `HH:mm` format, unknown-time/date-only mode, recorded-time rounding, and avoiding guessed times. Keep wording non-predictive; do not add UI, providers, storage, credentials, or modify existing files. | reviewed, accepted with date-only/provider and validation hardening (committing) |
 | H-087 | Codex -> Codex | Astrology form UI and H-086 birth-time help copy only | Integrate reviewed optional birth-time guidance beside validation without adding time lookup, provider changes, or new storage. | queued after H-086 |
+| H-088 | Codex -> Antigravity | new `src/data/astrologyBirthDateHelpCopy.ts` only | Create typed, content-only guidance for required `YYYY-MM-DD` birth-date format, valid calendar/leap dates, future-date rejection, and why full names are unnecessary. Keep wording privacy-preserving and non-predictive; do not add UI, providers, storage, credentials, or modify existing files. | in progress |
 
 ## Completion format
 
@@ -982,3 +983,28 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 65 tests passing).
 - **Follow-up:** Ready for Codex review and integration into H-085 form UI.
+
+### H-086 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyBirthTimeHelpCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only educational dataset and accessible guidance bundle explaining:
+    1. **Why Birth Time Is Optional (`optional-birth-time`):** Explains that many people do not know or have access to their exact birth time; entering a birth time is never mandatory in DreamAlchemy; a birth date alone allows the calculation provider to determine primary planetary positions (Sun, Mercury, Venus, Mars, and outer planets) for reflective exploration without requiring personal hospital records.
+    2. **24-Hour Time Format (`format-24-hour`):** Details the 24-hour HH:mm format (hours 00–23, minutes 00–59), padding single-digit hours with leading zeroes (e.g. 07:15), and conversion rules from 12-hour AM/PM clocks (e.g. 2:30 PM -> 14:30, 12:00 PM -> 12:00, 12:00 AM -> 00:00).
+    3. **Date-Only Mode & Unknown Times (`date-only-mode`):** Explains that omitting a birth time triggers date-only precision with a midday solar reference; fast-moving angles (Ascendant and Midheaven) and house cusps (1–12) that rotate through all signs in a single day are withheld rather than guessed, preventing false precision while keeping stable planetary sign placements available.
+    4. **Recorded-Time Rounding & Clock Drift (`recorded-rounding`):** Explains that official records are frequently rounded to the nearest 15 or 30 minutes, and clock drift of even 5–10 minutes can alter rising degrees or place placements near sign/house boundaries (0° or 29°); encourages treating angles as symbolic reflective thresholds rather than exact certainties.
+    5. **Why You Should Avoid Guessed Times (`avoid-guessing`):** Advises dreamers never to guess a birth time (such as 12:00 PM or midnight); guessing produces false precision for rising signs and houses; leaving time blank produces an honest, reliable date-only chart focusing on stable planetary archetypes.
+  - Sourced structured interfaces (`BirthTimeHelpSectionId`, `BirthTimeFormatExample`, `BirthTimeHelpSection`, `AstrologyBirthTimeHelpBundle`), constants (`BIRTH_TIME_FORMAT_EXAMPLES`, `BIRTH_TIME_HELP_SECTIONS`, `BIRTH_TIME_HELP_SECTION_IDS`, `ASTROLOGY_BIRTH_TIME_HELP`), and validation/conversion helpers:
+    - `getBirthTimeHelpSection(id)`
+    - `getAllBirthTimeHelpSections()`
+    - `isValidBirthTimeFormat(value)`
+    - `parseTimeString(timeStr)`
+    - `formatBirthTime(hour, minute)`
+    - `convertTo24Hour(hour12, minute, isPm)`
+    - `explainBirthTimeIssue(hour, minute)`
+    - `isRecognizedBirthTimeHelpSectionId(value)` (TypeScript type guard)
+  - Completely non-predictive, non-diagnostic, privacy-first; zero UI, routes, services, providers, storage, credentials, or existing files modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 67 tests passing).
+- **Follow-up:** Ready for Codex review and integration into H-087 form UI.
