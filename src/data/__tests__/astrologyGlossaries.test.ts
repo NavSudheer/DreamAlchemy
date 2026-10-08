@@ -7,10 +7,19 @@ import {
   isValidMajorAspectType,
 } from '../astrologyAspectGlossary';
 import { getHouseGlossaryEntry, isValidHouseNumber } from '../astrologyHouseGlossary';
+import { getCanonicalBodyName, hasBodyAlias } from '../astrologyBodyAliases';
 
 describe('optional astrology glossaries', () => {
   it('looks up chart bodies without case sensitivity', () => {
     expect(getBodyGlossaryEntry('  mOoN  ')?.name).toBe('Moon');
+    expect(getBodyGlossaryEntry('SOL')?.name).toBe('Sun');
+  });
+
+  it('normalizes provider node and minor-body labels without conflating node models', () => {
+    expect(getCanonicalBodyName(' true_node ')).toBe('True Node');
+    expect(getCanonicalBodyName('Pallas-Athena')).toBe('Pallas');
+    expect(hasBodyAlias('mean node')).toBe(false);
+    expect(hasBodyAlias('node')).toBe(false);
   });
 
   it('looks up zodiac signs without case sensitivity', () => {

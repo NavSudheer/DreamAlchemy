@@ -9,6 +9,8 @@
  * making zero claims regarding fortune, determinism, or psychological assessment.
  */
 
+import { getCanonicalBodyName } from './astrologyBodyAliases';
+
 export type AstrologyGlossaryEntryType = 'body' | 'sign';
 export type AstrologyElement = 'Fire' | 'Earth' | 'Air' | 'Water';
 export type AstrologyModality = 'Cardinal' | 'Fixed' | 'Mutable';
@@ -280,7 +282,7 @@ export const ASTROLOGY_SIGN_GLOSSARY: AstrologySignGlossaryEntry[] = [
 export function getBodyGlossaryEntry(
   bodyName: string,
 ): AstrologyBodyGlossaryEntry | undefined {
-  const normalized = bodyName.trim().toLowerCase();
+  const normalized = (getCanonicalBodyName(bodyName) ?? bodyName).trim().toLowerCase();
   return ASTROLOGY_BODY_GLOSSARY.find(
     entry => entry.name.toLowerCase() === normalized,
   );
