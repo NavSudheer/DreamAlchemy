@@ -104,10 +104,11 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-057 | Codex -> Codex | optional Astrology UI and H-055 consent copy only | Integrate the reviewed consent, unavailable, pending, and deletion copy into the optional Astrology screen without changing its local-storage or server boundaries. | done (committing) |
 | H-058 | Codex -> Codex | Dream Image preparation UI/service and H-054 guidance only | Surface the reviewed privacy checklist in preview mode and reject provider responses whose alt text fails the project baseline heuristic. Do not add or configure a provider. | done (committing) |
 | H-059 | Codex -> Antigravity | new `src/data/astrologyUncertaintyCopy.ts` only | Create typed, content-only uncertainty explanations for date-only, date-and-time, and date-time-timezone chart precision. Keep wording non-predictive and avoid accuracy guarantees; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | reviewed, corrected to match provider timezone behavior (committing) |
-| H-060 | Codex -> Antigravity | new `src/data/astrologyHouseGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for houses 1–12 with concise accessibility descriptions and lookup helpers. Frame every entry as a traditional symbolic metaphor; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | in progress |
+| H-060 | Codex -> Antigravity | new `src/data/astrologyHouseGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for houses 1–12 with concise accessibility descriptions and lookup helpers. Frame every entry as a traditional symbolic metaphor; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | reviewed, accepted with health-language and lookup hardening (committing) |
 | H-061 | Codex -> Codex | optional Astrology chart UI and H-059 uncertainty copy only | Integrate the reviewed precision-specific uncertainty explanation into calculated and locally restored charts without changing calculation or storage behavior. | done (committing) |
-| H-062 | Codex -> Antigravity | new `src/data/dreamImageAltTextTemplates.ts` only | Create typed, content-only accessible alt-text templates for every existing curated Dream Image prompt template. Describe only visible scene, medium, lighting, and palette; avoid interpretation, emotion claims, and personal data. Include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | queued after H-060 |
-| H-063 | Codex -> Codex | optional Astrology placement UI and H-060 glossary only | Integrate reviewed house explanations into expanded placements while retaining uncertainty and non-predictive disclosures. | queued after H-060 |
+| H-062 | Codex -> Antigravity | new `src/data/dreamImageAltTextTemplates.ts` only | Create typed, content-only accessible alt-text templates for every existing curated Dream Image prompt template. Describe only visible scene, medium, lighting, and palette; avoid interpretation, emotion claims, and personal data. Include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
+| H-063 | Codex -> Codex | optional Astrology placement UI and H-060 glossary only | Integrate reviewed house explanations into expanded placements while retaining uncertainty and non-predictive disclosures. | in progress |
+| H-064 | Codex -> Antigravity | new `src/data/astrologyBodyAliases.ts` only | Create a typed, content-only alias map from likely provider body labels, including spacing and case variants for nodes and minor bodies, to canonical glossary names. Include normalization and lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | queued after H-062 |
 
 ## Completion format
 
@@ -569,3 +570,46 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (10 suites, 41 tests passing).
 - **Follow-up:** Ready for Codex review and integration. H-060 is queued next for Antigravity.
+
+### H-060 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyHouseGlossary.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only glossary of non-predictive, archetypal entries for all 12 astrological houses:
+    1. **First House (`house-1`):** Angular; self-presentation, emergence & personal vitality (`Vita`); threshold where consciousness steps into the world; screen-reader accessibility description.
+    2. **Second House (`house-2`):** Succedent; personal resources, grounding & inner value (`Lucrum`); subterranean foundation nurturing stability; screen-reader accessibility description.
+    3. **Third House (`house-3`):** Cadent; curiosity, everyday exchange & inquiring mind (`Fratres`); local pathways, footpaths, and daily dialogue; screen-reader accessibility description.
+    4. **Fourth House (`house-4`):** Angular; roots, sanctuary & inner foundations (`Genitor`); the nadir (IC), roots of the tree, and private emotional grounding; screen-reader accessibility description.
+    5. **Fifth House (`house-5`):** Succedent; playful creativity, joy & vital spontaneity (`Nati`); artistic celebration and heartfelt creative delight; screen-reader accessibility description.
+    6. **Sixth House (`house-6`):** Cadent; daily rhythms, mindful care & dedicated craft (`Valetudo`); workshop and daily garden tending physical vitality; screen-reader accessibility description.
+    7. **Seventh House (`house-7`):** Angular; relational mirroring, mutuality & partnership (`Uxor`); setting horizon and conscious encounter with the other; screen-reader accessibility description.
+    8. **Eighth House (`house-8`):** Succedent; shared depths, vulnerability & regeneration (`Mors`); threshold of dusk, shared emotional depths, and renewal; screen-reader accessibility description.
+    9. **Ninth House (`house-9`):** Cadent; expansive horizons, wisdom seeking & worldview (`Iter`); open seas, distant passes, and philosophical inquiry; screen-reader accessibility description.
+    10. **Tenth House (`house-10`):** Angular; public contribution, vocation & purposeful calling (`Regnum`); midday zenith (MC), visible contribution, and community service; screen-reader accessibility description.
+    11. **Eleventh House (`house-11`):** Succedent; collective vision, fellowship & shared ideals (`Benefacta`); community circles and collaborative future hopes; screen-reader accessibility description.
+    12. **Twelfth House (`house-12`):** Cadent; solitude, transcendent quiet & subconscious rest (`Carcer`); pre-dawn sky, dream space, and restorative retreat; screen-reader accessibility description.
+  - Sourced each entry with:
+    - Stable unique `id` (e.g. `house-1`)
+    - Exact `house` number (`HouseNumber`, 1–12)
+    - Display `name` (e.g. `'First House'`)
+    - Traditional descriptive `traditionalName`
+    - Historical Latin archetypal designation `latinMotto`
+    - Structural `classification` ('angular' | 'succedent' | 'cadent')
+    - Concise `archetypalTheme`
+    - Historical symbolic `traditionalMetaphor`
+    - Non-predictive `contemplativePerspective`
+    - Distinctive symbolic `keywords`
+    - Screen-reader `accessibilityDescription`
+  - Defined clean interfaces (`HouseNumber`, `HouseClassification`, `AstrologyHouseGlossaryEntry`), constants (`ASTROLOGY_HOUSE_GLOSSARY`, `ALL_HOUSE_NUMBERS`), and lookup helpers:
+    - `getHouseGlossaryEntry(house)` (flexible lookup accepting number 1–12, string '1', 'house-1', 'First House', 'first', etc.)
+    - `getAllHouseGlossaryEntries()`
+    - `getAllHouseNumbers()`
+    - `hasHouseGlossaryEntry(house)`
+    - `isValidHouseNumber(value)` (TypeScript type guard)
+    - `getHousesByClassification(classification)`
+    - `getHouseAccessibilityDescription(house)`
+  - Educational, symbolic, non-predictive, and non-diagnostic; zero fatalism, fortune-telling, or psychological assessment. UI, routes, services, providers, storage, credentials, and existing data files left untouched.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (10 suites, 41 tests passing).
+- **Follow-up:** Ready for Codex review and integration. H-062 is queued next for Antigravity.
