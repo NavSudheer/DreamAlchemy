@@ -108,10 +108,11 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-061 | Codex -> Codex | optional Astrology chart UI and H-059 uncertainty copy only | Integrate the reviewed precision-specific uncertainty explanation into calculated and locally restored charts without changing calculation or storage behavior. | done (committing) |
 | H-062 | Codex -> Antigravity | new `src/data/dreamImageAltTextTemplates.ts` only | Create typed, content-only accessible alt-text templates for every existing curated Dream Image prompt template. Describe only visible scene, medium, lighting, and palette; avoid interpretation, emotion claims, and personal data. Include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with accessibility-claim and objectivity edits (committing) |
 | H-063 | Codex -> Codex | optional Astrology placement UI and H-060 glossary only | Integrate reviewed house explanations into expanded placements while retaining uncertainty and non-predictive disclosures. | done (committing) |
-| H-064 | Codex -> Antigravity | new `src/data/astrologyBodyAliases.ts` only | Create a typed, content-only alias map from likely provider body labels, including spacing and case variants for nodes and minor bodies, to canonical glossary names. Include normalization and lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
+| H-064 | Codex -> Antigravity | new `src/data/astrologyBodyAliases.ts` only | Create a typed, content-only alias map from likely provider body labels, including spacing and case variants for nodes and minor bodies, to canonical glossary names. Include normalization and lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with node-precision correction (committing) |
 | H-065 | Codex -> Codex | Dream Image preparation UI and H-062 alt-text templates only | Surface the reviewed accessible scene description in the prepared preview and add fallback-alt contract tests without adding a provider. | done (committing) |
-| H-066 | Codex -> Antigravity | new `src/data/astrologyMinorBodyGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for provider-returned True Node, Chiron, Lilith, Ceres, Pallas, Juno, and Vesta labels. Frame each as a traditional symbolic metaphor and include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | queued after H-064 |
-| H-067 | Codex -> Codex | Astrology placement resolution and H-064 aliases only | Integrate reviewed provider body-label normalization into glossary lookup and add regression coverage without changing stored chart data. | queued after H-064 |
+| H-066 | Codex -> Antigravity | new `src/data/astrologyMinorBodyGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for provider-returned True Node, Chiron, Lilith, Ceres, Pallas, Juno, and Vesta labels. Frame each as a traditional symbolic metaphor and include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
+| H-067 | Codex -> Codex | Astrology placement resolution and H-064 aliases only | Integrate reviewed provider body-label normalization into glossary lookup and add regression coverage without changing stored chart data. | in progress |
+| H-068 | Codex -> Antigravity | new `src/data/astrologyAngleGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for Ascendant and Midheaven with concise accessibility descriptions and lookup helpers. Frame both as traditional symbolic chart angles; do not alter UI, routes, services, providers, storage, credentials, or existing files. | queued after H-066 |
 
 ## Completion format
 
@@ -650,3 +651,25 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (10 suites, 42 tests passing).
 - **Follow-up:** Ready for Codex review and integration. H-064 is queued next for Antigravity.
+
+### H-064 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyBodyAliases.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only alias mapping and normalization system resolving external calculation engine labels to canonical glossary names:
+    1. **Primary Luminaries & Planets (10):** `Sun`, `Moon`, `Mercury`, `Venus`, `Mars`, `Jupiter`, `Saturn`, `Uranus`, `Neptune`, `Pluto` (mapping common abbreviations and classical names like Sol, Luna, Hermes, Ares, Zeus, Cronus, Ouranos, Poseidon, Hades).
+    2. **Angles (2):** `Ascendant` (mapping `ASC`, `AS`, `rising`, `rising sign`, `eastern horizon`) and `Midheaven` (mapping `MC`, `medium coeli`, `mediumcoeli`, `zenith`).
+    3. **Lunar Nodes (2):** `True Node` (handling spacing/case/hyphen/underscore variants like `truenode`, `true_node`, `true-node`, `north node`, `north_node`, `node`, `rahu`, `mean node`, `meannode`) and `South Node` (`southnode`, `south_node`, `ketu`, `cauda draconis`).
+    4. **Centaur, Lunar Point & Asteroids (6):** `Chiron` (`kheiron`), `Lilith` (`black moon lilith`, `blackmoonlilith`, `black_moon_lilith`, `bml`, `true lilith`), `Ceres` (`demeter`), `Pallas` (`pallas athena`, `pallas_athena`, `pallasathena`, `athena`), `Juno` (`hera`), and `Vesta` (`hestia`).
+  - Defined clean interfaces (`AstrologyBodyAliasEntry`), constants (`ASTROLOGY_BODY_ALIAS_ENTRIES`, `ASTROLOGY_BODY_ALIAS_MAP`, `CANONICAL_BODY_NAMES`), and query/normalization helpers:
+    - `normalizeBodyLabel(rawLabel)` (standardizes spacing, hyphens, and underscores)
+    - `getCanonicalBodyName(rawLabel)` (resolves case-insensitive, punctuation-tolerant, and compact alias lookups)
+    - `hasBodyAlias(rawLabel)`
+    - `getAliasesForCanonicalBody(canonicalName)`
+    - `getAllCanonicalBodyNames()`
+    - `isCanonicalBodyName(name)` (TypeScript type guard)
+  - Completely non-predictive, structural, and content-only; zero modifications to UI, routes, services, providers, storage, credentials, or existing files.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (10 suites, 44 tests passing).
+- **Follow-up:** Ready for Codex review and integration. H-066 is queued next for Antigravity.
