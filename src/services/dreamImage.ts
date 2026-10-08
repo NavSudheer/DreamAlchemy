@@ -20,6 +20,15 @@ export const getDreamImageAvailability = (): DreamImageAvailability =>
     : { available: false, reason: 'not-configured' };
 
 /**
+ * Builds the only payload permitted to leave the device. The local dream id is
+ * deliberately excluded; association with a saved dream remains app-local.
+ */
+export const createDreamImageProviderPayload = (request: DreamImageRequest) => ({
+  visualReflectionPrompt: request.visualReflectionPrompt.trim(),
+  style: request.style,
+});
+
+/**
  * Requests a generated visual reflection from an application-owned server
  * proxy. Provider selection, moderation, authentication, and rate limiting
  * belong on that server; no provider credential is included in the app.
@@ -43,11 +52,10 @@ export async function generateDreamImage(
     const response = await fetch(DREAM_IMAGE_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        dreamId: request.dreamId,
+      body: JSON.stringify(createDreamImageProviderPayload({
+        ...request,
         visualReflectionPrompt: prompt,
-        style: request.style,
-      }),
+      })),
       signal: controller.signal,
     });
 

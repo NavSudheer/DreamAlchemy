@@ -1,4 +1,4 @@
-import { generateDreamImage, getDreamImageAvailability } from '../dreamImage';
+import { createDreamImageProviderPayload, generateDreamImage, getDreamImageAvailability } from '../dreamImage';
 
 describe('dream image foundation', () => {
   it('stays unavailable without a configured server proxy', () => {
@@ -11,5 +11,19 @@ describe('dream image foundation', () => {
       visualReflectionPrompt: 'An abstract moonlit landscape',
       style: 'ethereal',
     })).rejects.toThrow('not available yet');
+  });
+
+  it('keeps the local dream id out of the future provider payload', () => {
+    const payload = createDreamImageProviderPayload({
+      dreamId: 'local-dream-id',
+      visualReflectionPrompt: '  An abstract moonlit landscape  ',
+      style: 'ethereal',
+    });
+
+    expect(payload).toEqual({
+      visualReflectionPrompt: 'An abstract moonlit landscape',
+      style: 'ethereal',
+    });
+    expect(payload).not.toHaveProperty('dreamId');
   });
 });

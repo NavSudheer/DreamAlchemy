@@ -7,6 +7,7 @@ import Text from '@/components/ui/Text';
 import { useTheme } from '@/providers/ThemeProvider';
 import { DREAM_IMAGE_PROMPT_TEMPLATES, getDefaultPromptTemplate } from '@/data/dreamImagePromptTemplates';
 import { DREAM_IMAGE_STYLE_LIST } from '@/data/dreamImageStyleMetadata';
+import { DREAM_IMAGE_CONSENT_COPY, DREAM_IMAGE_UNAVAILABLE_COPY } from '@/data/dreamImageConsentCopy';
 import { getDreamImageAvailability } from '@/services/dreamImage';
 import { DreamImageStyle } from '@/types/dreamImage';
 import { BorderRadius, Colors, spacing } from '@/utils/theme';
@@ -43,10 +44,12 @@ export default function DreamImageScreen() {
 
         {!availability.available && (
           <Card style={styles.notice} backgroundColor={surface}>
-            <Text variant="subtitle1" color={textColor}>Preview mode</Text>
+            <Text variant="caption" color={muted}>{DREAM_IMAGE_UNAVAILABLE_COPY.badgeLabel}</Text>
+            <Text variant="subtitle1" color={textColor} style={styles.noticeText}>{DREAM_IMAGE_UNAVAILABLE_COPY.title}</Text>
             <Text variant="body2" color={muted} style={styles.noticeText}>
-              Image generation is not configured. You can safely preview templates and styles without sending anything off this device.
+              {DREAM_IMAGE_UNAVAILABLE_COPY.description}
             </Text>
+            <Text variant="caption" color={muted} style={styles.noticeText}>{DREAM_IMAGE_UNAVAILABLE_COPY.safeBrowsingNotice}</Text>
           </Card>
         )}
 
@@ -97,8 +100,9 @@ export default function DreamImageScreen() {
           <Text variant="subtitle2" color={textColor} style={styles.previewLabel}>{template.title} · {style}</Text>
           <Text variant="body2" color={muted} style={styles.prompt}>{template.promptText}</Text>
           <Text variant="caption" color={muted}>
-            This exact curated scene—not journal text—would be sent only after a future generation step asks for explicit consent.
+            {DREAM_IMAGE_CONSENT_COPY.consentCheckboxLabel}
           </Text>
+          <Text variant="caption" color={muted} style={styles.disclaimer}>{DREAM_IMAGE_CONSENT_COPY.nonInterpretiveDisclaimer}</Text>
         </Card>
       </ScrollView>
     </View>
@@ -120,4 +124,5 @@ const styles = StyleSheet.create({
   preview: { padding: spacing[4] },
   previewLabel: { marginTop: spacing[3], textTransform: 'capitalize' },
   prompt: { lineHeight: 21, marginVertical: spacing[3] },
+  disclaimer: { fontStyle: 'italic', marginTop: spacing[2] },
 });
