@@ -32,6 +32,7 @@ import { getAngleGlossaryEntry } from '@/data/astrologyAngleGlossary';
 import { AstrologyProgress } from '@/components/astrology/AstrologyProgress';
 import { ASTROLOGY_COORDINATE_HELP } from '@/data/astrologyCoordinateHelpCopy';
 import { ASTROLOGY_TIMEZONE_HELP, suggestAlternativeForCommonInput } from '@/data/astrologyTimezoneHelpCopy';
+import { ASTROLOGY_BIRTH_TIME_HELP } from '@/data/astrologyBirthTimeHelpCopy';
 
 type FormField = 'birthDate' | 'birthTime' | 'timezone' | 'locationLabel' | 'latitude' | 'longitude';
 type FormErrors = Partial<Record<FormField, string>>;
@@ -64,6 +65,7 @@ export default function AstrologyScreen() {
   const [showPrecisionDetails, setShowPrecisionDetails] = useState(false);
   const [showCoordinateHelp, setShowCoordinateHelp] = useState(false);
   const [showTimezoneHelp, setShowTimezoneHelp] = useState(false);
+  const [showBirthTimeHelp, setShowBirthTimeHelp] = useState(false);
   const [busy, setBusy] = useState<'chart' | 'reflection' | null>(null);
   const [message, setMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
@@ -260,6 +262,28 @@ export default function AstrologyScreen() {
           <Text variant="h4" color={textColor}>Local birth profile</Text>
           {field('birthDate', 'Birth date', birthDate, setBirthDate, 'YYYY-MM-DD')}
           {field('birthTime', 'Birth time (optional)', birthTime, setBirthTime, 'HH:mm')}
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityState={{ expanded: showBirthTimeHelp }}
+            accessibilityLabel="Birth time help"
+            accessibilityHint="Explains optional date-only mode and 24-hour time format"
+            onPress={() => setShowBirthTimeHelp(value => !value)}
+            style={[styles.coordinateHelpToggle, { backgroundColor: inputSurface }]}
+          >
+            <Text variant="subtitle2" color={textColor}>{showBirthTimeHelp ? 'Hide birth time help' : 'Birth time unknown or in AM/PM?'}</Text>
+          </TouchableOpacity>
+          {showBirthTimeHelp && (
+            <View style={[styles.coordinateHelp, { backgroundColor: inputSurface }]}>
+              <Text variant="subtitle1" color={textColor}>{ASTROLOGY_BIRTH_TIME_HELP.title}</Text>
+              <Text variant="caption" color={muted} style={styles.optionText}>{ASTROLOGY_BIRTH_TIME_HELP.guidanceNote}</Text>
+              {ASTROLOGY_BIRTH_TIME_HELP.sections.map(section => (
+                <View key={section.id} accessibilityLabel={section.accessibilityLabel} style={styles.coordinateHelpSection}>
+                  <Text variant="subtitle2" color={textColor}>{section.title}</Text>
+                  <Text variant="caption" color={muted} style={styles.optionText}>{section.summary}</Text>
+                </View>
+              ))}
+            </View>
+          )}
           {field('timezone', 'Timezone when time is provided', timezone, setTimezone, 'America/Toronto')}
           <TouchableOpacity
             accessibilityRole="button"

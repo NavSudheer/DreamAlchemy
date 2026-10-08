@@ -90,4 +90,15 @@ describe('astrology form validation', () => {
     expect(visibleText()).toContain('Birth Timezone Help');
     expect(visibleText()).toContain('Why Country Names & Abbreviations Are Rejected');
   });
+
+  it('reveals optional birth-time guidance on demand', () => {
+    const toggle = screen.root.findByProps({ accessibilityLabel: 'Birth time help' });
+    expect(toggle.props.accessibilityState).toEqual({ expanded: false });
+
+    act(() => toggle.props.onPress());
+
+    expect(screen.root.findByProps({ accessibilityLabel: 'Birth time help' }).props.accessibilityState).toEqual({ expanded: true });
+    expect(visibleText()).toContain('Birth Time Guidance');
+    expect(visibleText()).toContain('Date-Only Mode & Unknown Times');
+  });
 });
