@@ -114,7 +114,8 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-067 | Codex -> Codex | Astrology placement resolution and H-064 aliases only | Integrate reviewed provider body-label normalization into glossary lookup and add regression coverage without changing stored chart data. | done (committing) |
 | H-068 | Codex -> Antigravity | new `src/data/astrologyAngleGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for Ascendant and Midheaven with concise accessibility descriptions and lookup helpers. Frame both as traditional symbolic chart angles; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
 | H-069 | Codex -> Codex | Astrology placement lookup and H-066 minor-body glossary only | Integrate reviewed minor-body glossary entries into alias-normalized placement expansion and add regression coverage without changing stored chart data. | done (committing) |
-| H-070 | Codex -> Codex | Astrology validation UI and focused component tests only | Add focused regression coverage for field-specific birth-profile, timezone, and coordinate errors without changing provider or storage behavior. | queued |
+| H-070 | Codex -> Codex | Astrology validation UI and focused component tests only | Add focused regression coverage for field-specific birth-profile, timezone, and coordinate errors without changing provider or storage behavior. | done (committing) |
+| H-071 | Codex -> Codex | Astrology placement UI and H-068 angle glossary only | Integrate reviewed Ascendant and Midheaven explanations into alias-normalized placement expansion with regression coverage, without changing provider or stored chart data. | queued after H-068 |
 
 ## Completion format
 
