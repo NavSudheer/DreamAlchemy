@@ -82,15 +82,17 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-035 | Codex -> Antigravity | new `src/services/__tests__/astrology.test.ts` only | Add focused Jest coverage for the provider-neutral Astrology validation and deletion helpers: valid/minimal profile, leap date, future date, partial time, timezone-without-time, invalid timezone, location length, and store deletion success/failure. Do not alter feature files, UI, routes, storage implementation, or add an astrology provider. | done `f1dd428` |
 | H-036 | Codex -> Antigravity | new `src/data/dreamImagePromptTemplates.ts` only | Create a typed, content-only set of 6–8 optional visual-reflection prompt templates. Each must be abstract, non-predictive, and explicitly avoid raw dream text; include lookup helpers. Do not alter UI, providers, routes, storage, or credentials. | done `919675e` |
 | H-037 | Codex -> Codex | `src/services/dreamImage.ts`, supporting tests only | Review and add focused tests for the provider-neutral Dream Images contract, preserving its no-provider/no-raw-dream-text boundary. | done `919675e` |
-| H-038 | Codex -> Antigravity | new `src/data/astrologyReflectionPrompts.ts` only | Create a typed, content-only set of optional, non-predictive astrology reflection prompts. Make no calculations or claims; do not alter UI, providers, routes, or storage. | reviewed, accepted (committing) |
+| H-038 | Codex -> Antigravity | new `src/data/astrologyReflectionPrompts.ts` only | Create a typed, content-only set of optional, non-predictive astrology reflection prompts. Make no calculations or claims; do not alter UI, providers, routes, or storage. | done `3e76ff3` |
 | H-039 | Codex -> Codex | `src/services/astrology.ts`, supporting tests only | Add focused contract tests for astrology’s provider-neutral boundaries and non-predictive result shape; do not add a calculation provider or UI. | done `a7c749f` |
-| H-040 | Codex -> Antigravity | new `src/data/dreamImageStyleMetadata.ts` only | Create typed, content-only labels and accessibility descriptions for the existing Dream Image styles. Keep wording artistic, optional, and non-interpretive; no UI, provider, storage, or credential changes. | in progress |
+| H-040 | Codex -> Antigravity | new `src/data/dreamImageStyleMetadata.ts` only | Create typed, content-only labels and accessibility descriptions for the existing Dream Image styles. Keep wording artistic, optional, and non-interpretive; no UI, provider, storage, or credential changes. | reviewed, accepted (committing) |
 | H-041 | Codex -> Codex | `api/astrology-chart.js`, `api/astrology-reflection.js`, `src/services/astrologyRemote.ts`, `src/services/astrologyStorage.ts`, `src/types/astrology.ts`, tests and setup docs | Implement the approved stateless Vercel hybrid: server-held provider/OpenAI keys, explicit consent, compact capped AI reflection, and local-only profile/chart/reflection storage. | done (committing) |
 | H-042 | Codex -> Codex | new optional Astrology route/components, Explore entry, existing H-041 services only | Build the explicit opt-in local Astrology UI without mixing astrology into base Jungian dream analysis. | done (committing) |
 | H-043 | Codex -> Codex | Astrology Vercel routes, provider adapter, focused tests only | Harden the optional Astrology server boundary with disabled-by-default rollout controls and endpoint/provider response contract tests. | done (committing) |
-| H-044 | Codex -> Antigravity | new `src/data/astrologyPlacementGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for the chart bodies and zodiac signs surfaced by the optional Astrology result. Include lookup helpers; do not alter UI, routes, services, providers, storage, or credentials. | queued after H-040 |
+| H-044 | Codex -> Antigravity | new `src/data/astrologyPlacementGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for the chart bodies and zodiac signs surfaced by the optional Astrology result. Include lookup helpers; do not alter UI, routes, services, providers, storage, or credentials. | in progress |
 | H-045 | Codex -> Codex | optional Astrology UI/services, test and setup docs only | Run the Mac-test readiness pass for optional Astrology, including unavailable-state UX and a deploy smoke checklist; do not enable production without server secrets and rate controls. | done (committing) |
 | H-046 | Codex -> Codex | Vercel Preview environment and deployed optional Astrology routes only | Configure the server-only Astrology variables, verify the Preview endpoints, and run the documented Mac smoke pass. Never place provider or OpenAI secrets in the client bundle. | awaiting provider key and Vercel Preview access |
+| H-047 | Codex -> Antigravity | new `src/data/dreamImageConsentCopy.ts` only | Create typed, content-only copy for optional Dream Image privacy consent, provider-unavailable, generation-pending, and local-deletion states. Keep it concise, non-interpretive, and explicit that curated prompts—not raw dream text—may leave the device. Do not alter UI, routes, services, providers, storage, credentials, or existing data files. | queued after H-044 |
+| H-048 | Codex -> Codex | optional Dream Images UI using existing provider-neutral contracts/data only | Build a provider-neutral, disabled-by-default Dream Image preparation screen that lets users choose a curated template and style without sending raw dream text or adding a provider. | in progress |
 
 ## Completion format
 
@@ -363,7 +365,7 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Follow-up:** Ready for Codex review and integration.
 
 ### H-038 Completion Notes (Antigravity)
-- **Status:** done (uncommitted; awaiting Codex integration)
+- **Status:** done (integrated in `3e76ff3`)
 - **Changed files:** `src/data/astrologyReflectionPrompts.ts`
 - **Summary of Implementation:**
   - Created a fully typed, content-only collection of 12 optional, non-predictive astrology reflection prompts across 6 introspective categories:
@@ -386,3 +388,22 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (4 suites, 16 tests passing).
 - **Follow-up:** Ready for Codex review and integration.
+
+### H-040 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dreamImageStyleMetadata.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only dataset of labels, artistic descriptions, visual characteristics, and accessibility properties for all 4 supported dream image styles (`ethereal`, `surreal`, `watercolor`, `cinematic`).
+  - Sourced each style entry with:
+    - `style`: `DreamImageStyle` key
+    - `label`: Human-readable display label
+    - `shortDescription`: Artistic summary of visual aesthetic
+    - `visualCharacteristics`: Distinctive lighting, rendering, and textural traits
+    - `accessibilityLabel`: Screen reader accessible label
+    - `accessibilityHint`: Screen reader hint explaining the aesthetic reflection
+  - Defined clean interfaces (`DreamImageStyleMetadata`), constants (`DREAM_IMAGE_STYLES_METADATA`, `DREAM_IMAGE_STYLE_LIST`, `SUPPORTED_DREAM_IMAGE_STYLES`), and helpers (`getDreamImageStyleMetadata`, `getAllDreamImageStyleMetadata`, `getAllDreamImageStyles`, `isValidDreamImageStyle`, `getStyleAccessibilityLabel`, `getStyleAccessibilityHint`).
+  - Kept descriptions strictly artistic, optional, and non-interpretive; zero UI, provider, storage, or credential modifications.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (8 suites, 33 tests passing).
+- **Follow-up:** Ready for Codex review and integration. H-044 is queued next for Antigravity.
