@@ -110,9 +110,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-063 | Codex -> Codex | optional Astrology placement UI and H-060 glossary only | Integrate reviewed house explanations into expanded placements while retaining uncertainty and non-predictive disclosures. | done (committing) |
 | H-064 | Codex -> Antigravity | new `src/data/astrologyBodyAliases.ts` only | Create a typed, content-only alias map from likely provider body labels, including spacing and case variants for nodes and minor bodies, to canonical glossary names. Include normalization and lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with node-precision correction (committing) |
 | H-065 | Codex -> Codex | Dream Image preparation UI and H-062 alt-text templates only | Surface the reviewed accessible scene description in the prepared preview and add fallback-alt contract tests without adding a provider. | done (committing) |
-| H-066 | Codex -> Antigravity | new `src/data/astrologyMinorBodyGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for provider-returned True Node, Chiron, Lilith, Ceres, Pallas, Juno, and Vesta labels. Frame each as a traditional symbolic metaphor and include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
+| H-066 | Codex -> Antigravity | new `src/data/astrologyMinorBodyGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for provider-returned True Node, Chiron, Lilith, Ceres, Pallas, Juno, and Vesta labels. Frame each as a traditional symbolic metaphor and include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with health-language and astronomy-precision hardening (committing) |
 | H-067 | Codex -> Codex | Astrology placement resolution and H-064 aliases only | Integrate reviewed provider body-label normalization into glossary lookup and add regression coverage without changing stored chart data. | done (committing) |
-| H-068 | Codex -> Antigravity | new `src/data/astrologyAngleGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for Ascendant and Midheaven with concise accessibility descriptions and lookup helpers. Frame both as traditional symbolic chart angles; do not alter UI, routes, services, providers, storage, credentials, or existing files. | queued after H-066 |
+| H-068 | Codex -> Antigravity | new `src/data/astrologyAngleGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for Ascendant and Midheaven with concise accessibility descriptions and lookup helpers. Frame both as traditional symbolic chart angles; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
 | H-069 | Codex -> Codex | Astrology placement lookup and H-066 minor-body glossary only | Integrate reviewed minor-body glossary entries into alias-normalized placement expansion and add regression coverage without changing stored chart data. | queued after H-066 |
 
 ## Completion format
@@ -674,3 +674,38 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (10 suites, 44 tests passing).
 - **Follow-up:** Ready for Codex review and integration. H-066 is queued next for Antigravity.
+
+### H-066 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyMinorBodyGlossary.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only glossary of non-predictive, archetypal entries for provider-returned lunar nodes, centaurs, lunar points, and asteroids:
+    1. **True Node (`minor-true-node`):** Lunar ascending node; emergent growth edge and unfolding potential; Caput Draconis / Dragon's Head metaphor; screen-reader accessibility description.
+    2. **Chiron (`minor-chiron`):** Centaur body; vulnerability, empathy & integrative wisdom; wounded healer and mentor of myth; screen-reader accessibility description.
+    3. **Lilith (`minor-lilith`):** Lunar apogee; instinctual autonomy, raw authenticity & untamed wilderness; Black Moon metaphor; screen-reader accessibility description.
+    4. **Ceres (`minor-ceres`):** Asteroid / dwarf planet; nourishment, caregiving & cycles of renewal; harvest goddess (Demeter) metaphor; screen-reader accessibility description.
+    5. **Pallas (`minor-pallas`):** Main-belt asteroid; strategic insight, pattern recognition & creative intellect; Pallas Athena metaphor; screen-reader accessibility description.
+    6. **Juno (`minor-juno`):** Main-belt asteroid; commitment, mutuality & relational equality; sacred alliance (Hera) metaphor; screen-reader accessibility description.
+    7. **Vesta (`minor-vesta`):** Main-belt asteroid; sacred focus, inner flame & dedicated devotion; hearth keeper (Hestia) metaphor; screen-reader accessibility description.
+  - Sourced each entry with:
+    - Stable unique `id`
+    - Canonical `name`
+    - Structural `category` ('node' | 'centaur' | 'point' | 'asteroid')
+    - Educational `astronomicalNature` description
+    - High-level `archetypalTheme`
+    - Historical `traditionalMetaphor`
+    - Non-predictive `contemplativePerspective`
+    - Distinctive symbolic `keywords`
+    - Screen-reader `accessibilityDescription`
+  - Defined clean interfaces (`MinorBodyCategory`, `AstrologyMinorBodyGlossaryEntry`), constants (`ASTROLOGY_MINOR_BODY_GLOSSARY`, `ALL_MINOR_BODY_NAMES`), and query helpers:
+    - `getMinorBodyGlossaryEntry(bodyName)` (supports direct ID/name matches as well as alias resolution via `astrologyBodyAliases`)
+    - `getAllMinorBodyGlossaryEntries()`
+    - `getAllMinorBodyNames()`
+    - `hasMinorBodyGlossaryEntry(bodyName)`
+    - `getMinorBodiesByCategory(category)`
+    - `getMinorBodyAccessibilityDescription(bodyName)`
+  - Completely non-predictive, non-diagnostic, and content-only; zero modifications to UI, routes, services, providers, storage, credentials, or existing files.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (10 suites, 45 tests passing).
+- **Follow-up:** Ready for Codex review and integration. H-068 is queued next for Antigravity.
