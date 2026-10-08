@@ -30,6 +30,7 @@ import { getHouseGlossaryEntry } from '@/data/astrologyHouseGlossary';
 import { getMinorBodyGlossaryEntry } from '@/data/astrologyMinorBodyGlossary';
 import { getAngleGlossaryEntry } from '@/data/astrologyAngleGlossary';
 import { AstrologyProgress } from '@/components/astrology/AstrologyProgress';
+import { ASTROLOGY_COORDINATE_HELP } from '@/data/astrologyCoordinateHelpCopy';
 
 type FormField = 'birthDate' | 'birthTime' | 'timezone' | 'locationLabel' | 'latitude' | 'longitude';
 type FormErrors = Partial<Record<FormField, string>>;
@@ -60,6 +61,7 @@ export default function AstrologyScreen() {
   const [expandedPlacement, setExpandedPlacement] = useState<string>();
   const [expandedAspect, setExpandedAspect] = useState<string>();
   const [showPrecisionDetails, setShowPrecisionDetails] = useState(false);
+  const [showCoordinateHelp, setShowCoordinateHelp] = useState(false);
   const [busy, setBusy] = useState<'chart' | 'reflection' | null>(null);
   const [message, setMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
@@ -262,6 +264,30 @@ export default function AstrologyScreen() {
             <View style={styles.coordinate}>{field('latitude', 'Latitude', latitude, setLatitude, '43.65', 'numbers-and-punctuation')}</View>
             <View style={styles.coordinate}>{field('longitude', 'Longitude', longitude, setLongitude, '-79.38', 'numbers-and-punctuation')}</View>
           </View>
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityState={{ expanded: showCoordinateHelp }}
+            accessibilityLabel="Coordinate help"
+            accessibilityHint="Explains coordinate format, calculation use, uncertainty, and privacy"
+            onPress={() => setShowCoordinateHelp(value => !value)}
+            style={[styles.coordinateHelpToggle, { backgroundColor: inputSurface }]}
+          >
+            <Text variant="subtitle2" color={textColor}>{showCoordinateHelp ? 'Hide coordinate help' : 'Why are coordinates needed?'}</Text>
+          </TouchableOpacity>
+          {showCoordinateHelp && (
+            <View style={[styles.coordinateHelp, { backgroundColor: inputSurface }]}>
+              <Text variant="subtitle1" color={textColor}>{ASTROLOGY_COORDINATE_HELP.title}</Text>
+              <Text variant="caption" color={muted} style={styles.optionText}>{ASTROLOGY_COORDINATE_HELP.subtitle}</Text>
+              {ASTROLOGY_COORDINATE_HELP.sections.map(section => (
+                <View key={section.id} accessibilityLabel={section.accessibilityLabel} style={styles.coordinateHelpSection}>
+                  <Text variant="subtitle2" color={textColor}>{section.title}</Text>
+                  <Text variant="caption" color={muted} style={styles.optionText}>{section.summary}</Text>
+                  {section.bulletPoints.slice(0, 2).map(point => <Text key={point} variant="caption" color={muted} style={styles.note}>• {point}</Text>)}
+                </View>
+              ))}
+              <Text variant="caption" color={muted} style={styles.privacyNote}>{ASTROLOGY_COORDINATE_HELP.privacyGuarantee}</Text>
+            </View>
+          )}
           <View style={styles.consentRow}>
             <Switch value={consented} onValueChange={setConsented} />
             <Text variant="body2" color={muted} style={styles.consentText}>{ASTROLOGY_CONSENT_COPY.consentCheckboxLabel}</Text>
@@ -387,6 +413,10 @@ const styles = StyleSheet.create({
   inputError: { borderColor: Colors.error[500], borderWidth: 1 },
   coordinateRow: { flexDirection: 'row', gap: spacing[3] },
   coordinate: { flex: 1 },
+  coordinateHelpToggle: { borderRadius: BorderRadius.md, marginTop: spacing[3], padding: spacing[3] },
+  coordinateHelp: { borderRadius: BorderRadius.md, marginTop: spacing[2], padding: spacing[3] },
+  coordinateHelpSection: { marginTop: spacing[3] },
+  privacyNote: { fontStyle: 'italic', lineHeight: 18, marginTop: spacing[3] },
   consentRow: { alignItems: 'center', flexDirection: 'row', marginVertical: spacing[4] },
   consentText: { flex: 1, lineHeight: 20, marginLeft: spacing[2] },
   placement: { marginTop: spacing[2] },

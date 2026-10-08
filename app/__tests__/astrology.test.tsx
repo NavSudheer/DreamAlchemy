@@ -68,4 +68,15 @@ describe('astrology form validation', () => {
 
     expect(visibleText()).toContain('Latitude is required. Enter a value from -90 to 90.');
   });
+
+  it('reveals accessible coordinate guidance on demand', () => {
+    const toggle = screen.root.findByProps({ accessibilityLabel: 'Coordinate help' });
+    expect(toggle.props.accessibilityState).toEqual({ expanded: false });
+
+    act(() => toggle.props.onPress());
+
+    expect(screen.root.findByProps({ accessibilityLabel: 'Coordinate help' }).props.accessibilityState).toEqual({ expanded: true });
+    expect(visibleText()).toContain('Birth Location Coordinates Help');
+    expect(visibleText()).toContain('Privacy & Storage Policy');
+  });
 });
