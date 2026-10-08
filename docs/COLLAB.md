@@ -126,8 +126,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-079 | Codex -> Codex | Astrology request UI and H-078 provider-error copy only | Integrate reviewed provider-error recovery messages into chart and reflection request failures with focused regression coverage, without changing provider or storage behavior. | done (committing) |
 | H-080 | Codex -> Antigravity | new `src/data/astrologyProgressCopy.ts` only | Create typed, content-only accessible progress labels for validating inputs, calculating placements, saving locally, and generating an optional reflection. Avoid timing, accuracy, or predictive claims; distinguish chart calculation from AI reflection. Do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with calculation and storage-claim precision edits (committing) |
 | H-081 | Codex -> Codex | Astrology request UI and H-080 progress copy only | Integrate reviewed accessible progress states into chart calculation and reflection loading feedback without changing request, provider, or storage behavior. | done (committing) |
-| H-082 | Codex -> Antigravity | new `src/data/astrologyCoordinateHelpCopy.ts` only | Create typed, content-only help copy explaining why latitude/longitude are required, valid ranges, example formats, boundary-location uncertainty, and that coordinates are sent for calculation but not saved. Do not add geocoding, UI, providers, storage, credentials, or modify existing files. | in progress |
+| H-082 | Codex -> Antigravity | new `src/data/astrologyCoordinateHelpCopy.ts` only | Create typed, content-only help copy explaining why latitude/longitude are required, valid ranges, example formats, boundary-location uncertainty, and that coordinates are sent for calculation but not saved. Do not add geocoding, UI, providers, storage, credentials, or modify existing files. | reviewed, accepted with provider-retention and calculation-precision corrections (committing) |
 | H-083 | Codex -> Codex | Astrology form UI and H-082 coordinate help copy only | Integrate reviewed coordinate guidance into an accessible expandable help panel without adding geocoding, location permissions, provider changes, or new storage. | queued after H-082 |
+| H-084 | Codex -> Antigravity | new `src/data/astrologyTimezoneHelpCopy.ts` only | Create typed, content-only help copy explaining IANA timezone identifiers, valid examples such as `Asia/Kolkata`, why country names like `India` are rejected, timezone-without-time behavior, and historical DST uncertainty. Do not add lookup APIs, geocoding, UI, providers, storage, credentials, or modify existing files. | in progress |
 
 ## Completion format
 
@@ -930,3 +931,28 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (15 suites, 62 tests passing).
 - **Follow-up:** Ready for Codex review and integration into H-081 request UI.
+
+### H-082 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyCoordinateHelpCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only educational dataset and accessible guidance bundle explaining:
+    1. **Why Coordinates Are Needed (`why-required`):** Explains that astronomical chart calculations model the sky as seen from an observer's physical vantage point on Earth; while planetary sign positions are broadly consistent worldwide on a given date, local horizon angles (Ascendant/rising sign and Midheaven) and house cusps directly depend on geographic coordinates.
+    2. **Valid Ranges (`valid-ranges`):** Defines numerical boundaries for latitude (-90° to +90°, with + for North and - for South) and longitude (-180° to +180°, with + for East and - for West), prohibiting special character symbols or direction letters.
+    3. **Decimal Format & Examples (`format-examples`):** Explains standard decimal degree formatting with plain numbers (e.g. 40.7128 and -74.0060); includes concrete city examples across all hemispheres (New York, London, Tokyo, Sydney, São Paulo); reassures dreamers that general city-center coordinates found in web maps are ideal and protect address privacy.
+    4. **Boundary-Location Uncertainty (`boundary-uncertainty`):** Details how approximate coordinates or birthplaces near administrative timezone boundaries or extreme polar latitudes (>66° N/S) can introduce minor variation in calculated house cusps or rising degrees; frames placements as gentle symbolic metaphors rather than absolute mathematical facts.
+    5. **Privacy & Storage Policy (`privacy-storage`):** Explicitly guarantees that coordinates are sent only in the transient calculation request payload to compute astronomical positions; coordinates are never saved to local device storage, are never stored in `LocalBirthProfile`, and only the optional display label is kept locally; personal dream journal records remain strictly separate and are never transmitted.
+  - Sourced structured interfaces (`CoordinateHelpSectionId`, `CoordinateRangeRule`, `CoordinateExample`, `CoordinateHelpSection`, `AstrologyCoordinateHelpBundle`), constants (`COORDINATE_RANGE_RULES`, `COORDINATE_EXAMPLES`, `COORDINATE_HELP_SECTIONS`, `COORDINATE_HELP_SECTION_IDS`, `ASTROLOGY_COORDINATE_HELP`), and validation/query helpers:
+    - `getCoordinateHelpSection(id)`
+    - `getAllCoordinateHelpSections()`
+    - `isValidLatitude(value)`
+    - `isValidLongitude(value)`
+    - `validateCoordinates(latitude, longitude)`
+    - `getCoordinatePrivacyStatement()`
+    - `getCoordinateBoundaryUncertaintyNote()`
+    - `isRecognizedCoordinateHelpSectionId(value)` (TypeScript type guard)
+  - Completely non-predictive, non-diagnostic, privacy-first; zero geocoding, UI, routes, services, providers, storage, credentials, or existing files modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 64 tests passing).
+- **Follow-up:** Ready for Codex review and integration into H-083 form help UI.
