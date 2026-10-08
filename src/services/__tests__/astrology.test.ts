@@ -71,6 +71,18 @@ describe('astrology profile validation', () => {
     ]));
   });
 
+  it('rejects ambiguous timezone abbreviations even when the runtime accepts them', () => {
+    const result = validateBirthProfileDraft({
+      birthDate: { year: 1995, month: 4, day: 12 },
+      birthTime: { hour: 8, minute: 15 },
+      timezone: 'EST',
+    }, referenceDate);
+
+    expect(result.issues).toEqual(expect.arrayContaining([
+      expect.objectContaining({ field: 'timezone', code: 'invalid_timezone' }),
+    ]));
+  });
+
   it('rejects location labels above the privacy-friendly boundary', () => {
     const result = validateBirthProfileDraft({
       birthDate: { year: 1995, month: 4, day: 12 },

@@ -31,6 +31,7 @@ import { getMinorBodyGlossaryEntry } from '@/data/astrologyMinorBodyGlossary';
 import { getAngleGlossaryEntry } from '@/data/astrologyAngleGlossary';
 import { AstrologyProgress } from '@/components/astrology/AstrologyProgress';
 import { ASTROLOGY_COORDINATE_HELP } from '@/data/astrologyCoordinateHelpCopy';
+import { ASTROLOGY_TIMEZONE_HELP, suggestAlternativeForCommonInput } from '@/data/astrologyTimezoneHelpCopy';
 
 type FormField = 'birthDate' | 'birthTime' | 'timezone' | 'locationLabel' | 'latitude' | 'longitude';
 type FormErrors = Partial<Record<FormField, string>>;
@@ -62,6 +63,7 @@ export default function AstrologyScreen() {
   const [expandedAspect, setExpandedAspect] = useState<string>();
   const [showPrecisionDetails, setShowPrecisionDetails] = useState(false);
   const [showCoordinateHelp, setShowCoordinateHelp] = useState(false);
+  const [showTimezoneHelp, setShowTimezoneHelp] = useState(false);
   const [busy, setBusy] = useState<'chart' | 'reflection' | null>(null);
   const [message, setMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
@@ -96,7 +98,8 @@ export default function AstrologyScreen() {
 
   const profileIssueMessage = (issue: BirthProfileValidationIssue): string => {
     if (issue.code === 'invalid_timezone') {
-      return `Timezone "${timezone.trim()}" is not valid. Use an IANA timezone such as "Asia/Kolkata".`;
+      const suggestion = suggestAlternativeForCommonInput(timezone) ?? 'Asia/Kolkata';
+      return `Timezone "${timezone.trim()}" is not valid. Use an IANA timezone such as "${suggestion}".`;
     }
     if (issue.code === 'timezone_requires_time') {
       return `Timezone "${timezone.trim()}" requires a birth time. Enter the time as HH:mm or clear the timezone.`;
@@ -258,6 +261,28 @@ export default function AstrologyScreen() {
           {field('birthDate', 'Birth date', birthDate, setBirthDate, 'YYYY-MM-DD')}
           {field('birthTime', 'Birth time (optional)', birthTime, setBirthTime, 'HH:mm')}
           {field('timezone', 'Timezone when time is provided', timezone, setTimezone, 'America/Toronto')}
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityState={{ expanded: showTimezoneHelp }}
+            accessibilityLabel="Timezone help"
+            accessibilityHint="Explains IANA timezone identifiers, examples, and date-only behavior"
+            onPress={() => setShowTimezoneHelp(value => !value)}
+            style={[styles.coordinateHelpToggle, { backgroundColor: inputSurface }]}
+          >
+            <Text variant="subtitle2" color={textColor}>{showTimezoneHelp ? 'Hide timezone help' : 'What timezone format should I use?'}</Text>
+          </TouchableOpacity>
+          {showTimezoneHelp && (
+            <View style={[styles.coordinateHelp, { backgroundColor: inputSurface }]}>
+              <Text variant="subtitle1" color={textColor}>{ASTROLOGY_TIMEZONE_HELP.title}</Text>
+              <Text variant="caption" color={muted} style={styles.optionText}>{ASTROLOGY_TIMEZONE_HELP.guidanceNote}</Text>
+              {ASTROLOGY_TIMEZONE_HELP.sections.map(section => (
+                <View key={section.id} accessibilityLabel={section.accessibilityLabel} style={styles.coordinateHelpSection}>
+                  <Text variant="subtitle2" color={textColor}>{section.title}</Text>
+                  <Text variant="caption" color={muted} style={styles.optionText}>{section.summary}</Text>
+                </View>
+              ))}
+            </View>
+          )}
           {field('locationLabel', 'Private location label (optional)', locationLabel, setLocationLabel, 'Home city')}
           <Text variant="caption" color={muted}>The label stays on this device. Coordinates are sent only when you calculate a chart and are not saved.</Text>
           <View style={styles.coordinateRow}>

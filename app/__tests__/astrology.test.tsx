@@ -79,4 +79,15 @@ describe('astrology form validation', () => {
     expect(visibleText()).toContain('Birth Location Coordinates Help');
     expect(visibleText()).toContain('Privacy & Storage Policy');
   });
+
+  it('reveals IANA timezone guidance on demand', () => {
+    const toggle = screen.root.findByProps({ accessibilityLabel: 'Timezone help' });
+    expect(toggle.props.accessibilityState).toEqual({ expanded: false });
+
+    act(() => toggle.props.onPress());
+
+    expect(screen.root.findByProps({ accessibilityLabel: 'Timezone help' }).props.accessibilityState).toEqual({ expanded: true });
+    expect(visibleText()).toContain('Birth Timezone Help');
+    expect(visibleText()).toContain('Why Country Names & Abbreviations Are Rejected');
+  });
 });

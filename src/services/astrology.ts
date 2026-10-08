@@ -22,8 +22,10 @@ const isValidDate = (year: number, month: number, day: number): boolean => {
 };
 
 const isValidTimezone = (timezone: string): boolean => {
+  const trimmed = timezone.trim();
+  if (trimmed !== 'UTC' && !trimmed.includes('/')) return false;
   try {
-    Intl.DateTimeFormat(undefined, { timeZone: timezone });
+    Intl.DateTimeFormat(undefined, { timeZone: trimmed });
     return true;
   } catch {
     return false;
