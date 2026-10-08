@@ -8,7 +8,8 @@ import Card from '@/components/ui/Card';
 import { useTheme } from '@/providers/ThemeProvider';
 import { BorderRadius, Colors, spacing } from '@/utils/theme';
 import { createLocalBirthProfile, validateBirthProfileDraft } from '@/services/astrology';
-import { AstrologyRemoteError, calculateAstrologyChart, generateAstrologyReflection } from '@/services/astrologyRemote';
+import { calculateAstrologyChart, generateAstrologyReflection } from '@/services/astrologyRemote';
+import { formatAstrologyRequestError } from '@/services/astrologyErrorPresentation';
 import { deleteLocalAstrologyData, readLocalAstrologyBundle, writeLocalAstrologyBundle } from '@/services/astrologyStorage';
 import {
   AstrologyChart,
@@ -23,7 +24,6 @@ import {
   ASTROLOGY_CONSENT_COPY,
   ASTROLOGY_DELETION_COPY,
   ASTROLOGY_PENDING_COPY,
-  ASTROLOGY_UNAVAILABLE_COPY,
 } from '@/data/astrologyConsentCopy';
 import { ASTROLOGY_UNCERTAINTY_COPY, getUncertaintyCopyByPrecision } from '@/data/astrologyUncertaintyCopy';
 import { getHouseGlossaryEntry } from '@/data/astrologyHouseGlossary';
@@ -157,9 +157,7 @@ export default function AstrologyScreen() {
       setShowPrecisionDetails(false);
       setMessage('Chart calculated and saved on this device.');
     } catch (error) {
-      setMessage(error instanceof AstrologyRemoteError && error.code === 'not_available'
-        ? `${ASTROLOGY_UNAVAILABLE_COPY.title}. ${ASTROLOGY_UNAVAILABLE_COPY.description}`
-        : error instanceof Error ? error.message : 'Could not calculate the chart.');
+      setMessage(formatAstrologyRequestError(error, 'chart'));
     } finally {
       setBusy(null);
     }
@@ -177,7 +175,7 @@ export default function AstrologyScreen() {
       setReflection(nextReflection);
       setMessage('Reflection generated and saved on this device.');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Could not create the reflection.');
+      setMessage(formatAstrologyRequestError(error, 'reflection'));
     } finally {
       setBusy(null);
     }
