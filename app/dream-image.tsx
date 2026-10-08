@@ -8,6 +8,7 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { DREAM_IMAGE_PROMPT_TEMPLATES, getDefaultPromptTemplate } from '@/data/dreamImagePromptTemplates';
 import { DREAM_IMAGE_STYLE_LIST } from '@/data/dreamImageStyleMetadata';
 import { DREAM_IMAGE_CONSENT_COPY, DREAM_IMAGE_UNAVAILABLE_COPY } from '@/data/dreamImageConsentCopy';
+import { DREAM_IMAGE_SAFETY_CHECKLIST } from '@/data/dreamImageSafetyGuidelines';
 import { getDreamImageAvailability } from '@/services/dreamImage';
 import { DreamImageStyle } from '@/types/dreamImage';
 import { BorderRadius, Colors, spacing } from '@/utils/theme';
@@ -52,6 +53,16 @@ export default function DreamImageScreen() {
             <Text variant="caption" color={muted} style={styles.noticeText}>{DREAM_IMAGE_UNAVAILABLE_COPY.safeBrowsingNotice}</Text>
           </Card>
         )}
+
+        <Card style={styles.notice} backgroundColor={surface}>
+          <Text variant="subtitle1" color={textColor}>Privacy and safety boundaries</Text>
+          {DREAM_IMAGE_SAFETY_CHECKLIST.map(item => (
+            <View key={item.id} style={styles.checklistItem}>
+              <Text variant="subtitle2" color={textColor}>✓ {item.label}</Text>
+              <Text variant="caption" color={muted} style={styles.optionText}>{item.recommendedSummary}</Text>
+            </View>
+          ))}
+        </Card>
 
         <Text variant="h4" color={textColor} style={styles.heading}>Choose a curated scene</Text>
         {DREAM_IMAGE_PROMPT_TEMPLATES.map(item => {
@@ -115,6 +126,7 @@ const styles = StyleSheet.create({
   intro: { lineHeight: 22, marginBottom: spacing[4], textAlign: 'center' },
   notice: { marginBottom: spacing[5], padding: spacing[4] },
   noticeText: { lineHeight: 20, marginTop: spacing[2] },
+  checklistItem: { marginTop: spacing[3] },
   heading: { marginBottom: spacing[3], marginTop: spacing[2] },
   option: { marginBottom: spacing[3], padding: spacing[4] },
   selected: { borderColor: Colors.primary[500], borderWidth: 2 },

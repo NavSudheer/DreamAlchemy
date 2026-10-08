@@ -3,6 +3,7 @@ import {
   DreamImageRequest,
   GeneratedDreamImage,
 } from '../types/dreamImage';
+import { isDescriptiveAltText } from '../data/dreamImageSafetyGuidelines';
 
 const DREAM_IMAGE_API_URL = process.env.EXPO_PUBLIC_DREAM_IMAGE_API_URL;
 const REQUEST_TIMEOUT_MS = 60_000;
@@ -66,6 +67,9 @@ export async function generateDreamImage(
     const image = await response.json() as Partial<GeneratedDreamImage>;
     if (!image.id || !image.imageUrl || !image.altText || !image.generatedAt) {
       throw new DreamImageError('The dream image response was incomplete. Please try again.');
+    }
+    if (!isDescriptiveAltText(image.altText)) {
+      throw new DreamImageError('The dream image response did not include descriptive alternative text.');
     }
 
     return {
