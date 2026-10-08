@@ -100,7 +100,8 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-053 | Codex -> Codex | Dream Image preparation UI/service boundary and H-047 copy only | Integrate reviewed privacy/unavailable copy and ensure a future request sends only the curated prompt and style—not the local dream id or raw dream content. Do not add a provider. | done (committing) |
 | H-054 | Codex -> Antigravity | new `src/data/dreamImageSafetyGuidelines.ts` only | Create typed, content-only safety and accessibility guidance for future curated Dream Image generation: disallowed raw journal text, personal identifiers, medical/predictive claims, and inaccessible alt text. Include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | in progress |
 | H-055 | Codex -> Antigravity | new `src/data/astrologyConsentCopy.ts` only | Create typed, content-only copy for optional Astrology consent, unavailable-provider, AI-reflection pending, and local-deletion states. Keep it explicit that birth fields/chart summaries may be externally processed while saved results remain local; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | queued after H-054 |
-| H-056 | Codex -> Codex | Astrology glossary helpers and focused tests only | Add regression coverage for case-insensitive body, sign, and aspect lookup plus whitespace-tolerant aspect validation. | in progress |
+| H-056 | Codex -> Codex | Astrology glossary helpers and focused tests only | Add regression coverage for case-insensitive body, sign, and aspect lookup plus whitespace-tolerant aspect validation. | done (committing) |
+| H-057 | Codex -> Codex | optional Astrology UI and H-055 consent copy only | Integrate the reviewed consent, unavailable, pending, and deletion copy into the optional Astrology screen without changing its local-storage or server boundaries. | queued after H-055 |
 
 ## Completion format
 
