@@ -8,6 +8,7 @@ import {
 } from '../astrologyAspectGlossary';
 import { getHouseGlossaryEntry, isValidHouseNumber } from '../astrologyHouseGlossary';
 import { getCanonicalBodyName, hasBodyAlias } from '../astrologyBodyAliases';
+import { getMinorBodyGlossaryEntry } from '../astrologyMinorBodyGlossary';
 
 describe('optional astrology glossaries', () => {
   it('looks up chart bodies without case sensitivity', () => {
@@ -20,6 +21,12 @@ describe('optional astrology glossaries', () => {
     expect(getCanonicalBodyName('Pallas-Athena')).toBe('Pallas');
     expect(hasBodyAlias('mean node')).toBe(false);
     expect(hasBodyAlias('node')).toBe(false);
+  });
+
+  it('resolves provider minor-body aliases to non-predictive glossary entries', () => {
+    expect(getMinorBodyGlossaryEntry('true_node')?.name).toBe('True Node');
+    expect(getMinorBodyGlossaryEntry('Pallas-Athena')?.name).toBe('Pallas');
+    expect(getMinorBodyGlossaryEntry('mean node')).toBeUndefined();
   });
 
   it('looks up zodiac signs without case sensitivity', () => {
