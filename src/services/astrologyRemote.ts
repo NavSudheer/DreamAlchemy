@@ -11,7 +11,11 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL
 const REQUEST_TIMEOUT_MS = 30_000;
 
 export class AstrologyRemoteError extends Error {
-  constructor(message: string) {
+  constructor(
+    message: string,
+    public readonly code: 'not_available' | 'request_failed' | 'timeout' | 'network',
+    public readonly retryable: boolean,
+  ) {
     super(message);
     this.name = 'AstrologyRemoteError';
   }
@@ -28,12 +32,23 @@ const postJson = async <T>(path: string, body: unknown): Promise<T> => {
       signal: controller.signal,
     });
     const result = await response.json().catch(() => ({}));
-    if (!response.ok) throw new AstrologyRemoteError(result?.error || 'The astrology service is unavailable.');
+    if (!response.ok) {
+      if (response.status === 503) {
+        throw new AstrologyRemoteError('Optional Astrology is not available on this build yet.', 'not_available', false);
+      }
+      throw new AstrologyRemoteError(
+        result?.error || 'The astrology service is temporarily unavailable.',
+        'request_failed',
+        response.status >= 500,
+      );
+    }
     return result as T;
   } catch (error) {
     if (error instanceof AstrologyRemoteError) throw error;
-    if ((error as Error)?.name === 'AbortError') throw new AstrologyRemoteError('The astrology request timed out.');
-    throw new AstrologyRemoteError('Could not reach the astrology service.');
+    if ((error as Error)?.name === 'AbortError') {
+      throw new AstrologyRemoteError('The astrology request timed out. Please try again.', 'timeout', true);
+    }
+    throw new AstrologyRemoteError('Could not reach the astrology service. Check your connection and try again.', 'network', true);
   } finally {
     clearTimeout(timeout);
   }

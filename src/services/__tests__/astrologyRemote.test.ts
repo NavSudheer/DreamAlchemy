@@ -1,4 +1,4 @@
-import { calculateAstrologyChart, generateAstrologyReflection } from '../astrologyRemote';
+import { AstrologyRemoteError, calculateAstrologyChart, generateAstrologyReflection } from '../astrologyRemote';
 import { AstrologyChart, AstrologyConsent, LocalBirthProfile } from '../../types/astrology';
 
 const consent: AstrologyConsent = {
@@ -58,5 +58,23 @@ describe('remote astrology privacy boundary', () => {
     expect(requestBody).toEqual({ chart, consent });
     expect(requestBody).not.toHaveProperty('dreamText');
     expect(requestBody).not.toHaveProperty('profile');
+  });
+
+  it('turns a disabled server route into a clear non-retryable release state', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: false,
+      status: 503,
+      json: jest.fn().mockResolvedValue({ error: 'Astrology is not enabled.' }),
+    } as never);
+
+    const error = await calculateAstrologyChart(profile, { latitude: 43.65, longitude: -79.38 }, consent)
+      .catch(value => value);
+
+    expect(error).toBeInstanceOf(AstrologyRemoteError);
+    expect(error).toMatchObject({
+      code: 'not_available',
+      retryable: false,
+      message: 'Optional Astrology is not available on this build yet.',
+    });
   });
 });

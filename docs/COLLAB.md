@@ -89,7 +89,8 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-042 | Codex -> Codex | new optional Astrology route/components, Explore entry, existing H-041 services only | Build the explicit opt-in local Astrology UI without mixing astrology into base Jungian dream analysis. | done (committing) |
 | H-043 | Codex -> Codex | Astrology Vercel routes, provider adapter, focused tests only | Harden the optional Astrology server boundary with disabled-by-default rollout controls and endpoint/provider response contract tests. | done (committing) |
 | H-044 | Codex -> Antigravity | new `src/data/astrologyPlacementGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for the chart bodies and zodiac signs surfaced by the optional Astrology result. Include lookup helpers; do not alter UI, routes, services, providers, storage, or credentials. | queued after H-040 |
-| H-045 | Codex -> Codex | optional Astrology UI/services, test and setup docs only | Run the Mac-test readiness pass for optional Astrology, including unavailable-state UX and a deploy smoke checklist; do not enable production without server secrets and rate controls. | in progress |
+| H-045 | Codex -> Codex | optional Astrology UI/services, test and setup docs only | Run the Mac-test readiness pass for optional Astrology, including unavailable-state UX and a deploy smoke checklist; do not enable production without server secrets and rate controls. | done (committing) |
+| H-046 | Codex -> Codex | Vercel Preview environment and deployed optional Astrology routes only | Configure the server-only Astrology variables, verify the Preview endpoints, and run the documented Mac smoke pass. Never place provider or OpenAI secrets in the client bundle. | awaiting provider key and Vercel Preview access |
 
 ## Completion format
 

@@ -26,3 +26,12 @@ The default provider contract was checked against the [NatalChart.AI developer d
 6. Deleting local astrology data removes the profile, chart, and reflection bundle.
 
 Configure Vercel/provider rate limits and spending alerts before enabling the feature for users. The app should remain usable when either route is unavailable.
+
+## Mac test smoke checklist
+
+1. Add the server-only environment variables to a Vercel Preview deployment, keep `ASTROLOGY_FEATURE_ENABLED=false`, redeploy, and confirm Calculate shows the unavailable-build message without losing the local form.
+2. Set `ASTROLOGY_FEATURE_ENABLED=true`, redeploy, and calculate a dated-only chart and a chart with time/timezone. Confirm neither the private location label nor coordinates reappear after relaunch.
+3. Generate a reflection and confirm it is concise, non-predictive, and contains no dream text or local profile label.
+4. Relaunch the app and confirm the saved profile, chart, and reflection reload from local storage.
+5. Delete local astrology data, confirm the destructive prompt, relaunch, and verify the profile/chart/reflection remain deleted.
+6. Disable the feature flag again after testing unless Vercel rate controls and provider/OpenAI spending alerts are active.
