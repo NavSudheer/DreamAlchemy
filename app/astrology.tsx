@@ -19,6 +19,7 @@ import {
   ASTROLOGY_PENDING_COPY,
   ASTROLOGY_UNAVAILABLE_COPY,
 } from '@/data/astrologyConsentCopy';
+import { ASTROLOGY_UNCERTAINTY_COPY, getUncertaintyCopyByPrecision } from '@/data/astrologyUncertaintyCopy';
 
 const parseDate = (value: string) => {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
@@ -45,6 +46,7 @@ export default function AstrologyScreen() {
   const [reflection, setReflection] = useState<AstrologyReflection>();
   const [expandedPlacement, setExpandedPlacement] = useState<string>();
   const [expandedAspect, setExpandedAspect] = useState<string>();
+  const [showPrecisionDetails, setShowPrecisionDetails] = useState(false);
   const [busy, setBusy] = useState<'chart' | 'reflection' | null>(null);
   const [message, setMessage] = useState('');
 
@@ -93,6 +95,7 @@ export default function AstrologyScreen() {
       setReflection(undefined);
       setExpandedPlacement(undefined);
       setExpandedAspect(undefined);
+      setShowPrecisionDetails(false);
       setMessage('Chart calculated and saved on this device.');
     } catch (error) {
       setMessage(error instanceof AstrologyRemoteError && error.code === 'not_available'
@@ -136,6 +139,7 @@ export default function AstrologyScreen() {
               setReflection(undefined);
               setExpandedPlacement(undefined);
               setExpandedAspect(undefined);
+              setShowPrecisionDetails(false);
               setBirthDate('');
               setBirthTime('');
               setTimezone('');
@@ -155,6 +159,7 @@ export default function AstrologyScreen() {
   const inputSurface = isDark ? Colors.neutral[700] : Colors.neutral[100];
   const textColor = isDark ? Colors.neutral[100] : Colors.neutral[800];
   const muted = isDark ? Colors.neutral[300] : Colors.neutral[600];
+  const precisionCopy = chart ? getUncertaintyCopyByPrecision(chart.precision) : undefined;
 
   const field = (label: string, value: string, onChangeText: (value: string) => void, placeholder: string, keyboardType: KeyboardTypeOptions = 'default') => (
     <View style={styles.field}>
@@ -194,6 +199,26 @@ export default function AstrologyScreen() {
           <Card style={styles.card} backgroundColor={surface}>
             <Text variant="h4" color={textColor}>Calculated chart</Text>
             <Text variant="body2" color={muted}>{chart.placements.length} placements · {chart.aspects.length} aspects · {chart.precision}</Text>
+            {precisionCopy && (
+              <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityState={{ expanded: showPrecisionDetails }}
+                accessibilityLabel={`${ASTROLOGY_UNCERTAINTY_COPY.title}: ${precisionCopy.label}`}
+                accessibilityHint={precisionCopy.accessibilityDescription}
+                onPress={() => setShowPrecisionDetails(value => !value)}
+                style={[styles.precision, { backgroundColor: inputSurface }]}
+              >
+                <Text variant="subtitle2" color={textColor}>{precisionCopy.label} · {showPrecisionDetails ? 'Hide details' : 'Why this matters'}</Text>
+                <Text variant="caption" color={muted} style={styles.optionText}>{precisionCopy.summary}</Text>
+                {showPrecisionDetails && (
+                  <View>
+                    <Text variant="caption" color={muted} style={styles.optionText}>{precisionCopy.explanation}</Text>
+                    {precisionCopy.uncertainFactors.slice(0, 3).map(factor => <Text key={factor} variant="caption" color={muted} style={styles.note}>• {factor}</Text>)}
+                    <Text variant="caption" color={muted} style={styles.symbolicNote}>{ASTROLOGY_UNCERTAINTY_COPY.generalDisclaimer}</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            )}
             {chart.placements.slice(0, 8).map(item => {
               const expanded = expandedPlacement === item.body;
               const bodyGlossary = getBodyGlossaryEntry(item.body);
@@ -279,6 +304,8 @@ const styles = StyleSheet.create({
   consentRow: { alignItems: 'center', flexDirection: 'row', marginVertical: spacing[4] },
   consentText: { flex: 1, lineHeight: 20, marginLeft: spacing[2] },
   placement: { marginTop: spacing[2] },
+  precision: { borderRadius: BorderRadius.md, marginTop: spacing[3], padding: spacing[3] },
+  optionText: { lineHeight: 18, marginTop: spacing[2] },
   sectionLabel: { marginTop: spacing[4] },
   glossary: { borderRadius: BorderRadius.md, marginTop: spacing[2], padding: spacing[3] },
   signNote: { marginTop: spacing[2] },
