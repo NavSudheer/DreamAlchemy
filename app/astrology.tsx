@@ -12,6 +12,7 @@ import { calculateAstrologyChart, generateAstrologyReflection } from '@/services
 import { deleteLocalAstrologyData, readLocalAstrologyBundle, writeLocalAstrologyBundle } from '@/services/astrologyStorage';
 import { AstrologyChart, AstrologyReflection, LocalAstrologyBundle } from '@/types/astrology';
 import { getBodyGlossaryEntry, getSignGlossaryEntry } from '@/data/astrologyPlacementGlossary';
+import { getAspectGlossaryEntry } from '@/data/astrologyAspectGlossary';
 
 const parseDate = (value: string) => {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
@@ -37,6 +38,7 @@ export default function AstrologyScreen() {
   const [chart, setChart] = useState<AstrologyChart>();
   const [reflection, setReflection] = useState<AstrologyReflection>();
   const [expandedPlacement, setExpandedPlacement] = useState<string>();
+  const [expandedAspect, setExpandedAspect] = useState<string>();
   const [busy, setBusy] = useState<'chart' | 'reflection' | null>(null);
   const [message, setMessage] = useState('');
 
@@ -83,6 +85,7 @@ export default function AstrologyScreen() {
       setChart(nextChart);
       setReflection(undefined);
       setExpandedPlacement(undefined);
+      setExpandedAspect(undefined);
       setMessage('Chart calculated and saved on this device.');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Could not calculate the chart.');
@@ -123,6 +126,7 @@ export default function AstrologyScreen() {
               setChart(undefined);
               setReflection(undefined);
               setExpandedPlacement(undefined);
+              setExpandedAspect(undefined);
               setBirthDate('');
               setBirthTime('');
               setTimezone('');
@@ -204,6 +208,32 @@ export default function AstrologyScreen() {
                 </TouchableOpacity>
               );
             })}
+            {!!chart.aspects.length && <Text variant="subtitle1" color={textColor} style={styles.sectionLabel}>Major aspects</Text>}
+            {chart.aspects.slice(0, 6).map((item, index) => {
+              const itemKey = `${item.fromBody}-${item.type}-${item.toBody}-${index}`;
+              const expanded = expandedAspect === itemKey;
+              const glossary = getAspectGlossaryEntry(item.type);
+              return (
+                <TouchableOpacity
+                  key={itemKey}
+                  accessibilityRole="button"
+                  accessibilityState={{ expanded }}
+                  accessibilityLabel={`${item.fromBody} ${item.type} ${item.toBody}${item.orbDegrees != null ? `, orb ${item.orbDegrees} degrees` : ''}`}
+                  accessibilityHint={glossary?.accessibilityDescription}
+                  disabled={!glossary}
+                  onPress={() => setExpandedAspect(expanded ? undefined : itemKey)}
+                  style={styles.placement}
+                >
+                  <Text variant="body2" color={textColor}>{item.fromBody} · {item.type} · {item.toBody}{item.orbDegrees != null ? ` · ${item.orbDegrees.toFixed(2)}°` : ''}{glossary ? (expanded ? ' · Hide notes' : ' · Explore') : ''}</Text>
+                  {expanded && glossary && (
+                    <View style={[styles.glossary, { backgroundColor: inputSurface }]}>
+                      <Text variant="caption" color={muted}><Text variant="subtitle2" color={textColor}>{glossary.archetypalTheme}: </Text>{glossary.contemplativePerspective}</Text>
+                      <Text variant="caption" color={muted} style={styles.symbolicNote}>Traditional symbolic metaphor only—not a fact, diagnosis, or prediction.</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
             {chart.uncertaintyNotes.map(note => <Text key={note} variant="caption" color={muted} style={styles.note}>{note}</Text>)}
             <Text variant="caption" color={muted} style={styles.disclosure}>{chart.reflectiveDisclosure}</Text>
             <Button fullWidth variant="secondary" isLoading={busy === 'reflection'} isDisabled={busy !== null || !consented} onPress={() => void createReflection()}>Create capped AI reflection</Button>
@@ -237,6 +267,7 @@ const styles = StyleSheet.create({
   consentRow: { alignItems: 'center', flexDirection: 'row', marginVertical: spacing[4] },
   consentText: { flex: 1, lineHeight: 20, marginLeft: spacing[2] },
   placement: { marginTop: spacing[2] },
+  sectionLabel: { marginTop: spacing[4] },
   glossary: { borderRadius: BorderRadius.md, marginTop: spacing[2], padding: spacing[3] },
   signNote: { marginTop: spacing[2] },
   symbolicNote: { fontStyle: 'italic', marginTop: spacing[2] },
