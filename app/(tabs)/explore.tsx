@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Href, useRouter, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '@/providers/ThemeProvider';
 import { Colors, spacing, BorderRadius, Shadows } from '@/utils/theme';
 import Text from '@/components/ui/Text';
@@ -225,6 +225,19 @@ export default function ExploreScreen() {
           <Text variant="body1" style={styles.cardDescription}>
             Understand the science and psychology behind dreams
           </Text>
+        </Card>
+
+        <Card
+          variant="gradient"
+          gradientColors={isDark ? ['#42324F', '#2D2438'] : ['#F7EFFA', '#E9D9F0']}
+          style={styles.card}
+          onPress={() => router.push('/astrology' as Href)}
+        >
+          <View style={styles.cardHeader}>
+            <Ionicons name="planet-outline" size={28} color={isDark ? Colors.neutral[100] : Colors.primary[700]} />
+            <Text variant="h4" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.cardTitle}>Optional Astrology</Text>
+          </View>
+          <Text variant="body1" style={styles.cardDescription}>Create a private, non-predictive chart reflection kept separate from dream analysis</Text>
         </Card>
       </ScrollView>
     </View>

@@ -18,6 +18,9 @@ const isFiniteCoordinate = (value, min, max) =>
 export default async function handler(request) {
   if (request.method === 'OPTIONS') return json({}, 204);
   if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
+  if (process.env.ASTROLOGY_FEATURE_ENABLED !== 'true') {
+    return json({ error: 'Astrology is not enabled.' }, 503);
+  }
 
   const apiKey = process.env.ASTROLOGY_API_KEY;
   if (!apiKey) return json({ error: 'Astrology is not configured.' }, 503);

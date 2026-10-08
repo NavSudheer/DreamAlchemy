@@ -86,7 +86,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-039 | Codex -> Codex | `src/services/astrology.ts`, supporting tests only | Add focused contract tests for astrology’s provider-neutral boundaries and non-predictive result shape; do not add a calculation provider or UI. | done `a7c749f` |
 | H-040 | Codex -> Antigravity | new `src/data/dreamImageStyleMetadata.ts` only | Create typed, content-only labels and accessibility descriptions for the existing Dream Image styles. Keep wording artistic, optional, and non-interpretive; no UI, provider, storage, or credential changes. | in progress |
 | H-041 | Codex -> Codex | `api/astrology-chart.js`, `api/astrology-reflection.js`, `src/services/astrologyRemote.ts`, `src/services/astrologyStorage.ts`, `src/types/astrology.ts`, tests and setup docs | Implement the approved stateless Vercel hybrid: server-held provider/OpenAI keys, explicit consent, compact capped AI reflection, and local-only profile/chart/reflection storage. | done (committing) |
-| H-042 | Codex -> Codex | new optional Astrology route/components, Explore entry, existing H-041 services only | Build the explicit opt-in local Astrology UI without mixing astrology into base Jungian dream analysis. | in progress |
+| H-042 | Codex -> Codex | new optional Astrology route/components, Explore entry, existing H-041 services only | Build the explicit opt-in local Astrology UI without mixing astrology into base Jungian dream analysis. | done (committing) |
+| H-043 | Codex -> Codex | Astrology Vercel routes, provider adapter, focused tests only | Harden the optional Astrology server boundary with disabled-by-default rollout controls and endpoint/provider response contract tests. | in progress |
+| H-044 | Codex -> Antigravity | new `src/data/astrologyPlacementGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for the chart bodies and zodiac signs surfaced by the optional Astrology result. Include lookup helpers; do not alter UI, routes, services, providers, storage, or credentials. | queued after H-040 |
 
 ## Completion format
 

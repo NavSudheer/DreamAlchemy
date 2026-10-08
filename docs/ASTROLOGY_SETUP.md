@@ -4,6 +4,7 @@ DreamAlchemy keeps birth profiles, calculated charts, and AI reflections on the 
 
 ## Vercel environment variables
 
+- `ASTROLOGY_FEATURE_ENABLED`: set to `true` only after the provider key and production controls are ready. Leave it unset or `false` to keep both routes disabled.
 - `ASTROLOGY_API_KEY`: server-only chart provider key.
 - `ASTROLOGY_API_URL`: optional chart endpoint override. Defaults to NatalChart.AI `/v1/chart/full`.
 - `OPENAI_API_KEY`: existing server-only OpenAI key.

@@ -18,12 +18,15 @@ const json = (body, status = 200) => new Response(JSON.stringify(body), {
 export default async function handler(request) {
   if (request.method === 'OPTIONS') return json({}, 204);
   if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
+  if (process.env.ASTROLOGY_FEATURE_ENABLED !== 'true') {
+    return json({ error: 'Astrology is not enabled.' }, 503);
+  }
   if (!process.env.OPENAI_API_KEY) return json({ error: 'Reflection service is not configured.' }, 503);
 
   try {
     const body = await request.json();
-    if (body?.consent?.reflectiveUseAcknowledged !== true) {
-      return json({ error: 'Reflective-use acknowledgement is required.' }, 400);
+    if (body?.consent?.reflectiveUseAcknowledged !== true || body?.consent?.externalProcessingAllowed !== true) {
+      return json({ error: 'Explicit astrology processing consent is required.' }, 400);
     }
     if ('dreamText' in (body ?? {}) || 'dream' in (body ?? {})) {
       return json({ error: 'Raw dream text is not accepted by this endpoint.' }, 400);
