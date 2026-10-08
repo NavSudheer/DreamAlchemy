@@ -112,10 +112,11 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-065 | Codex -> Codex | Dream Image preparation UI and H-062 alt-text templates only | Surface the reviewed accessible scene description in the prepared preview and add fallback-alt contract tests without adding a provider. | done (committing) |
 | H-066 | Codex -> Antigravity | new `src/data/astrologyMinorBodyGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for provider-returned True Node, Chiron, Lilith, Ceres, Pallas, Juno, and Vesta labels. Frame each as a traditional symbolic metaphor and include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with health-language and astronomy-precision hardening (committing) |
 | H-067 | Codex -> Codex | Astrology placement resolution and H-064 aliases only | Integrate reviewed provider body-label normalization into glossary lookup and add regression coverage without changing stored chart data. | done (committing) |
-| H-068 | Codex -> Antigravity | new `src/data/astrologyAngleGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for Ascendant and Midheaven with concise accessibility descriptions and lookup helpers. Frame both as traditional symbolic chart angles; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
+| H-068 | Codex -> Antigravity | new `src/data/astrologyAngleGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for Ascendant and Midheaven with concise accessibility descriptions and lookup helpers. Frame both as traditional symbolic chart angles; do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with astronomy-precision and lookup hardening (committing) |
 | H-069 | Codex -> Codex | Astrology placement lookup and H-066 minor-body glossary only | Integrate reviewed minor-body glossary entries into alias-normalized placement expansion and add regression coverage without changing stored chart data. | done (committing) |
 | H-070 | Codex -> Codex | Astrology validation UI and focused component tests only | Add focused regression coverage for field-specific birth-profile, timezone, and coordinate errors without changing provider or storage behavior. | done (committing) |
 | H-071 | Codex -> Codex | Astrology placement UI and H-068 angle glossary only | Integrate reviewed Ascendant and Midheaven explanations into alias-normalized placement expansion with regression coverage, without changing provider or stored chart data. | queued after H-068 |
+| H-072 | Codex -> Antigravity | new `src/data/dreamImageFailureCopy.ts` only | Create typed, content-only recovery copy for optional Dream Image offline, provider-unavailable, moderation-rejected, rate-limited, and retryable-failure states. Keep wording concise, privacy-preserving, non-interpretive, and free of provider promises; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
 
 ## Completion format
 
@@ -711,3 +712,36 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (10 suites, 45 tests passing).
 - **Follow-up:** Ready for Codex review and integration. H-068 is queued next for Antigravity.
+
+### H-068 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyAngleGlossary.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only glossary of non-predictive, archetypal entries for the principal astronomical chart angles:
+    1. **Ascendant (`angle-ascendant`):** Eastern horizon angle (`ASC`, Horoskopos / Ascendens, House 1); threshold of emergence, presence & personal orientation; dawn portal metaphor where consciousness steps into the world; screen-reader accessibility description.
+    2. **Midheaven (`angle-midheaven`):** Southern meridian angle (`MC`, Medium Coeli, House 10); purposeful calling, vocation & visible contribution; midday culmination and zenith metaphor; screen-reader accessibility description.
+  - Sourced each entry with:
+    - Stable unique `id`
+    - Normalized lowercase `angle` key (`ChartAngle`: `'ascendant' | 'midheaven'`)
+    - Canonical `name`
+    - Astronomical `abbreviation` (`ASC`, `MC`)
+    - Classical Latin/Greek `classicalTerm`
+    - Precise `astronomicalDefinition`
+    - Associated quadrant house number `associatedHouse` (1 and 10)
+    - High-level `archetypalTheme`
+    - Historical `traditionalMetaphor`
+    - Non-predictive `contemplativePerspective`
+    - Distinctive symbolic `keywords`
+    - Screen-reader `accessibilityDescription`
+  - Defined clean interfaces (`ChartAngle`, `AstrologyAngleGlossaryEntry`), constants (`ASTROLOGY_ANGLE_GLOSSARY`, `CHART_ANGLE_KEYS`), and query helpers:
+    - `getAngleGlossaryEntry(angleName)` (supports direct ID, angle key, abbreviation, canonical name, and alias variants via `astrologyBodyAliases`)
+    - `getAllAngleGlossaryEntries()`
+    - `getAllAngleKeys()`
+    - `hasAngleGlossaryEntry(angleName)`
+    - `isValidChartAngle(value)` (TypeScript type guard)
+    - `getAngleAccessibilityDescription(angleName)`
+  - Educational, symbolic, non-predictive, and non-diagnostic; zero claims of fatalism, fortune-telling, or psychological assessment. UI, routes, services, providers, storage, credentials, and existing files left untouched.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (11 suites, 49 tests passing).
+- **Follow-up:** Ready for Codex review and integration.
