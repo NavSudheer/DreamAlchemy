@@ -122,8 +122,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-075 | Codex -> Codex | Dream Image result UI and H-074 action copy only | Integrate reviewed generated-image action labels and confirmations into provider-neutral result components without enabling a provider or adding storage behavior. | done (committing) |
 | H-076 | Codex -> Antigravity | new `src/data/dreamImageProgressCopy.ts` only | Create typed, content-only accessible progress labels for queued, moderating, rendering, and finalizing Dream Image states. Avoid timing promises and interpretation claims; reiterate that only curated scene/style inputs are processed. Do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with privacy-claim and policy wording precision edits (committing) |
 | H-077 | Codex -> Codex | Dream Image provider-neutral loading UI and H-076 progress copy only | Integrate reviewed accessible progress states into a reusable generation-status component without enabling a provider or adding storage behavior. | done (committing) |
-| H-078 | Codex -> Antigravity | new `src/data/astrologyProviderErrorCopy.ts` only | Create typed, content-only recovery copy for optional Astrology disabled, offline, invalid-provider-response, rate-limited, and reflection-unavailable states. Keep it non-predictive and explicit about local data preservation; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
+| H-078 | Codex -> Antigravity | new `src/data/astrologyProviderErrorCopy.ts` only | Create typed, content-only recovery copy for optional Astrology disabled, offline, invalid-provider-response, rate-limited, and reflection-unavailable states. Keep it non-predictive and explicit about local data preservation; do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with persistence-boundary corrections (committing) |
 | H-079 | Codex -> Codex | Astrology request UI and H-078 provider-error copy only | Integrate reviewed provider-error recovery messages into chart and reflection request failures with focused regression coverage, without changing provider or storage behavior. | queued after H-078 |
+| H-080 | Codex -> Antigravity | new `src/data/astrologyProgressCopy.ts` only | Create typed, content-only accessible progress labels for validating inputs, calculating placements, saving locally, and generating an optional reflection. Avoid timing, accuracy, or predictive claims; distinguish chart calculation from AI reflection. Do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
 
 ## Completion format
 
@@ -852,3 +853,34 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (13 suites, 56 tests passing).
 - **Follow-up:** Ready for Codex review and integration into H-077 loading UI.
+
+### H-078 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyProviderErrorCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only dataset of user-facing recovery messages, actionable guidance, and local data preservation guarantees across all failure states of the optional Astrology flow:
+    1. **Disabled (`disabled`):** Explains that optional astrology reflection is not enabled or configured for the build; invites exploring local dream journal and techniques; confirms entered birth profile remains stored locally and not transmitted.
+    2. **Offline (`offline`):** Explains that calculating an astrology chart requires an active network connection to reach calculation endpoints; guides user to verify Wi-Fi/mobile data; marks retryable; confirms profile and dream entries remain stored safely on device.
+    3. **Invalid Provider Response (`invalid-provider-response`):** Explains that the external calculation service responded with incomplete or unparseable astronomical data; suggests verifying birth date, time, and coordinates; marks retryable; confirms profile details remain intact locally so user does not need to re-enter info.
+    4. **Rate Limited (`rate-limited`):** Explains that session calculation or reflection request threshold has been reached; advises waiting a few moments; confirms previously calculated charts and profile remain safely accessible locally.
+    5. **Reflection Unavailable (`reflection-unavailable`):** Explains that the AI symbolic reflection service is temporarily offline or unconfigured; guides user to explore calculated chart placements, signs, and symbolic aspects locally; confirms calculated chart placements and profile remain fully preserved on device.
+  - Sourced each state entry with:
+    - State key `state` (`AstrologyProviderErrorState`)
+    - Dialog/card header title `title`
+    - Educational issue explanation `message`
+    - Actionable remedy `recoveryAction`
+    - Boolean `retryable` flag
+    - Local data safety statement `localDataPreservation`
+    - User-facing button label `actionButtonLabel`
+  - Defined clean interfaces (`AstrologyProviderErrorState`, `AstrologyProviderErrorEntry`, `AstrologyProviderErrorBundle`), constants (`ASTROLOGY_PROVIDER_ERROR_COPY`, `ASTROLOGY_PROVIDER_ERROR_BUNDLE`, `ASTROLOGY_PROVIDER_ERROR_STATES`), and query/resolution helpers:
+    - `getAstrologyProviderErrorCopy(state)`
+    - `getAllAstrologyProviderErrorStates()`
+    - `getAllAstrologyProviderErrorEntries()`
+    - `isRetryableProviderError(state)`
+    - `isRecognizedProviderErrorState(value)` (TypeScript type guard)
+    - `resolveAstrologyProviderError(error)` (maps Error instances, status codes, or strings to matching typed failure entries)
+  - Educational, non-predictive, non-diagnostic, and privacy-first; zero modifications to UI, routes, services, providers, storage, credentials, or existing files.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (14 suites, 58 tests passing).
+- **Follow-up:** Ready for Codex review and integration into H-079 request UI.
