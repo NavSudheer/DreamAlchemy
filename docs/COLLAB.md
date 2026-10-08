@@ -95,10 +95,11 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-048 | Codex -> Codex | optional Dream Images UI using existing provider-neutral contracts/data only | Build a provider-neutral, disabled-by-default Dream Image preparation screen that lets users choose a curated template and style without sending raw dream text or adding a provider. | done (committing) |
 | H-049 | Codex -> Codex | Dream Image server proxy/provider integration only after explicit provider approval | Add the optional server-held image provider integration, moderation, rate controls, and explicit consent without accepting raw dream text. | awaiting provider selection and approval |
 | H-050 | Codex -> Codex | optional Astrology screen and H-044 glossary only | Add concise, expandable body/sign explanations to calculated chart placements while retaining the non-predictive disclosure and local-only result storage. | done (committing) |
-| H-051 | Codex -> Antigravity | new `src/data/astrologyAspectGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for the five major aspect types returned by the current calculation provider. Include lookup helpers and concise accessibility descriptions; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | in progress |
-| H-052 | Codex -> Codex | optional Astrology screen and H-051 glossary only | Integrate reviewed aspect explanations into the calculated-chart view with accessible expansion and the existing non-predictive disclosure. | queued after H-051 |
+| H-051 | Codex -> Antigravity | new `src/data/astrologyAspectGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for the five major aspect types returned by the current calculation provider. Include lookup helpers and concise accessibility descriptions; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | reviewed, accepted with wording hardening (committing) |
+| H-052 | Codex -> Codex | optional Astrology screen and H-051 glossary only | Integrate reviewed aspect explanations into the calculated-chart view with accessible expansion and the existing non-predictive disclosure. | in progress |
 | H-053 | Codex -> Codex | Dream Image preparation UI/service boundary and H-047 copy only | Integrate reviewed privacy/unavailable copy and ensure a future request sends only the curated prompt and style—not the local dream id or raw dream content. Do not add a provider. | done (committing) |
-| H-054 | Codex -> Antigravity | new `src/data/dreamImageSafetyGuidelines.ts` only | Create typed, content-only safety and accessibility guidance for future curated Dream Image generation: disallowed raw journal text, personal identifiers, medical/predictive claims, and inaccessible alt text. Include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | queued after H-051 |
+| H-054 | Codex -> Antigravity | new `src/data/dreamImageSafetyGuidelines.ts` only | Create typed, content-only safety and accessibility guidance for future curated Dream Image generation: disallowed raw journal text, personal identifiers, medical/predictive claims, and inaccessible alt text. Include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | in progress |
+| H-055 | Codex -> Antigravity | new `src/data/astrologyConsentCopy.ts` only | Create typed, content-only copy for optional Astrology consent, unavailable-provider, AI-reflection pending, and local-deletion states. Keep it explicit that birth fields/chart summaries may be externally processed while saved results remain local; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | queued after H-054 |
 
 ## Completion format
 
@@ -450,3 +451,36 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (8 suites, 33 tests passing).
 - **Follow-up:** Ready for Codex review and integration. H-051 is queued next for Antigravity.
+
+### H-051 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyAspectGlossary.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only dataset of non-predictive, archetypal glossary entries for all 5 major Ptolemaic aspect types returned by chart calculations:
+    1. **Conjunction (`conjunction`):** 0° geometric angle, fusion relationship dynamic, concentrated focus archetypal theme, reflective invitation on unified intentions, screen-reader accessibility description.
+    2. **Sextile (`sextile`):** 60° geometric angle, opportunity relationship dynamic, supportive creative dialogue and open affinity, screen-reader accessibility description.
+    3. **Square (`square`):** 90° geometric angle, tension relationship dynamic, dynamic friction and catalytic crossroads, screen-reader accessibility description.
+    4. **Trine (`trine`):** 120° geometric angle, flow relationship dynamic, natural resonance and effortless harmonic grace, screen-reader accessibility description.
+    5. **Opposition (`opposition`):** 180° geometric angle, polarity relationship dynamic, complementary polar perspective and relational balance, screen-reader accessibility description.
+  - Sourced each entry with:
+    - Stable unique `id` (e.g. `aspect-conjunction`)
+    - Normalized lowercase `type` (`MajorAspectType`)
+    - Display `name` (e.g. `'Conjunction'`)
+    - Exact `angleDegrees` (0, 60, 90, 120, 180)
+    - `relationshipDynamic` ('fusion' | 'opportunity' | 'tension' | 'flow' | 'polarity')
+    - `archetypalTheme` title
+    - Non-predictive, introspective `contemplativePerspective`
+    - Distinctive symbolic `keywords`
+    - Explicit `accessibilityDescription` for assistive tech / screen readers
+  - Defined clean interfaces (`MajorAspectType`, `AstrologyAspectGlossaryEntry`), constants (`ASTROLOGY_ASPECT_GLOSSARY`, `MAJOR_ASPECT_TYPES`), and helper functions:
+    - `getAspectGlossaryEntry(aspectType)` (case-insensitive lookup by name or type)
+    - `getAllAspectGlossaryEntries()`
+    - `getAllMajorAspectTypes()`
+    - `hasAspectGlossaryEntry(aspectType)`
+    - `isValidMajorAspectType(value)` (TypeScript type guard)
+    - `getAspectAccessibilityDescription(aspectType)`
+  - Strictly educational, symbolic, non-predictive, and non-diagnostic; zero fortunes, diagnoses, or determinism. UI, routes, services, providers, storage, credentials, and existing data files left untouched.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (8 suites, 34 tests passing).
+- **Follow-up:** Ready for Codex review and integration. H-054 is queued next for Antigravity.
