@@ -28,6 +28,7 @@ import {
 import { ASTROLOGY_UNCERTAINTY_COPY, getUncertaintyCopyByPrecision } from '@/data/astrologyUncertaintyCopy';
 import { getHouseGlossaryEntry } from '@/data/astrologyHouseGlossary';
 import { getMinorBodyGlossaryEntry } from '@/data/astrologyMinorBodyGlossary';
+import { getAngleGlossaryEntry } from '@/data/astrologyAngleGlossary';
 
 type FormField = 'birthDate' | 'birthTime' | 'timezone' | 'locationLabel' | 'latitude' | 'longitude';
 type FormErrors = Partial<Record<FormField, string>>;
@@ -299,9 +300,10 @@ export default function AstrologyScreen() {
               const expanded = expandedPlacement === item.body;
               const bodyGlossary = getBodyGlossaryEntry(item.body);
               const minorBodyGlossary = getMinorBodyGlossaryEntry(item.body);
+              const angleGlossary = getAngleGlossaryEntry(item.body);
               const signGlossary = getSignGlossaryEntry(item.sign);
               const houseGlossary = item.house ? getHouseGlossaryEntry(item.house) : undefined;
-              const hasGlossary = !!(bodyGlossary || minorBodyGlossary || signGlossary || houseGlossary);
+              const hasGlossary = !!(bodyGlossary || minorBodyGlossary || angleGlossary || signGlossary || houseGlossary);
               return (
                 <TouchableOpacity
                   key={item.body}
@@ -318,6 +320,7 @@ export default function AstrologyScreen() {
                     <View style={[styles.glossary, { backgroundColor: inputSurface }]}>
                       {bodyGlossary && <Text variant="caption" color={muted}><Text variant="subtitle2" color={textColor}>{bodyGlossary.archetypalTheme}: </Text>{bodyGlossary.contemplativePerspective}</Text>}
                       {minorBodyGlossary && <Text variant="caption" color={muted}><Text variant="subtitle2" color={textColor}>{minorBodyGlossary.archetypalTheme}: </Text>{minorBodyGlossary.contemplativePerspective}</Text>}
+                      {angleGlossary && <Text variant="caption" color={muted}><Text variant="subtitle2" color={textColor}>{angleGlossary.archetypalTheme}: </Text>{angleGlossary.contemplativePerspective}</Text>}
                       {signGlossary && <Text variant="caption" color={muted} style={styles.signNote}><Text variant="subtitle2" color={textColor}>{item.sign} · {signGlossary.element} · {signGlossary.modality}: </Text>{signGlossary.contemplativePerspective}</Text>}
                       {houseGlossary && <Text variant="caption" color={muted} style={styles.signNote}><Text variant="subtitle2" color={textColor}>{houseGlossary.name} · {houseGlossary.classification}: </Text>{houseGlossary.contemplativePerspective}</Text>}
                       <Text variant="caption" color={muted} style={styles.symbolicNote}>Optional symbolic traditions only—not facts about you or predictions.</Text>
