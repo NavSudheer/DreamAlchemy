@@ -9,6 +9,7 @@ import { DREAM_IMAGE_PROMPT_TEMPLATES, getDefaultPromptTemplate } from '@/data/d
 import { DREAM_IMAGE_STYLE_LIST } from '@/data/dreamImageStyleMetadata';
 import { DREAM_IMAGE_CONSENT_COPY, DREAM_IMAGE_UNAVAILABLE_COPY } from '@/data/dreamImageConsentCopy';
 import { DREAM_IMAGE_SAFETY_CHECKLIST } from '@/data/dreamImageSafetyGuidelines';
+import { getAltTextForTemplate } from '@/data/dreamImageAltTextTemplates';
 import { getDreamImageAvailability } from '@/services/dreamImage';
 import { DreamImageStyle } from '@/types/dreamImage';
 import { BorderRadius, Colors, spacing } from '@/utils/theme';
@@ -110,6 +111,8 @@ export default function DreamImageScreen() {
           <Text variant="h4" color={textColor}>Prepared reflection</Text>
           <Text variant="subtitle2" color={textColor} style={styles.previewLabel}>{template.title} · {style}</Text>
           <Text variant="body2" color={muted} style={styles.prompt}>{template.promptText}</Text>
+          <Text variant="subtitle2" color={textColor}>Accessible scene description</Text>
+          <Text variant="caption" color={muted} style={styles.optionText}>{getAltTextForTemplate(template.id, style)}</Text>
           <Text variant="caption" color={muted}>
             {DREAM_IMAGE_CONSENT_COPY.consentCheckboxLabel}
           </Text>
