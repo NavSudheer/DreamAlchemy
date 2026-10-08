@@ -120,8 +120,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-073 | Codex -> Codex | Dream Image preparation UI and H-072 failure copy only | Integrate reviewed failure-specific recovery messages into the optional Dream Image preparation flow without adding a provider or accepting raw dream text. | done (committing) |
 | H-074 | Codex -> Antigravity | new `src/data/dreamImageResultActionsCopy.ts` only | Create typed, content-only labels, confirmations, and accessibility descriptions for future generated-image regenerate, save locally, share, and delete actions. Keep wording explicit that journal text is not embedded or shared automatically; do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with platform-sharing and privacy-claim precision edits (committing) |
 | H-075 | Codex -> Codex | Dream Image result UI and H-074 action copy only | Integrate reviewed generated-image action labels and confirmations into provider-neutral result components without enabling a provider or adding storage behavior. | done (committing) |
-| H-076 | Codex -> Antigravity | new `src/data/dreamImageProgressCopy.ts` only | Create typed, content-only accessible progress labels for queued, moderating, rendering, and finalizing Dream Image states. Avoid timing promises and interpretation claims; reiterate that only curated scene/style inputs are processed. Do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
+| H-076 | Codex -> Antigravity | new `src/data/dreamImageProgressCopy.ts` only | Create typed, content-only accessible progress labels for queued, moderating, rendering, and finalizing Dream Image states. Avoid timing promises and interpretation claims; reiterate that only curated scene/style inputs are processed. Do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with privacy-claim and policy wording precision edits (committing) |
 | H-077 | Codex -> Codex | Dream Image provider-neutral loading UI and H-076 progress copy only | Integrate reviewed accessible progress states into a reusable generation-status component without enabling a provider or adding storage behavior. | queued after H-076 |
+| H-078 | Codex -> Antigravity | new `src/data/astrologyProviderErrorCopy.ts` only | Create typed, content-only recovery copy for optional Astrology disabled, offline, invalid-provider-response, rate-limited, and reflection-unavailable states. Keep it non-predictive and explicit about local data preservation; do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
 
 ## Completion format
 
@@ -813,3 +814,40 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (12 suites, 53 tests passing).
 - **Follow-up:** Ready for Codex review and integration.
+
+### H-076 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dreamImageProgressCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only dataset of user-facing status labels, accessible announcements, step indicators, and privacy reassurances for all active phases of the optional Dream Image generation workflow:
+    1. **Queued (`queued`, Step 1 of 4):** Explains that the request is in queue awaiting image service capacity; announces preparing curated prompt and style; explicitly reminds users that only the curated scene template and style are processed while raw dream journal text stays strictly local.
+    2. **Moderating (`moderating`, Step 2 of 4):** Explains verifying that the curated scene description meets community safety guidelines before rendering; announces prompt safety check; confirms raw journal entries and personal reflections are never inspected or transmitted.
+    3. **Rendering (`rendering`, Step 3 of 4):** Explains creating an artistic visual interpretation from the selected scene template and art style; avoids interpretation claims (strictly visual/artistic reflection, no claims of dream decoding); explicitly confirms no personal dream narratives or dates are included in rendering.
+    4. **Finalizing (`finalizing`, Step 4 of 4):** Explains preparing the rendered reflection image and descriptive alternative text for local display; confirms that the reflection is delivered without modifying or exporting saved dream journal entries.
+  - Sourced each state entry with:
+    - State key `state` (`DreamImageProgressState`)
+    - Status title `label`
+    - Compact label `shortLabel`
+    - Informative explanation `description` (strictly timing-promise free)
+    - Screen-reader accessible label `accessibilityLabel`
+    - Contextual screen-reader hint `accessibilityHint`
+    - Screen-reader live region announcement `liveRegionAnnouncement`
+    - Reassurance statement `privacyReassurance`
+    - Sequential step number `stepNumber` and total steps count `totalSteps`
+  - Defined clean interfaces (`DreamImageProgressState`, `DreamImageProgressEntry`, `DreamImageProgressBundle`), constants (`DREAM_IMAGE_PROGRESS_COPY`, `DREAM_IMAGE_PROGRESS_BUNDLE`, `DREAM_IMAGE_PROGRESS_STATES`), and query/navigation helpers:
+    - `getDreamImageProgressCopy(state)`
+    - `getAllDreamImageProgressStates()`
+    - `getAllDreamImageProgressEntries()`
+    - `getProgressAccessibilityLabel(state)`
+    - `getProgressAccessibilityHint(state)`
+    - `getProgressAnnouncement(state)`
+    - `getProgressPrivacyReassurance(state)`
+    - `getProgressStep(state)`
+    - `isRecognizedProgressState(value)` (TypeScript type guard)
+    - `getNextProgressState(current)`
+    - `getPreviousProgressState(current)`
+  - Completely privacy-preserving, non-interpretive, timing-guarantee free; zero modifications to UI, routes, services, providers, storage, credentials, or existing files.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (13 suites, 56 tests passing).
+- **Follow-up:** Ready for Codex review and integration into H-077 loading UI.
