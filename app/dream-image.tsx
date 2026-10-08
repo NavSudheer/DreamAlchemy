@@ -10,6 +10,7 @@ import { DREAM_IMAGE_STYLE_LIST } from '@/data/dreamImageStyleMetadata';
 import { DREAM_IMAGE_CONSENT_COPY, DREAM_IMAGE_UNAVAILABLE_COPY } from '@/data/dreamImageConsentCopy';
 import { DREAM_IMAGE_SAFETY_CHECKLIST } from '@/data/dreamImageSafetyGuidelines';
 import { getAltTextForTemplate } from '@/data/dreamImageAltTextTemplates';
+import { getDreamImageFailureCopy } from '@/data/dreamImageFailureCopy';
 import { getDreamImageAvailability } from '@/services/dreamImage';
 import { DreamImageStyle } from '@/types/dreamImage';
 import { BorderRadius, Colors, spacing } from '@/utils/theme';
@@ -21,6 +22,7 @@ export default function DreamImageScreen() {
   const [templateId, setTemplateId] = useState(defaultTemplate.id);
   const [style, setStyle] = useState<DreamImageStyle>(defaultTemplate.recommendedStyle);
   const availability = getDreamImageAvailability();
+  const unavailableCopy = getDreamImageFailureCopy('provider-unavailable');
   const template = useMemo(
     () => DREAM_IMAGE_PROMPT_TEMPLATES.find(item => item.id === templateId) ?? defaultTemplate,
     [defaultTemplate, templateId],
@@ -47,10 +49,12 @@ export default function DreamImageScreen() {
         {!availability.available && (
           <Card style={styles.notice} backgroundColor={surface}>
             <Text variant="caption" color={muted}>{DREAM_IMAGE_UNAVAILABLE_COPY.badgeLabel}</Text>
-            <Text variant="subtitle1" color={textColor} style={styles.noticeText}>{DREAM_IMAGE_UNAVAILABLE_COPY.title}</Text>
+            <Text variant="subtitle1" color={textColor} style={styles.noticeText}>{unavailableCopy.title}</Text>
             <Text variant="body2" color={muted} style={styles.noticeText}>
-              {DREAM_IMAGE_UNAVAILABLE_COPY.description}
+              {unavailableCopy.message}
             </Text>
+            <Text variant="body2" color={muted} style={styles.noticeText}>{unavailableCopy.recoveryAction}</Text>
+            <Text variant="caption" color={muted} style={styles.noticeText}>{unavailableCopy.privacyReassurance}</Text>
             <Text variant="caption" color={muted} style={styles.noticeText}>{DREAM_IMAGE_UNAVAILABLE_COPY.safeBrowsingNotice}</Text>
           </Card>
         )}
