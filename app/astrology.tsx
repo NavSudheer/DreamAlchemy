@@ -20,6 +20,7 @@ import {
   ASTROLOGY_UNAVAILABLE_COPY,
 } from '@/data/astrologyConsentCopy';
 import { ASTROLOGY_UNCERTAINTY_COPY, getUncertaintyCopyByPrecision } from '@/data/astrologyUncertaintyCopy';
+import { getHouseGlossaryEntry } from '@/data/astrologyHouseGlossary';
 
 const parseDate = (value: string) => {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
@@ -223,22 +224,25 @@ export default function AstrologyScreen() {
               const expanded = expandedPlacement === item.body;
               const bodyGlossary = getBodyGlossaryEntry(item.body);
               const signGlossary = getSignGlossaryEntry(item.sign);
+              const houseGlossary = item.house ? getHouseGlossaryEntry(item.house) : undefined;
+              const hasGlossary = !!(bodyGlossary || signGlossary || houseGlossary);
               return (
                 <TouchableOpacity
                   key={item.body}
                   accessibilityRole="button"
                   accessibilityState={{ expanded }}
                   accessibilityLabel={`${item.body} in ${item.sign}${item.house ? `, house ${item.house}` : ''}`}
-                  accessibilityHint={bodyGlossary || signGlossary ? 'Shows or hides optional symbolic glossary notes' : undefined}
-                  disabled={!bodyGlossary && !signGlossary}
+                  accessibilityHint={hasGlossary ? 'Shows or hides optional symbolic glossary notes' : undefined}
+                  disabled={!hasGlossary}
                   onPress={() => setExpandedPlacement(expanded ? undefined : item.body)}
                   style={styles.placement}
                 >
-                  <Text variant="body2" color={textColor}>{item.body}: {item.sign}{item.house ? ` · House ${item.house}` : ''}{bodyGlossary || signGlossary ? (expanded ? ' · Hide notes' : ' · Explore') : ''}</Text>
-                  {expanded && (bodyGlossary || signGlossary) && (
+                  <Text variant="body2" color={textColor}>{item.body}: {item.sign}{item.house ? ` · House ${item.house}` : ''}{hasGlossary ? (expanded ? ' · Hide notes' : ' · Explore') : ''}</Text>
+                  {expanded && hasGlossary && (
                     <View style={[styles.glossary, { backgroundColor: inputSurface }]}>
                       {bodyGlossary && <Text variant="caption" color={muted}><Text variant="subtitle2" color={textColor}>{bodyGlossary.archetypalTheme}: </Text>{bodyGlossary.contemplativePerspective}</Text>}
                       {signGlossary && <Text variant="caption" color={muted} style={styles.signNote}><Text variant="subtitle2" color={textColor}>{item.sign} · {signGlossary.element} · {signGlossary.modality}: </Text>{signGlossary.contemplativePerspective}</Text>}
+                      {houseGlossary && <Text variant="caption" color={muted} style={styles.signNote}><Text variant="subtitle2" color={textColor}>{houseGlossary.name} · {houseGlossary.classification}: </Text>{houseGlossary.contemplativePerspective}</Text>}
                       <Text variant="caption" color={muted} style={styles.symbolicNote}>Optional symbolic traditions only—not facts about you or predictions.</Text>
                     </View>
                   )}
