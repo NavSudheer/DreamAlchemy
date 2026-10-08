@@ -128,8 +128,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-081 | Codex -> Codex | Astrology request UI and H-080 progress copy only | Integrate reviewed accessible progress states into chart calculation and reflection loading feedback without changing request, provider, or storage behavior. | done (committing) |
 | H-082 | Codex -> Antigravity | new `src/data/astrologyCoordinateHelpCopy.ts` only | Create typed, content-only help copy explaining why latitude/longitude are required, valid ranges, example formats, boundary-location uncertainty, and that coordinates are sent for calculation but not saved. Do not add geocoding, UI, providers, storage, credentials, or modify existing files. | reviewed, accepted with provider-retention and calculation-precision corrections (committing) |
 | H-083 | Codex -> Codex | Astrology form UI and H-082 coordinate help copy only | Integrate reviewed coordinate guidance into an accessible expandable help panel without adding geocoding, location permissions, provider changes, or new storage. | done (committing) |
-| H-084 | Codex -> Antigravity | new `src/data/astrologyTimezoneHelpCopy.ts` only | Create typed, content-only help copy explaining IANA timezone identifiers, valid examples such as `Asia/Kolkata`, why country names like `India` are rejected, timezone-without-time behavior, and historical DST uncertainty. Do not add lookup APIs, geocoding, UI, providers, storage, credentials, or modify existing files. | in progress |
+| H-084 | Codex -> Antigravity | new `src/data/astrologyTimezoneHelpCopy.ts` only | Create typed, content-only help copy explaining IANA timezone identifiers, valid examples such as `Asia/Kolkata`, why country names like `India` are rejected, timezone-without-time behavior, and historical DST uncertainty. Do not add lookup APIs, geocoding, UI, providers, storage, credentials, or modify existing files. | reviewed, accepted with date-only, ambiguity, and historical-coverage corrections (committing) |
 | H-085 | Codex -> Codex | Astrology form UI and H-084 timezone help copy only | Integrate reviewed timezone guidance beside field-specific validation without adding timezone lookup, geocoding, provider changes, or new storage. | queued after H-084 |
+| H-086 | Codex -> Antigravity | new `src/data/astrologyBirthTimeHelpCopy.ts` only | Create typed, content-only guidance for optional birth time, 24-hour `HH:mm` format, unknown-time/date-only mode, recorded-time rounding, and avoiding guessed times. Keep wording non-predictive; do not add UI, providers, storage, credentials, or modify existing files. | in progress |
 
 ## Completion format
 
@@ -957,3 +958,26 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 64 tests passing).
 - **Follow-up:** Ready for Codex review and integration into H-083 form help UI.
+
+### H-084 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyTimezoneHelpCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only educational dataset and accessible guidance bundle explaining:
+    1. **What Is an IANA Timezone (`what-is-iana`):** Explains that IANA Time Zone Database identifiers use Area/Location structures (e.g. Continent/City like `Asia/Kolkata` or `America/New_York`) to encapsulate the entire historical record of local clock changes, daylight saving transitions, and municipal calendar shifts rather than ambiguous static offsets.
+    2. **Valid Formats & Examples (`valid-examples`):** Details standard Continent/City formatting, underscores for multi-word cities, case-sensitivity conventions, and concrete examples across global regions (`Asia/Kolkata`, `America/New_York`, `America/Chicago`, `America/Los_Angeles`, `Europe/London`, `Asia/Tokyo`, `Australia/Sydney`, `UTC`).
+    3. **Why Country Names & Abbreviations Are Rejected (`why-countries-rejected`):** Explains that country names (e.g. "India", "USA", "Australia") do not map 1:1 to timezone definitions and often span multiple time zones; abbreviations (e.g. "IST", "EST", "CST") are ambiguous across different nations and do not indicate whether daylight saving was active in a given birth year.
+    4. **Timezone Without Birth Time (`timezone-without-time`):** Explains that timezones serve solely to convert local clock time to universal astronomical time (UTC); without a birth time, chart calculations operate in date-only mode with a midday solar reference (time-dependent angles and houses are withheld); supplying a timezone without a time would imply false precision, so the form requires leaving timezone blank unless a birth time is entered.
+    5. **Historical DST & Offset Uncertainty (`historical-dst-uncertainty`):** Details how historical daylight saving laws, wartime double-summer time, and municipal ordinance variations throughout the 20th century can introduce minor calculation uncertainty for past birth years; frames placements as gentle symbolic perspectives rather than absolute deterministic facts.
+  - Sourced structured interfaces (`TimezoneHelpSectionId`, `TimezoneExample`, `TimezoneRejectedExample`, `TimezoneHelpSection`, `AstrologyTimezoneHelpBundle`), constants (`TIMEZONE_EXAMPLES`, `TIMEZONE_REJECTED_EXAMPLES`, `TIMEZONE_HELP_SECTIONS`, `TIMEZONE_HELP_SECTION_IDS`, `ASTROLOGY_TIMEZONE_HELP`), and validation/query helpers:
+    - `getTimezoneHelpSection(id)`
+    - `getAllTimezoneHelpSections()`
+    - `isValidIanaTimezone(value)`
+    - `suggestAlternativeForCommonInput(input)` (maps common country names and abbreviations to canonical IANA alternatives)
+    - `explainTimezoneIssue(timezone, hasBirthTime)`
+    - `isRecognizedTimezoneHelpSectionId(value)` (TypeScript type guard)
+  - Educational, non-predictive, non-diagnostic, and privacy-preserving; zero lookup APIs, geocoding, UI, routes, services, providers, storage, credentials, or existing files modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 65 tests passing).
+- **Follow-up:** Ready for Codex review and integration into H-085 form UI.
