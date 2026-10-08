@@ -124,8 +124,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-077 | Codex -> Codex | Dream Image provider-neutral loading UI and H-076 progress copy only | Integrate reviewed accessible progress states into a reusable generation-status component without enabling a provider or adding storage behavior. | done (committing) |
 | H-078 | Codex -> Antigravity | new `src/data/astrologyProviderErrorCopy.ts` only | Create typed, content-only recovery copy for optional Astrology disabled, offline, invalid-provider-response, rate-limited, and reflection-unavailable states. Keep it non-predictive and explicit about local data preservation; do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with persistence-boundary corrections (committing) |
 | H-079 | Codex -> Codex | Astrology request UI and H-078 provider-error copy only | Integrate reviewed provider-error recovery messages into chart and reflection request failures with focused regression coverage, without changing provider or storage behavior. | done (committing) |
-| H-080 | Codex -> Antigravity | new `src/data/astrologyProgressCopy.ts` only | Create typed, content-only accessible progress labels for validating inputs, calculating placements, saving locally, and generating an optional reflection. Avoid timing, accuracy, or predictive claims; distinguish chart calculation from AI reflection. Do not alter UI, routes, services, providers, storage, credentials, or existing files. | in progress |
+| H-080 | Codex -> Antigravity | new `src/data/astrologyProgressCopy.ts` only | Create typed, content-only accessible progress labels for validating inputs, calculating placements, saving locally, and generating an optional reflection. Avoid timing, accuracy, or predictive claims; distinguish chart calculation from AI reflection. Do not alter UI, routes, services, providers, storage, credentials, or existing files. | reviewed, accepted with calculation and storage-claim precision edits (committing) |
 | H-081 | Codex -> Codex | Astrology request UI and H-080 progress copy only | Integrate reviewed accessible progress states into chart calculation and reflection loading feedback without changing request, provider, or storage behavior. | queued after H-080 |
+| H-082 | Codex -> Antigravity | new `src/data/astrologyCoordinateHelpCopy.ts` only | Create typed, content-only help copy explaining why latitude/longitude are required, valid ranges, example formats, boundary-location uncertainty, and that coordinates are sent for calculation but not saved. Do not add geocoding, UI, providers, storage, credentials, or modify existing files. | in progress |
 
 ## Completion format
 
@@ -885,3 +886,46 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (14 suites, 58 tests passing).
 - **Follow-up:** Ready for Codex review and integration into H-079 request UI.
+
+### H-080 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyProgressCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only dataset of user-facing status labels, accessible announcements, step indicators, and privacy reassurances across all active phases of the optional Astrology workflow:
+    1. **Validating Inputs (`validating-inputs`, Calculation Phase, Step 1 of 4):** Explains checking birth date, optional time, and geographic coordinates for chart calculation; announces checking inputs; explicitly confirms validation occurs locally on device and form entries stay on screen until calculation succeeds.
+    2. **Calculating Placements (`calculating-placements`, Calculation Phase, Step 2 of 4):** Explains requesting symbolic planetary placements and aspect angles from the calculation service; announces calculating placements from birth data; explicitly confirms dream journal entries are never included.
+    3. **Saving Locally (`saving-locally`, Calculation Phase, Step 3 of 4):** Explains storing calculated placements and birth profile in local device storage; announces local storage operation; confirms all calculations and profile remain private and local.
+    4. **Generating Reflection (`generating-reflection`, Reflection Phase, Step 4 of 4):** Explains composing an optional symbolic reflection from calculated chart placements and aspect relationships; strictly avoids predictive or diagnostic claims; announces reflection composition; explicitly distinguishes AI reflection from astronomical calculation and confirms dream journal text is never sent.
+  - Sourced each state entry with:
+    - State key `state` (`AstrologyProgressState`)
+    - Pipeline phase `phase` (`AstrologyProgressPhase`: `'calculation'` vs `'reflection'`)
+    - Status title `label`
+    - Compact label `shortLabel`
+    - Educational issue description `description` (strictly timing-promise free)
+    - Screen-reader accessible label `accessibilityLabel`
+    - Contextual screen-reader hint `accessibilityHint`
+    - Screen-reader live region announcement `liveRegionAnnouncement`
+    - Reassurance statement `privacyReassurance`
+    - Sequential step number `stepNumber` and total steps count `totalSteps`
+  - Defined clean interfaces (`AstrologyProgressState`, `AstrologyProgressPhase`, `AstrologyProgressEntry`, `AstrologyProgressBundle`), constants (`ASTROLOGY_PROGRESS_COPY`, `ASTROLOGY_PROGRESS_BUNDLE`, `ASTROLOGY_PROGRESS_STATES`), and query/navigation helpers:
+    - `getAstrologyProgressCopy(state)`
+    - `getAllAstrologyProgressStates()`
+    - `getAllAstrologyProgressEntries()`
+    - `getAstrologyProgressEntriesByPhase(phase)`
+    - `getProgressPhase(state)`
+    - `isCalculationPhase(state)`
+    - `isReflectionPhase(state)`
+    - `getAstrologyProgressAccessibilityLabel(state)`
+    - `getAstrologyProgressAccessibilityHint(state)`
+    - `getAstrologyProgressAnnouncement(state)`
+    - `getAstrologyProgressPrivacyReassurance(state)`
+    - `getAstrologyProgressStep(state)`
+    - `isRecognizedAstrologyProgressState(value)` (TypeScript type guard)
+    - `resolveAstrologyProgressState(value)` (supports canonical and shorthand alias strings)
+    - `getNextAstrologyProgressState(current)`
+    - `getPreviousAstrologyProgressState(current)`
+  - Completely privacy-preserving, non-predictive, non-diagnostic, timing-guarantee free; clearly distinguishes chart calculation from AI reflection; zero modifications to UI, routes, services, providers, storage, credentials, or existing files.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (15 suites, 62 tests passing).
+- **Follow-up:** Ready for Codex review and integration into H-081 request UI.
