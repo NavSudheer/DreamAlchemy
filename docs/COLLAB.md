@@ -103,9 +103,10 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-056 | Codex -> Codex | Astrology glossary helpers and focused tests only | Add regression coverage for case-insensitive body, sign, and aspect lookup plus whitespace-tolerant aspect validation. | done (committing) |
 | H-057 | Codex -> Codex | optional Astrology UI and H-055 consent copy only | Integrate the reviewed consent, unavailable, pending, and deletion copy into the optional Astrology screen without changing its local-storage or server boundaries. | done (committing) |
 | H-058 | Codex -> Codex | Dream Image preparation UI/service and H-054 guidance only | Surface the reviewed privacy checklist in preview mode and reject provider responses whose alt text fails the project baseline heuristic. Do not add or configure a provider. | done (committing) |
-| H-059 | Codex -> Antigravity | new `src/data/astrologyUncertaintyCopy.ts` only | Create typed, content-only uncertainty explanations for date-only, date-and-time, and date-time-timezone chart precision. Keep wording non-predictive and avoid accuracy guarantees; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | in progress |
-| H-060 | Codex -> Antigravity | new `src/data/astrologyHouseGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for houses 1–12 with concise accessibility descriptions and lookup helpers. Frame every entry as a traditional symbolic metaphor; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | queued after H-059 |
-| H-061 | Codex -> Codex | optional Astrology chart UI and H-059 uncertainty copy only | Integrate the reviewed precision-specific uncertainty explanation into calculated and locally restored charts without changing calculation or storage behavior. | queued after H-059 |
+| H-059 | Codex -> Antigravity | new `src/data/astrologyUncertaintyCopy.ts` only | Create typed, content-only uncertainty explanations for date-only, date-and-time, and date-time-timezone chart precision. Keep wording non-predictive and avoid accuracy guarantees; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | reviewed, corrected to match provider timezone behavior (committing) |
+| H-060 | Codex -> Antigravity | new `src/data/astrologyHouseGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for houses 1–12 with concise accessibility descriptions and lookup helpers. Frame every entry as a traditional symbolic metaphor; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | in progress |
+| H-061 | Codex -> Codex | optional Astrology chart UI and H-059 uncertainty copy only | Integrate the reviewed precision-specific uncertainty explanation into calculated and locally restored charts without changing calculation or storage behavior. | in progress |
+| H-062 | Codex -> Antigravity | new `src/data/dreamImageAltTextTemplates.ts` only | Create typed, content-only accessible alt-text templates for every existing curated Dream Image prompt template. Describe only visible scene, medium, lighting, and palette; avoid interpretation, emotion claims, and personal data. Include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing files. | queued after H-060 |
 
 ## Completion format
 
@@ -537,3 +538,33 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (10 suites, 41 tests passing).
 - **Follow-up:** Ready for Codex review and integration. H-059 is queued next for Antigravity.
+
+### H-059 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyUncertaintyCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only educational dataset detailing astronomical and interpretive uncertainty across all three chart precision tiers:
+    1. **Date Only (`date-only`):** Broad daily overview; clarifies that without a birth time, the local horizon (Ascendant), houses 1–12, and rapid lunar movements (up to ~13° daily variance) cannot be determined; calculations use a midday UTC snapshot.
+    2. **Date & Time (`date-and-time`):** Approximate house cusps and Moon position; explains that omitted IANA timezone identifiers may result in civil timezone or historical daylight saving time (DST) shifts of up to one hour (~15° Ascendant shift).
+    3. **Date, Time & Timezone (`date-time-timezone`):** High-resolution mathematical ephemeris; explains limitations arising from historical birth-certificate clock rounding (e.g. to nearest 15 minutes) and differences across mathematical house system models (e.g. Placidus vs. Whole Sign).
+  - Sourced each precision tier with:
+    - Stable `precision` key (`AstrologyPrecision`)
+    - Display `label`
+    - Concise `summary`
+    - Detailed astronomical `explanation`
+    - Explicit arrays of `stableFactors` and `uncertainFactors`
+    - Standalone `uncertaintyNotes` bullets directly consumable by `AstrologyChart.uncertaintyNotes`
+    - Contemplative, non-predictive `contemplativePerspective`
+    - Screen-reader `accessibilityDescription`
+  - Defined clean interfaces (`AstrologyPrecisionUncertainty`, `AstrologyUncertaintyCopyBundle`), constants (`ASTROLOGY_PRECISION_UNCERTAINTY`, `ASTROLOGY_UNCERTAINTY_COPY`, `SUPPORTED_ASTROLOGY_PRECISIONS`), and query helpers:
+    - `getUncertaintyCopyByPrecision(precision)`
+    - `getUncertaintyNotesForPrecision(precision)`
+    - `getAllPrecisionUncertainties()`
+    - `isSupportedAstrologyPrecision(precision)` (TypeScript type guard)
+    - `getPrecisionAccessibilityLabel(precision)`
+    - `getPrecisionContemplativeNote(precision)`
+  - Completely non-predictive, non-diagnostic, and humble framing with zero accuracy or fatalistic guarantees; no UI, routes, services, providers, storage, credentials, or existing data files modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (10 suites, 41 tests passing).
+- **Follow-up:** Ready for Codex review and integration. H-060 is queued next for Antigravity.
