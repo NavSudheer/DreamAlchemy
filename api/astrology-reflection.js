@@ -28,8 +28,8 @@ export default async function handler(request) {
     if (body?.consent?.reflectiveUseAcknowledged !== true || body?.consent?.externalProcessingAllowed !== true) {
       return json({ error: 'Explicit astrology processing consent is required.' }, 400);
     }
-    if ('dreamText' in (body ?? {}) || 'dream' in (body ?? {})) {
-      return json({ error: 'Raw dream text is not accepted by this endpoint.' }, 400);
+    if (['dreamText', 'dream', 'profile', 'birth'].some((field) => field in (body ?? {}))) {
+      return json({ error: 'Raw dream or birth-profile data is not accepted by this endpoint.' }, 400);
     }
 
     const chart = body?.chart;

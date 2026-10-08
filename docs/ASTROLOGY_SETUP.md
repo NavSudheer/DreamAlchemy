@@ -14,12 +14,14 @@ Never prefix either secret with `EXPO_PUBLIC_`. Configure the variables for the 
 
 The mobile app may set `EXPO_PUBLIC_API_BASE_URL` to the Vercel deployment origin. Secrets are never returned to the app.
 
+The default provider contract was checked against the [NatalChart.AI developer documentation](https://www.natalchart.ai/developers). Its free API pool is currently limited to 10 requests per day, so use provider and Vercel rate controls before enabling the feature beyond private testing.
+
 ## Privacy boundary
 
 1. Birth profile data is created and stored locally.
 2. A chart request requires explicit reflective-use and external-processing consent.
 3. Only date, optional time/timezone, and calculation coordinates are sent through Vercel to the chart provider. A local location label is not sent.
-4. The AI route accepts a compact chart summary only and rejects raw dream fields.
+4. The AI route accepts a compact chart summary only and rejects raw dream, birth-profile, and birth fields.
 5. The generated reflection is capped and stored locally with the chart.
 6. Deleting local astrology data removes the profile, chart, and reflection bundle.
 

@@ -15,6 +15,21 @@ const json = (body, status = 200) => new Response(JSON.stringify(body), {
 const isFiniteCoordinate = (value, min, max) =>
   typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
 
+const isValidBirthDate = (value) => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value ?? '');
+  if (!match) return false;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  const today = new Date();
+  return year >= 1800
+    && date.getUTCFullYear() === year
+    && date.getUTCMonth() === month - 1
+    && date.getUTCDate() === day
+    && date.getTime() <= Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
+};
+
 export default async function handler(request) {
   if (request.method === 'OPTIONS') return json({}, 204);
   if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
@@ -31,7 +46,7 @@ export default async function handler(request) {
     if (consent?.reflectiveUseAcknowledged !== true || consent?.externalProcessingAllowed !== true) {
       return json({ error: 'Explicit astrology processing consent is required.' }, 400);
     }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(birth?.date ?? '')) {
+    if (!isValidBirthDate(birth?.date)) {
       return json({ error: 'A valid birth date is required.' }, 400);
     }
     if (!isFiniteCoordinate(birth?.latitude, -90, 90) || !isFiniteCoordinate(birth?.longitude, -180, 180)) {
@@ -66,18 +81,22 @@ export default async function handler(request) {
     const planets = Array.isArray(providerChart.planets) ? providerChart.planets : [];
     const aspects = Array.isArray(providerChart.aspects) ? providerChart.aspects : [];
     const warnings = Array.isArray(providerChart.warnings) ? providerChart.warnings.map(String) : [];
+    const placements = planets.map((planet) => ({
+      body: String(planet.name ?? ''),
+      sign: String(planet.sign ?? ''),
+      ...(Number.isFinite(planet.longitude) ? { longitude: planet.longitude } : {}),
+      ...(Number.isFinite(planet.house) ? { house: planet.house } : {}),
+      ...(typeof planet.retrograde === 'boolean' ? { retrograde: planet.retrograde } : {}),
+    })).filter((placement) => placement.body && placement.sign);
+    if (!placements.length) {
+      return json({ error: 'The astrology calculation service returned an invalid chart.' }, 502);
+    }
 
     return json({
       providerId: 'natalchart-ai',
       calculatedAt: Date.now(),
       precision: birth.time ? (birth.timezone ? 'date-time-timezone' : 'date-and-time') : 'date-only',
-      placements: planets.map((planet) => ({
-        body: String(planet.name ?? ''),
-        sign: String(planet.sign ?? ''),
-        ...(Number.isFinite(planet.longitude) ? { longitude: planet.longitude } : {}),
-        ...(Number.isFinite(planet.house) ? { house: planet.house } : {}),
-        ...(typeof planet.retrograde === 'boolean' ? { retrograde: planet.retrograde } : {}),
-      })).filter((placement) => placement.body && placement.sign),
+      placements,
       aspects: aspects.map((aspect) => ({
         type: String(aspect.aspect ?? aspect.type ?? ''),
         fromBody: String(aspect.planet1 ?? aspect.fromBody ?? ''),
@@ -85,7 +104,7 @@ export default async function handler(request) {
         ...(Number.isFinite(aspect.orb) ? { orbDegrees: aspect.orb } : {}),
       })).filter((aspect) => aspect.type && aspect.fromBody && aspect.toBody),
       uncertaintyNotes: birth.time ? warnings : ['Birth time was not provided; time-dependent placements are omitted or approximate.'],
-      reflectiveDisclosure: 'For personal reflection and entertainment only; this chart is not factual, predictive, medical, legal, or financial advice.',
+      reflectiveDisclosure: 'For personal reflection and entertainment only; this chart is not factual or predictive advice and is not medical, legal, or financial guidance.',
     });
   } catch {
     return json({ error: 'Could not calculate the astrology chart.' }, 500);
