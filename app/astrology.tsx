@@ -29,6 +29,7 @@ import { ASTROLOGY_UNCERTAINTY_COPY, getUncertaintyCopyByPrecision } from '@/dat
 import { getHouseGlossaryEntry } from '@/data/astrologyHouseGlossary';
 import { getMinorBodyGlossaryEntry } from '@/data/astrologyMinorBodyGlossary';
 import { getAngleGlossaryEntry } from '@/data/astrologyAngleGlossary';
+import { AstrologyProgress } from '@/components/astrology/AstrologyProgress';
 
 type FormField = 'birthDate' | 'birthTime' | 'timezone' | 'locationLabel' | 'latitude' | 'longitude';
 type FormErrors = Partial<Record<FormField, string>>;
@@ -366,6 +367,8 @@ export default function AstrologyScreen() {
             <Text variant="caption" color={muted}>{reflection.disclosure}</Text>
           </Card>
         )}
+
+        {busy && <AstrologyProgress state={busy === 'chart' ? 'calculating-placements' : 'generating-reflection'} />}
 
         {!!message && <Text variant="body2" color={muted} style={styles.message} accessibilityLiveRegion="polite">{message}</Text>}
         <Button variant="outline" fullWidth onPress={removeData}>Delete local astrology data</Button>
