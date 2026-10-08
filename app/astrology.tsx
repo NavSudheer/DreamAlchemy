@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, KeyboardTypeOptions, ScrollView, StyleSheet, Switch, TextInput, View } from 'react-native';
+import { Alert, KeyboardTypeOptions, ScrollView, StyleSheet, Switch, TextInput, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Header from '@/components/ui/Header';
 import Text from '@/components/ui/Text';
@@ -11,6 +11,7 @@ import { createLocalBirthProfile } from '@/services/astrology';
 import { calculateAstrologyChart, generateAstrologyReflection } from '@/services/astrologyRemote';
 import { deleteLocalAstrologyData, readLocalAstrologyBundle, writeLocalAstrologyBundle } from '@/services/astrologyStorage';
 import { AstrologyChart, AstrologyReflection, LocalAstrologyBundle } from '@/types/astrology';
+import { getBodyGlossaryEntry, getSignGlossaryEntry } from '@/data/astrologyPlacementGlossary';
 
 const parseDate = (value: string) => {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
@@ -35,6 +36,7 @@ export default function AstrologyScreen() {
   const [consented, setConsented] = useState(false);
   const [chart, setChart] = useState<AstrologyChart>();
   const [reflection, setReflection] = useState<AstrologyReflection>();
+  const [expandedPlacement, setExpandedPlacement] = useState<string>();
   const [busy, setBusy] = useState<'chart' | 'reflection' | null>(null);
   const [message, setMessage] = useState('');
 
@@ -80,6 +82,7 @@ export default function AstrologyScreen() {
       await writeLocalAstrologyBundle(bundle);
       setChart(nextChart);
       setReflection(undefined);
+      setExpandedPlacement(undefined);
       setMessage('Chart calculated and saved on this device.');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Could not calculate the chart.');
@@ -119,6 +122,7 @@ export default function AstrologyScreen() {
             void deleteLocalAstrologyData().then(() => {
               setChart(undefined);
               setReflection(undefined);
+              setExpandedPlacement(undefined);
               setBirthDate('');
               setBirthTime('');
               setTimezone('');
@@ -174,7 +178,32 @@ export default function AstrologyScreen() {
           <Card style={styles.card} backgroundColor={surface}>
             <Text variant="h4" color={textColor}>Calculated chart</Text>
             <Text variant="body2" color={muted}>{chart.placements.length} placements · {chart.aspects.length} aspects · {chart.precision}</Text>
-            {chart.placements.slice(0, 8).map(item => <Text key={item.body} variant="body2" color={textColor} style={styles.placement}>{item.body}: {item.sign}{item.house ? ` · House ${item.house}` : ''}</Text>)}
+            {chart.placements.slice(0, 8).map(item => {
+              const expanded = expandedPlacement === item.body;
+              const bodyGlossary = getBodyGlossaryEntry(item.body);
+              const signGlossary = getSignGlossaryEntry(item.sign);
+              return (
+                <TouchableOpacity
+                  key={item.body}
+                  accessibilityRole="button"
+                  accessibilityState={{ expanded }}
+                  accessibilityLabel={`${item.body} in ${item.sign}${item.house ? `, house ${item.house}` : ''}`}
+                  accessibilityHint={bodyGlossary || signGlossary ? 'Shows or hides optional symbolic glossary notes' : undefined}
+                  disabled={!bodyGlossary && !signGlossary}
+                  onPress={() => setExpandedPlacement(expanded ? undefined : item.body)}
+                  style={styles.placement}
+                >
+                  <Text variant="body2" color={textColor}>{item.body}: {item.sign}{item.house ? ` · House ${item.house}` : ''}{bodyGlossary || signGlossary ? (expanded ? ' · Hide notes' : ' · Explore') : ''}</Text>
+                  {expanded && (bodyGlossary || signGlossary) && (
+                    <View style={[styles.glossary, { backgroundColor: inputSurface }]}>
+                      {bodyGlossary && <Text variant="caption" color={muted}><Text variant="subtitle2" color={textColor}>{bodyGlossary.archetypalTheme}: </Text>{bodyGlossary.contemplativePerspective}</Text>}
+                      {signGlossary && <Text variant="caption" color={muted} style={styles.signNote}><Text variant="subtitle2" color={textColor}>{item.sign} · {signGlossary.element} · {signGlossary.modality}: </Text>{signGlossary.contemplativePerspective}</Text>}
+                      <Text variant="caption" color={muted} style={styles.symbolicNote}>Optional symbolic traditions only—not facts about you or predictions.</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
             {chart.uncertaintyNotes.map(note => <Text key={note} variant="caption" color={muted} style={styles.note}>{note}</Text>)}
             <Text variant="caption" color={muted} style={styles.disclosure}>{chart.reflectiveDisclosure}</Text>
             <Button fullWidth variant="secondary" isLoading={busy === 'reflection'} isDisabled={busy !== null || !consented} onPress={() => void createReflection()}>Create capped AI reflection</Button>
@@ -208,6 +237,9 @@ const styles = StyleSheet.create({
   consentRow: { alignItems: 'center', flexDirection: 'row', marginVertical: spacing[4] },
   consentText: { flex: 1, lineHeight: 20, marginLeft: spacing[2] },
   placement: { marginTop: spacing[2] },
+  glossary: { borderRadius: BorderRadius.md, marginTop: spacing[2], padding: spacing[3] },
+  signNote: { marginTop: spacing[2] },
+  symbolicNote: { fontStyle: 'italic', marginTop: spacing[2] },
   note: { marginTop: spacing[2] },
   disclosure: { lineHeight: 18, marginVertical: spacing[4] },
   reflection: { lineHeight: 23, marginVertical: spacing[3] },
