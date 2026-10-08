@@ -98,10 +98,12 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-051 | Codex -> Antigravity | new `src/data/astrologyAspectGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for the five major aspect types returned by the current calculation provider. Include lookup helpers and concise accessibility descriptions; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | reviewed, accepted with wording hardening (committing) |
 | H-052 | Codex -> Codex | optional Astrology screen and H-051 glossary only | Integrate reviewed aspect explanations into the calculated-chart view with accessible expansion and the existing non-predictive disclosure. | done (committing) |
 | H-053 | Codex -> Codex | Dream Image preparation UI/service boundary and H-047 copy only | Integrate reviewed privacy/unavailable copy and ensure a future request sends only the curated prompt and style—not the local dream id or raw dream content. Do not add a provider. | done (committing) |
-| H-054 | Codex -> Antigravity | new `src/data/dreamImageSafetyGuidelines.ts` only | Create typed, content-only safety and accessibility guidance for future curated Dream Image generation: disallowed raw journal text, personal identifiers, medical/predictive claims, and inaccessible alt text. Include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | in progress |
-| H-055 | Codex -> Antigravity | new `src/data/astrologyConsentCopy.ts` only | Create typed, content-only copy for optional Astrology consent, unavailable-provider, AI-reflection pending, and local-deletion states. Keep it explicit that birth fields/chart summaries may be externally processed while saved results remain local; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | queued after H-054 |
+| H-054 | Codex -> Antigravity | new `src/data/dreamImageSafetyGuidelines.ts` only | Create typed, content-only safety and accessibility guidance for future curated Dream Image generation: disallowed raw journal text, personal identifiers, medical/predictive claims, and inaccessible alt text. Include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | reviewed, accepted with standards wording correction (committing) |
+| H-055 | Codex -> Antigravity | new `src/data/astrologyConsentCopy.ts` only | Create typed, content-only copy for optional Astrology consent, unavailable-provider, AI-reflection pending, and local-deletion states. Keep it explicit that birth fields/chart summaries may be externally processed while saved results remain local; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | in progress |
 | H-056 | Codex -> Codex | Astrology glossary helpers and focused tests only | Add regression coverage for case-insensitive body, sign, and aspect lookup plus whitespace-tolerant aspect validation. | done (committing) |
 | H-057 | Codex -> Codex | optional Astrology UI and H-055 consent copy only | Integrate the reviewed consent, unavailable, pending, and deletion copy into the optional Astrology screen without changing its local-storage or server boundaries. | queued after H-055 |
+| H-058 | Codex -> Codex | Dream Image preparation UI/service and H-054 guidance only | Surface the reviewed privacy checklist in preview mode and reject provider responses whose alt text fails the project baseline heuristic. Do not add or configure a provider. | in progress |
+| H-059 | Codex -> Antigravity | new `src/data/astrologyUncertaintyCopy.ts` only | Create typed, content-only uncertainty explanations for date-only, date-and-time, and date-time-timezone chart precision. Keep wording non-predictive and avoid accuracy guarantees; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | queued after H-055 |
 
 ## Completion format
 
@@ -486,3 +488,29 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (8 suites, 34 tests passing).
 - **Follow-up:** Ready for Codex review and integration. H-054 is queued next for Antigravity.
+
+### H-054 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dreamImageSafetyGuidelines.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only safety and accessibility guidance module for curated Dream Image generation across the four specified boundaries:
+    1. **Disallow Raw Journal Text (`raw-journal`):** Ensures unedited dream diary entries, vulnerable personal logs, and subconscious text stay strictly on-device; prompts must always be curated into abstract, symbolic scenes.
+    2. **Disallow Personal Identifiers (`personal-identifiers`):** Eliminates living persons' real names, addresses, phone numbers, and PII; encourages universal archetypes (traveler, guide) and metaphorical landscapes.
+    3. **Disallow Medical & Predictive Claims (`medical-predictive`):** Prohibits clinical diagnoses, psychological assessments, therapy prescriptions, and deterministic fortune-telling; frames imagery strictly as open-ended artistic reflection.
+    4. **Disallow Inaccessible Alt Text (`accessibility`):** Prohibits empty alt text, raw filenames, or non-descriptive placeholders (e.g. "image", "photo"); mandates descriptive visual summaries conveying medium, subject, lighting, and palette under WCAG 2.1 AA standards.
+  - Provided a structured review checklist (`DREAM_IMAGE_SAFETY_CHECKLIST`) for easy presentation in consent modals or validation sheets.
+  - Defined clean interfaces (`DreamImageSafetyCategory`, `DreamImageSafetyGuideline`, `DreamImageSafetyChecklistItem`), constants (`DREAM_IMAGE_SAFETY_GUIDELINES`, `DREAM_IMAGE_SAFETY_CATEGORIES`, `DREAM_IMAGE_SAFETY_CHECKLIST`), and query/validation helpers:
+    - `getSafetyGuidelineById(id)`
+    - `getSafetyGuidelinesByCategory(category)`
+    - `getAllSafetyGuidelines()`
+    - `getAllSafetyCategories()`
+    - `hasSafetyGuideline(id)`
+    - `getSafetyChecklist()`
+    - `isValidSafetyCategory(value)` (TypeScript type guard)
+    - `isDescriptiveAltText(altText)` (evaluates minimum accessibility standards, checks placeholders & filenames)
+    - `getAccessibilityAltTextGuidance()`
+  - Content-only and privacy-centric; zero modifications to UI, routes, services, providers, storage, credentials, or existing data files.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (9 suites, 38 tests passing).
+- **Follow-up:** Ready for Codex review and integration. H-055 is queued next for Antigravity.
