@@ -1,3 +1,5 @@
+/* global jest, describe, beforeEach, afterAll, it, expect */
+
 const handler = require('../../../api/astrology-chart').default;
 
 const validBody = {

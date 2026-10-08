@@ -30,6 +30,7 @@ function RootNavigator() {
         <Stack.Screen name="symbol/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="category/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="astrology" options={{ headerShown: false }} />
+        <Stack.Screen name="dream-image" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style={isDark ? 'light' : 'dark'} />

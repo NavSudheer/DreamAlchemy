@@ -1,3 +1,5 @@
+/* global jest, describe, beforeEach, afterAll, it, expect */
+
 const mockCreate = jest.fn();
 
 jest.mock('openai', () => ({

@@ -239,6 +239,19 @@ export default function ExploreScreen() {
           </View>
           <Text variant="body1" style={styles.cardDescription}>Create a private, non-predictive chart reflection kept separate from dream analysis</Text>
         </Card>
+
+        <Card
+          variant="gradient"
+          gradientColors={isDark ? ['#243447', '#1B2838'] : ['#EFF6FF', '#DBEAFE']}
+          style={styles.card}
+          onPress={() => router.push('/dream-image' as Href)}
+        >
+          <View style={styles.cardHeader}>
+            <Ionicons name="images-outline" size={28} color={isDark ? Colors.neutral[100] : Colors.primary[700]} />
+            <Text variant="h4" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.cardTitle}>Dream Image Studio</Text>
+          </View>
+          <Text variant="body1" style={styles.cardDescription}>Preview curated visual scenes and styles without sharing your journal text</Text>
+        </Card>
       </ScrollView>
     </View>
   );
