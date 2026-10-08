@@ -99,11 +99,12 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-052 | Codex -> Codex | optional Astrology screen and H-051 glossary only | Integrate reviewed aspect explanations into the calculated-chart view with accessible expansion and the existing non-predictive disclosure. | done (committing) |
 | H-053 | Codex -> Codex | Dream Image preparation UI/service boundary and H-047 copy only | Integrate reviewed privacy/unavailable copy and ensure a future request sends only the curated prompt and style—not the local dream id or raw dream content. Do not add a provider. | done (committing) |
 | H-054 | Codex -> Antigravity | new `src/data/dreamImageSafetyGuidelines.ts` only | Create typed, content-only safety and accessibility guidance for future curated Dream Image generation: disallowed raw journal text, personal identifiers, medical/predictive claims, and inaccessible alt text. Include lookup helpers; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | reviewed, accepted with standards wording correction (committing) |
-| H-055 | Codex -> Antigravity | new `src/data/astrologyConsentCopy.ts` only | Create typed, content-only copy for optional Astrology consent, unavailable-provider, AI-reflection pending, and local-deletion states. Keep it explicit that birth fields/chart summaries may be externally processed while saved results remain local; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | in progress |
+| H-055 | Codex -> Antigravity | new `src/data/astrologyConsentCopy.ts` only | Create typed, content-only copy for optional Astrology consent, unavailable-provider, AI-reflection pending, and local-deletion states. Keep it explicit that birth fields/chart summaries may be externally processed while saved results remain local; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | reviewed, accepted with disclosure precision edit (committing) |
 | H-056 | Codex -> Codex | Astrology glossary helpers and focused tests only | Add regression coverage for case-insensitive body, sign, and aspect lookup plus whitespace-tolerant aspect validation. | done (committing) |
-| H-057 | Codex -> Codex | optional Astrology UI and H-055 consent copy only | Integrate the reviewed consent, unavailable, pending, and deletion copy into the optional Astrology screen without changing its local-storage or server boundaries. | queued after H-055 |
+| H-057 | Codex -> Codex | optional Astrology UI and H-055 consent copy only | Integrate the reviewed consent, unavailable, pending, and deletion copy into the optional Astrology screen without changing its local-storage or server boundaries. | in progress |
 | H-058 | Codex -> Codex | Dream Image preparation UI/service and H-054 guidance only | Surface the reviewed privacy checklist in preview mode and reject provider responses whose alt text fails the project baseline heuristic. Do not add or configure a provider. | done (committing) |
-| H-059 | Codex -> Antigravity | new `src/data/astrologyUncertaintyCopy.ts` only | Create typed, content-only uncertainty explanations for date-only, date-and-time, and date-time-timezone chart precision. Keep wording non-predictive and avoid accuracy guarantees; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | queued after H-055 |
+| H-059 | Codex -> Antigravity | new `src/data/astrologyUncertaintyCopy.ts` only | Create typed, content-only uncertainty explanations for date-only, date-and-time, and date-time-timezone chart precision. Keep wording non-predictive and avoid accuracy guarantees; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | in progress |
+| H-060 | Codex -> Antigravity | new `src/data/astrologyHouseGlossary.ts` only | Create typed, content-only, non-predictive glossary entries for houses 1–12 with concise accessibility descriptions and lookup helpers. Frame every entry as a traditional symbolic metaphor; do not alter UI, routes, services, providers, storage, credentials, or existing data files. | queued after H-059 |
 
 ## Completion format
 
@@ -514,3 +515,24 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (9 suites, 38 tests passing).
 - **Follow-up:** Ready for Codex review and integration. H-055 is queued next for Antigravity.
+
+### H-055 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyConsentCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only user copy bundle for the optional Astrology feature across four key states:
+    1. **Consent Flow (`consent`):** Explicit modal and card headers, summary explanation, checkbox agreement label matching existing UI patterns, external processing notice clarifying that birth coordinates/times are sent externally for calculation while dream journals remain offline, non-predictive/non-factual disclaimers, and clear confirm/cancel button labels.
+    2. **Provider Unavailable State (`unavailable`):** Informative badge label, title, description, and safe offline browsing reassurance for placement/aspect glossaries.
+    3. **Processing Pending State (`pending`):** Separate title and description copy for both chart calculation and AI reflection synthesis, stateless external processing reassurance, and duration guidance.
+    4. **Local Deletion State (`deletion`):** Confirmation dialog title, dialog warning message specifying removal of local birth profile, chart, and reflection, confirm/cancel action labels, and post-deletion success message.
+  - Defined clean interfaces (`AstrologyConsentCopy`, `AstrologyUnavailableCopy`, `AstrologyPendingCopy`, `AstrologyDeletionCopy`, `AstrologyCopyBundle`), constants (`ASTROLOGY_CONSENT_COPY`, `ASTROLOGY_UNAVAILABLE_COPY`, `ASTROLOGY_PENDING_COPY`, `ASTROLOGY_DELETION_COPY`, `ASTROLOGY_COPY_BUNDLE`), and lookup helpers:
+    - `getAstrologyConsentCopy()`
+    - `getAstrologyUnavailableCopy()`
+    - `getAstrologyPendingCopy()`
+    - `getAstrologyDeletionCopy()`
+    - `getAstrologyCopyBundle()`
+  - Strictly non-predictive, non-diagnostic, and non-fatalistic; zero modifications to UI, routes, services, providers, storage, credentials, or existing data files.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (10 suites, 41 tests passing).
+- **Follow-up:** Ready for Codex review and integration. H-059 is queued next for Antigravity.
