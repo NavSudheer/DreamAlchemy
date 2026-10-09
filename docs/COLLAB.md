@@ -159,7 +159,8 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-112 | Codex -> Codex | Dream Image generated-result UI and in-memory actions only | Connect successful H-109 results to regenerate and in-memory delete actions while keeping save/share hidden until permissions and persistence are implemented. | done (committing) |
 | H-113 | Codex -> Codex | Dream Image error/retry/result UI and focused tests only | Add accessible retry recovery for retryable generation failures and verify result alt text, regenerate, and in-memory deletion without exposing save/share prematurely. | done (committing) |
 | H-114 | Codex -> Codex | Dream Image screen, current tests, and readiness docs only | Run the post-integration regression/smoke pass, reconcile H-102/H-108 boundaries with the new consent/result UI, and fix only verified provider-neutral blockers. | done (committing) |
-| H-115 | Codex -> Codex | Dream Image saved-dream association and current local storage only | Validate route-provided Dream Image associations against an existing saved dream before enabling generation, without reading dream text into provider payloads or adding sync. | in progress |
+| H-115 | Codex -> Codex | Dream Image saved-dream association and current local storage only | Validate route-provided Dream Image associations against an existing saved dream before enabling generation, without reading dream text into provider payloads or adding sync. | done (committing) |
+| H-116 | Codex -> Codex | Dream Image UI tests and privacy boundary only | Verify that saved-dream validation, consent, template/style changes, retries, and regenerate never place dream content or analysis fields into provider requests. | in progress |
 
 ## Completion format
 

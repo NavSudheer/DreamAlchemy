@@ -6,6 +6,7 @@ import { DreamImageResultActions } from '@/components/dream-image/DreamImageResu
 let mockDreamId: string | undefined;
 let mockAvailable = false;
 const mockGenerateDreamImage = jest.fn();
+const mockGetDreams = jest.fn();
 
 jest.mock('expo-router', () => ({
   useRouter: () => ({ back: jest.fn() }),
@@ -22,6 +23,9 @@ jest.mock('@/services/dreamImage', () => ({
     : ({ available: false, reason: 'not-configured' }),
   generateDreamImage: (...args: unknown[]) => mockGenerateDreamImage(...args),
 }));
+jest.mock('@/utils/storage', () => ({
+  getDreams: (...args: unknown[]) => mockGetDreams(...args),
+}));
 
 describe('Dream Image preparation screen', () => {
   let screen: ReactTestRenderer;
@@ -30,6 +34,8 @@ describe('Dream Image preparation screen', () => {
     mockDreamId = undefined;
     mockAvailable = false;
     mockGenerateDreamImage.mockReset();
+    mockGetDreams.mockReset();
+    mockGetDreams.mockResolvedValue([]);
     act(() => { screen = create(<DreamImageScreen />); });
   });
 
@@ -83,6 +89,7 @@ describe('Dream Image preparation screen', () => {
     act(() => screen.unmount());
     mockDreamId = 'dream-1';
     mockAvailable = true;
+    mockGetDreams.mockResolvedValue([{ id: 'dream-1', analysis: { interpretation: 'local only' } }]);
     mockGenerateDreamImage.mockResolvedValue({
       id: 'image-1',
       imageUrl: 'https://images.example/image-1.png',
@@ -110,6 +117,7 @@ describe('Dream Image preparation screen', () => {
     act(() => screen.unmount());
     mockDreamId = 'dream-1';
     mockAvailable = true;
+    mockGetDreams.mockResolvedValue([{ id: 'dream-1', analysis: { interpretation: 'local only' } }]);
     mockGenerateDreamImage.mockRejectedValueOnce(new Error('Could not reach the dream image service. Check your connection and try again.'));
     await act(async () => { screen = create(<DreamImageScreen />); });
 
@@ -123,5 +131,21 @@ describe('Dream Image preparation screen', () => {
       .find(node => node.props.children === 'Try Again');
     expect(retry).toBeDefined();
     expect(screen.root.findAllByProps({ accessibilityLiveRegion: 'polite' }).length).toBeGreaterThan(0);
+  });
+
+  it('does not enable generation for an unknown route-provided dream id', async () => {
+    act(() => screen.unmount());
+    mockDreamId = 'missing-dream';
+    mockAvailable = true;
+    mockGetDreams.mockResolvedValue([{ id: 'different-dream', analysis: { interpretation: 'local only' } }]);
+    await act(async () => { screen = create(<DreamImageScreen />); });
+
+    act(() => screen.root.findByProps({ accessibilityLabel: 'Consent to process curated Dream Image scene' }).props.onValueChange(true));
+
+    const generate = screen.root.findAllByType('Button' as never)
+      .find(node => node.props.children === 'Generate Visual Reflection');
+    expect(generate?.props.isDisabled).toBe(true);
+    act(() => generate?.props.onPress());
+    expect(mockGenerateDreamImage).not.toHaveBeenCalled();
   });
 });

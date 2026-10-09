@@ -20,6 +20,7 @@ import {
 } from '@/services/dreamImageGenerationState';
 import { DreamImageProgress } from '@/components/dream-image/DreamImageProgress';
 import { DreamImageResultActions } from '@/components/dream-image/DreamImageResultActions';
+import { getDreams } from '@/utils/storage';
 import { DreamImageStyle } from '@/types/dreamImage';
 import { BorderRadius, Colors, spacing } from '@/utils/theme';
 
@@ -30,6 +31,8 @@ export default function DreamImageScreen() {
   const defaultTemplate = getDefaultPromptTemplate();
   const [templateId, setTemplateId] = useState(defaultTemplate.id);
   const [style, setStyle] = useState<DreamImageStyle>(defaultTemplate.recommendedStyle);
+  const [validatedDreamId, setValidatedDreamId] = useState<string>();
+  const [associationChecking, setAssociationChecking] = useState(false);
   const [generation, dispatchGeneration] = useReducer(
     reduceDreamImageGeneration,
     INITIAL_DREAM_IMAGE_GENERATION_STATE,
@@ -42,15 +45,38 @@ export default function DreamImageScreen() {
   );
 
   useEffect(() => {
+    let mounted = true;
+    if (!dreamId) {
+      setValidatedDreamId(undefined);
+      setAssociationChecking(false);
+      return () => { mounted = false; };
+    }
+    setAssociationChecking(true);
+    void getDreams()
+      .then(dreams => {
+        if (!mounted) return;
+        const exists = dreams.some(dream => dream.id === dreamId && !!dream.analysis);
+        setValidatedDreamId(exists ? dreamId : undefined);
+      })
+      .catch(() => {
+        if (mounted) setValidatedDreamId(undefined);
+      })
+      .finally(() => {
+        if (mounted) setAssociationChecking(false);
+      });
+    return () => { mounted = false; };
+  }, [dreamId]);
+
+  useEffect(() => {
     dispatchGeneration({
       type: 'prepare',
       request: {
-        dreamId: dreamId ?? '',
+        dreamId: validatedDreamId ?? '',
         visualReflectionPrompt: template.promptText,
         style,
       },
     });
-  }, [dreamId, style, template.promptText]);
+  }, [style, template.promptText, validatedDreamId]);
 
   const surface = isDark ? Colors.neutral[800] : Colors.neutral[50];
   const selectedSurface = isDark ? Colors.primary[900] : Colors.primary[50];
@@ -178,9 +204,11 @@ export default function DreamImageScreen() {
             </Text>
           </View>
           <Text variant="caption" color={muted} style={styles.noticeText}>
-            {dreamId
+            {associationChecking
+              ? 'Checking the saved-dream association on this device.'
+              : validatedDreamId
               ? 'The saved-dream association stays on this device and is excluded from the provider payload.'
-              : 'Generation is available only when this studio is opened from a saved dream analysis. Explore mode remains a private preparation preview.'}
+              : 'Generation is available only when this studio is opened from an existing saved dream analysis. Explore and invalid-link modes remain private preparation previews.'}
           </Text>
           <Button
             fullWidth
