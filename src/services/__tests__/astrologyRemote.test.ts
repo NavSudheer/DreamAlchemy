@@ -77,4 +77,46 @@ describe('remote astrology privacy boundary', () => {
       message: 'Optional Astrology is not available on this build yet.',
     });
   });
+
+  it('uses stable server codes for rate limits without relying on message text', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: false,
+      status: 429,
+      json: jest.fn().mockResolvedValue({ error: 'Please pause.', code: 'provider_rate_limited' }),
+    } as never);
+
+    const error = await calculateAstrologyChart(profile, { latitude: 43.65, longitude: -79.38 }, consent)
+      .catch(value => value);
+
+    expect(error).toMatchObject({
+      code: 'rate_limited',
+      serverCode: 'provider_rate_limited',
+      retryable: false,
+      message: 'Please pause.',
+    });
+  });
+
+  it('maps stable invalid-response and timeout codes to typed client errors', async () => {
+    const fetchMock = jest.spyOn(global, 'fetch');
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 502,
+      json: jest.fn().mockResolvedValue({ error: 'Bad chart.', code: 'provider_invalid_response' }),
+    } as never);
+    await expect(calculateAstrologyChart(profile, { latitude: 43.65, longitude: -79.38 }, consent)).rejects.toMatchObject({
+      code: 'invalid_response',
+      serverCode: 'provider_invalid_response',
+    });
+
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 504,
+      json: jest.fn().mockResolvedValue({ error: 'Timed out.', code: 'provider_timeout' }),
+    } as never);
+    await expect(generateAstrologyReflection(chart, consent)).rejects.toMatchObject({
+      code: 'timeout',
+      serverCode: 'provider_timeout',
+      retryable: true,
+    });
+  });
 });

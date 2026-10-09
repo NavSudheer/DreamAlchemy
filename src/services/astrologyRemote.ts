@@ -10,11 +10,20 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL
   || 'https://nextjs-boilerplate-eight-topaz-22.vercel.app';
 const REQUEST_TIMEOUT_MS = 30_000;
 
+export type AstrologyRemoteErrorCode =
+  | 'not_available'
+  | 'request_failed'
+  | 'invalid_response'
+  | 'rate_limited'
+  | 'timeout'
+  | 'network';
+
 export class AstrologyRemoteError extends Error {
   constructor(
     message: string,
-    public readonly code: 'not_available' | 'request_failed' | 'timeout' | 'network',
+    public readonly code: AstrologyRemoteErrorCode,
     public readonly retryable: boolean,
+    public readonly serverCode?: string,
   ) {
     super(message);
     this.name = 'AstrologyRemoteError';
@@ -33,13 +42,34 @@ const postJson = async <T>(path: string, body: unknown): Promise<T> => {
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
-      if (response.status === 503) {
-        throw new AstrologyRemoteError('Optional Astrology is not available on this build yet.', 'not_available', false);
+      const serverCode = typeof result?.code === 'string' ? result.code : undefined;
+      if (response.status === 503 || ['feature_disabled', 'provider_not_configured', 'reflection_not_configured'].includes(serverCode ?? '')) {
+        throw new AstrologyRemoteError('Optional Astrology is not available on this build yet.', 'not_available', false, serverCode);
+      }
+      if (response.status === 429 || serverCode === 'provider_rate_limited') {
+        throw new AstrologyRemoteError(
+          result?.error || 'The astrology request limit has been reached.',
+          'rate_limited',
+          false,
+          serverCode,
+        );
+      }
+      if (serverCode === 'provider_timeout') {
+        throw new AstrologyRemoteError(result?.error || 'The astrology request timed out.', 'timeout', true, serverCode);
+      }
+      if (['provider_invalid_response', 'reflection_empty'].includes(serverCode ?? '')) {
+        throw new AstrologyRemoteError(
+          result?.error || 'The astrology service returned an invalid response.',
+          'invalid_response',
+          true,
+          serverCode,
+        );
       }
       throw new AstrologyRemoteError(
         result?.error || 'The astrology service is temporarily unavailable.',
         'request_failed',
         response.status >= 500,
+        serverCode,
       );
     }
     return result as T;

@@ -2,11 +2,12 @@ import {
   AstrologyProviderErrorEntry,
   resolveAstrologyProviderError,
 } from '../data/astrologyProviderErrorCopy';
+import { AstrologyRemoteErrorCode } from './astrologyRemote';
 
 export type AstrologyRequestKind = 'chart' | 'reflection';
 
 type RemoteLikeError = Error & {
-  code?: 'not_available' | 'request_failed' | 'timeout' | 'network';
+  code?: AstrologyRemoteErrorCode;
 };
 
 export function getAstrologyRequestError(
@@ -19,6 +20,12 @@ export function getAstrologyRequestError(
   }
   if (remoteError?.code === 'not_available') {
     return resolveAstrologyProviderError(requestKind === 'reflection' ? 'reflection-unavailable' : 'disabled');
+  }
+  if (remoteError?.code === 'rate_limited') {
+    return resolveAstrologyProviderError('rate-limited');
+  }
+  if (remoteError?.code === 'invalid_response') {
+    return resolveAstrologyProviderError(requestKind === 'reflection' ? 'reflection-unavailable' : 'invalid-provider-response');
   }
 
   const resolved = resolveAstrologyProviderError(error);

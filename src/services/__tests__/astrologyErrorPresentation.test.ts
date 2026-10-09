@@ -22,7 +22,13 @@ describe('astrology request error presentation', () => {
   });
 
   it('preserves rate-limit recovery when the response identifies it', () => {
-    const error = new AstrologyRemoteError('Too many requests; rate limit reached.', 'request_failed', false);
+    const error = new AstrologyRemoteError('Please pause.', 'rate_limited', false, 'provider_rate_limited');
     expect(getAstrologyRequestError(error, 'reflection').state).toBe('rate-limited');
+  });
+
+  it('uses the typed invalid-response state for chart and reflection requests', () => {
+    const error = new AstrologyRemoteError('Unusable payload.', 'invalid_response', true, 'provider_invalid_response');
+    expect(getAstrologyRequestError(error, 'chart').state).toBe('invalid-provider-response');
+    expect(getAstrologyRequestError(error, 'reflection').state).toBe('reflection-unavailable');
   });
 });
