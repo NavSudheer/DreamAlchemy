@@ -23,9 +23,10 @@ const validBody = {
   },
 };
 
-const request = (body = validBody) => ({
+const request = (body = validBody, overrides = {}) => ({
   method: 'POST',
   json: jest.fn().mockResolvedValue(body),
+  ...overrides,
 });
 
 describe('astrology reflection route', () => {
@@ -63,12 +64,38 @@ describe('astrology reflection route', () => {
     expect(mockCreate).not.toHaveBeenCalled();
   });
 
+  it('requires JSON and rejects oversized request bodies before model work', async () => {
+    const invalidType = await handler(request(validBody, {
+      headers: { get: jest.fn((name) => name === 'content-type' ? 'text/plain' : null) },
+    }));
+    expect(invalidType.status).toBe(415);
+    await expect(invalidType.json()).resolves.toMatchObject({ code: 'invalid_content_type' });
+
+    const oversized = await handler(request(validBody, {
+      headers: { get: jest.fn((name) => name === 'content-length' ? '70000' : 'application/json') },
+    }));
+    expect(oversized.status).toBe(413);
+    await expect(oversized.json()).resolves.toMatchObject({ code: 'payload_too_large' });
+    expect(mockCreate).not.toHaveBeenCalled();
+  });
+
   it.each(['dream', 'dreamText', 'profile', 'birth'])('rejects the personal-data field %s', async (field) => {
     const response = await handler(request({ ...validBody, [field]: { private: 'personal data' } }));
 
     expect(response.status).toBe(400);
     expect(mockCreate).not.toHaveBeenCalled();
   });
+
+  it.each(['birthDate', 'birthTime', 'timezone', 'latitude', 'longitude', 'locationLabel', 'coordinates'])(
+    'rejects the direct birth-detail field %s',
+    async (field) => {
+      const response = await handler(request({ ...validBody, [field]: 'private birth detail' }));
+
+      expect(response.status).toBe(400);
+      await expect(response.json()).resolves.toMatchObject({ code: 'sensitive_data_rejected' });
+      expect(mockCreate).not.toHaveBeenCalled();
+    },
+  );
 
   it('sends a compact chart-only prompt with capped output settings', async () => {
     mockCreate.mockResolvedValue({
@@ -89,5 +116,16 @@ describe('astrology reflection route', () => {
       reflection: 'A brief, optional metaphor for reflection.',
     });
     expect(result.disclosure).toContain('not factual or predictive');
+  });
+
+  it('maps an aborted model request to a timeout error', async () => {
+    const timeout = new Error('aborted');
+    timeout.name = 'AbortError';
+    mockCreate.mockRejectedValue(timeout);
+
+    const response = await handler(request());
+
+    expect(response.status).toBe(504);
+    await expect(response.json()).resolves.toMatchObject({ code: 'provider_timeout' });
   });
 });

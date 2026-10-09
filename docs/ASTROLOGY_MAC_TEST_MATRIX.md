@@ -96,7 +96,7 @@ Never commit `.env.local` or paste server keys into client-visible Expo configur
 | :--- | :--- | :--- | :--- | :--- |
 | **TC-ERR-01** | Feature Disabled / Preview | Run with `ASTROLOGY_FEATURE_ENABLED=false` | Server returns 503 unavailable; client displays preview/unavailable notice; local input fields remain preserved. | `astrologyChartRoute.test.js` |
 | **TC-ERR-02** | Offline / Disconnected Network | Disconnect network on Mac, tap Calculate | Displays offline error notice: `"You are currently offline. Check your internet connection and try again."` Form inputs preserved. | `astrologyErrorPresentation.test.ts` |
-| **TC-ERR-03** | Rate Limit (HTTP 429) | After the proxy propagates or emits 429, use a controlled stub or deployment quota to return 429 | Client presents rate-limit recovery copy. **Current release blocker:** the chart proxy maps provider failures to 502 and does not yet enforce or propagate a 429 rate limit. | `astrologyErrorPresentation.test.ts` (presentation only) |
+| **TC-ERR-03** | Rate Limit (HTTP 429) | Use the controlled route test or provider quota to return 429 | Chart proxy returns stable `provider_rate_limited` code and the client presents rate-limit recovery copy. **Current release blocker:** the proxy does not yet enforce its own durable request budget. | `astrologyChartRoute.test.js`, `astrologyErrorPresentation.test.ts` |
 | **TC-ERR-04** | Provider Service Failure (502 / 500) | Provider outage or invalid response | Friendly recovery message: `"The chart calculation service is temporarily unavailable or returned an invalid response. Your inputs have been kept."` | `astrologyErrorPresentation.test.ts` |
 | **TC-ERR-05** | Progress Indicators | Trigger calculation / reflection | Displays `AstrologyProgress` with accessible stage labels (`"Calculating Natal Chart"` / `"Composing Archetypal Reflection"`). | `AstrologyProgress.test.tsx` |
 
@@ -193,7 +193,7 @@ A build candidate may only pass release verification when:
 | Local web route smoke | Pass | Fresh Expo web server returned HTTP 200 for `/astrology`; the rendered accessibility tree exposed the route title, disclosure, all six inputs, four help controls, consent switch, Calculate action, and Delete action. |
 | Field-specific validation | Pass (automated) | UI coverage verifies malformed date, invalid leap day, missing latitude, and the exact invalid-timezone message for `India`. |
 | Provider-connected calculation/reflection | Blocked | Requires server-only provider/OpenAI keys and an enabled Preview deployment; H-046 remains awaiting access. |
-| HTTP 429 / request throttling | Blocked | Presentation copy is tested, but the current proxy neither enforces throttling nor propagates provider 429 responses. Required before production enablement. |
+| HTTP 429 / request throttling | Partially pass; production blocked | Provider 429 propagation and presentation are tested. The proxy still lacks its own durable request budget, required before production enablement. |
 | iOS Simulator, VoiceOver, relaunch, and destructive deletion | Pending Mac operator | These require the user's Mac/Xcode or interactive browser/device pass; use the cases above and record build/environment evidence. |
 
 **Readiness decision:** ready for local Mac UI testing with Astrology disabled or stubbed. Not ready for provider-connected production enablement until H-046 access, server-side rate controls, and the pending Mac operator cases are completed.

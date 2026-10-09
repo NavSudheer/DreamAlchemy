@@ -16,9 +16,10 @@ const validBody = {
   },
 };
 
-const request = (body = validBody) => ({
+const request = (body = validBody, overrides = {}) => ({
   method: 'POST',
   json: jest.fn().mockResolvedValue(body),
+  ...overrides,
 });
 
 describe('astrology chart route', () => {
@@ -44,7 +45,33 @@ describe('astrology chart route', () => {
     const response = await handler(request());
 
     expect(response.status).toBe(503);
-    await expect(response.json()).resolves.toEqual({ error: 'Astrology is not enabled.' });
+    await expect(response.json()).resolves.toEqual({
+      error: 'Astrology is not enabled.',
+      code: 'feature_disabled',
+    });
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it('requires JSON and rejects oversized request bodies before provider work', async () => {
+    const invalidType = await handler(request(validBody, {
+      headers: { get: jest.fn((name) => name === 'content-type' ? 'text/plain' : null) },
+    }));
+    expect(invalidType.status).toBe(415);
+    await expect(invalidType.json()).resolves.toMatchObject({ code: 'invalid_content_type' });
+
+    const oversized = await handler(request(validBody, {
+      headers: { get: jest.fn((name) => name === 'content-length' ? '20000' : 'application/json') },
+    }));
+    expect(oversized.status).toBe(413);
+    await expect(oversized.json()).resolves.toMatchObject({ code: 'payload_too_large' });
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it('rejects dream data at the chart-calculation boundary', async () => {
+    const response = await handler(request({ ...validBody, dreamText: 'private journal text' }));
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toMatchObject({ code: 'sensitive_data_rejected' });
     expect(global.fetch).not.toHaveBeenCalled();
   });
 
@@ -112,6 +139,27 @@ describe('astrology chart route', () => {
     expect(response.status).toBe(502);
     await expect(response.json()).resolves.toEqual({
       error: 'The astrology calculation service returned an invalid chart.',
+      code: 'provider_invalid_response',
     });
+  });
+
+  it('propagates provider rate limiting as a stable public error', async () => {
+    global.fetch.mockResolvedValue(new Response('', { status: 429 }));
+
+    const response = await handler(request());
+
+    expect(response.status).toBe(429);
+    await expect(response.json()).resolves.toMatchObject({ code: 'provider_rate_limited' });
+  });
+
+  it('maps an aborted provider request to a timeout error', async () => {
+    const timeout = new Error('aborted');
+    timeout.name = 'AbortError';
+    global.fetch.mockRejectedValue(timeout);
+
+    const response = await handler(request());
+
+    expect(response.status).toBe(504);
+    await expect(response.json()).resolves.toMatchObject({ code: 'provider_timeout' });
   });
 });

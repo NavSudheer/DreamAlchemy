@@ -14,10 +14,10 @@
 
 ## Blocking findings
 
-1. **No server-side request throttling.** The routes do not currently enforce a per-client or deployment request budget. The chart route also maps every non-success provider response to 502, so a provider 429 cannot reach the client's tested rate-limit presentation.
+1. **No server-side request throttling.** The routes do not currently enforce a per-client or deployment request budget. The chart route now preserves a provider 429 as the stable public `provider_rate_limited` error, but that is not a substitute for DreamAlchemy-owned limits.
 2. **Wildcard CORS is not an access control.** `Access-Control-Allow-Origin: *` permits browser calls from any origin. CORS must be narrowed for web deployment, but native clients may not send an `Origin` header, so origin filtering cannot replace abuse controls.
-3. **No explicit upstream timeout.** A slow chart provider or model request may occupy the serverless invocation until platform timeout.
-4. **No explicit request-size/content-type guard.** The reflection summary is capped after parsing, but both routes should reject oversized or unexpected request bodies before expensive provider work.
+3. **Upstream timeout implemented; deployment verification pending.** Both provider calls now use bounded abort signals and stable `provider_timeout` responses; the configured Preview environment still needs a timeout smoke check.
+4. **Request guards implemented; deployment verification pending.** Both routes require JSON when a content type is supplied, reject declared or parsed oversized bodies, and return stable public validation codes. Focused route tests cover these boundaries.
 5. **Provider-connected verification is incomplete.** H-046 still requires Preview access and server-only keys. No production enablement should occur until the real error, deletion, privacy, and quota paths have been exercised.
 
 ## Approved implementation shape
