@@ -168,8 +168,8 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-121 | Codex -> Codex | Dream Image client proxy contract and focused tests only | Align the client request body with the application-owned route's explicit consent contract while continuing to exclude dream ids, dream text, analysis, and provider credentials. | done (`7f1e96f`) |
 | H-122 | Codex -> Codex | Dream Image route/client failure contract and focused tests only | Map disabled, consent, allowlist, and provider-unavailable server codes to stable actionable client failures without message parsing or provider coupling. | done (committing) |
 | H-123 | Codex -> Codex | Dream Image successful-result UI and reviewed H-117 disclosure copy only | Integrate accurate generated-art, curated-input, non-diagnostic, session-scope, and provider-dependent retention disclosures without adding persistence, sharing, or provider behavior. | done (committing) |
-| H-124 | Codex -> Antigravity | new `src/data/dreamImageProviderDecisionCopy.ts` only | Create a small typed, content-only set of neutral labels and explanations for provider evaluation states: not reviewed, under review, blocked, approved for sandbox, and approved for limited production. Avoid vendor names, pricing claims, SLAs, retention durations, or implementation instructions. Do not alter existing files. | assigned |
-| H-125 | Codex -> Codex | Dream Image route allowlist drift protection and focused tests only | Prevent the server route's curated prompt and style allowlists from silently drifting from the application catalog while preserving the strict server-owned request boundary. | in progress |
+| H-124 | Codex -> Antigravity | new `src/data/dreamImageProviderDecisionCopy.ts` only | Create a small typed, content-only set of neutral labels and explanations for provider evaluation states: not reviewed, under review, blocked, approved for sandbox, and approved for limited production. Avoid vendor names, pricing claims, SLAs, retention durations, or implementation instructions. Do not alter existing files. | done (uncommitted) |
+| H-125 | Codex -> Codex | Dream Image route allowlist drift protection and focused tests only | Prevent the server route's curated prompt and style allowlists from silently drifting from the application catalog while preserving the strict server-owned request boundary. | done (committing) |
 
 ## Completion format
 
@@ -1277,3 +1277,20 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (22 suites, 129 tests passing).
 - **Follow-up:** Ready for Codex review and integration into H-118.
+
+### H-124 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dreamImageProviderDecisionCopy.ts`
+- **Summary of Implementation:**
+  - Created a concise, fully typed, content-only dataset of neutral labels and explanations for all 5 provider evaluation states:
+    1. **Not Reviewed (`not-reviewed`):** Neutral status indicating a candidate has been cataloged or proposed but has not yet undergone formal architectural, privacy, security, or safety evaluation (`badgeLabel: 'Unreviewed'`).
+    2. **Under Review (`under-review`):** Active status indicating ongoing evaluation across mandatory privacy terms, moderation controls, data-use terms, execution model, and security posture (`badgeLabel: 'In Review'`).
+    3. **Blocked (`blocked`):** Non-qualifying status indicating a candidate failed one or more required standards or triggered a disqualification criterion, preventing sandbox or production clearance (`badgeLabel: 'Blocked'`).
+    4. **Approved for Sandbox (`approved-for-sandbox`):** Non-production clearance indicating baseline standards are met for isolated staging or test-environment proxy verification without enabling production traffic (`badgeLabel: 'Sandbox Only'`).
+    5. **Approved for Limited Production (`approved-for-limited-production`):** Clearance indicating verification of required deployment gates for controlled, disabled-by-default production rollout with active safeguards and monitoring (`badgeLabel: 'Limited Production'`).
+  - Defined clean interfaces (`DreamImageProviderEvaluationState`, `DreamImageProviderDecisionCopy`), constants (`DREAM_IMAGE_PROVIDER_EVALUATION_STATES`, `DREAM_IMAGE_PROVIDER_DECISION_COPY`), and helper functions (`getProviderDecisionCopy`, `getAllProviderDecisionCopies`, `getAllProviderEvaluationStates`, `getProviderEvaluationStateBadgeLabel`, `isApprovedForProduction`, `isApprovedForSandbox`, `isValidProviderEvaluationState`).
+  - Strictly neutral framing: zero vendor names, zero pricing claims, zero SLAs, zero retention durations, and zero implementation instructions. Existing files, UI, services, providers, storage, and credentials left untouched.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (22 suites, 130 tests passing).
+- **Follow-up:** Ready for Codex review and integration.

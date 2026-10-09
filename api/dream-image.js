@@ -2,8 +2,8 @@ export const config = { runtime: 'edge' };
 
 const MAX_REQUEST_BYTES = 16_000;
 const ALLOWED_FIELDS = new Set(['visualReflectionPrompt', 'style', 'consent']);
-const ALLOWED_STYLES = new Set(['ethereal', 'surreal', 'watercolor', 'cinematic']);
-const ALLOWED_PROMPTS = new Set([
+export const DREAM_IMAGE_ALLOWED_STYLES = ['ethereal', 'surreal', 'watercolor', 'cinematic'];
+export const DREAM_IMAGE_ALLOWED_PROMPTS = [
   'An ancient stone doorway standing open in a quiet field of tall grass, glowing softly with warm amber twilight beneath violet clouds and distant constellations.',
   'A glassy alpine lake at dusk perfectly reflecting a slender crescent moon and silver constellations, with subtle ripples catching soft light around smooth river stones.',
   'A peaceful clearing deep within an ancient misty forest where gentle morning rays filter through emerald moss and spiraling tree boughs onto a smooth resting stone.',
@@ -11,7 +11,9 @@ const ALLOWED_PROMPTS = new Set([
   'A concentric labyrinth of low weathered stones set in soft mossy earth, gently winding toward a still central reflecting pool under twilight stars.',
   'Gentle aquatic currents flowing through deep twilight-blue waters, carrying drifting ribbons of soft aquamarine bioluminescence and shimmering silver light particles.',
   'A solitary weathered bronze lantern casting a warm golden glow onto a wooden footbridge that stretches over morning valley mist toward soft rolling hills.',
-]);
+];
+const ALLOWED_STYLES = new Set(DREAM_IMAGE_ALLOWED_STYLES);
+const ALLOWED_PROMPTS = new Set(DREAM_IMAGE_ALLOWED_PROMPTS);
 
 const json = (body, status = 200) => new Response(JSON.stringify(body), {
   status,

@@ -1,6 +1,12 @@
 /* global describe, beforeEach, afterAll, it, expect */
 
-const handler = require('../../../api/dream-image').default;
+const {
+  default: handler,
+  DREAM_IMAGE_ALLOWED_PROMPTS,
+  DREAM_IMAGE_ALLOWED_STYLES,
+} = require('../../../api/dream-image');
+const { DREAM_IMAGE_PROMPT_TEMPLATES } = require('../../data/dreamImagePromptTemplates');
+const { DREAM_IMAGE_STYLE_LIST } = require('../../data/dreamImageStyleMetadata');
 
 const validBody = {
   visualReflectionPrompt: 'An ancient stone doorway standing open in a quiet field of tall grass, glowing softly with warm amber twilight beneath violet clouds and distant constellations.',
@@ -27,6 +33,15 @@ describe('Dream Image route request boundary', () => {
 
   afterAll(() => {
     process.env = originalEnvironment;
+  });
+
+  it('keeps the server allowlists synchronized with the curated app catalog', () => {
+    expect(DREAM_IMAGE_ALLOWED_PROMPTS).toEqual(
+      DREAM_IMAGE_PROMPT_TEMPLATES.map(template => template.promptText),
+    );
+    expect(DREAM_IMAGE_ALLOWED_STYLES).toEqual(
+      DREAM_IMAGE_STYLE_LIST.map(style => style.style),
+    );
   });
 
   it('stays unavailable until explicitly enabled', async () => {
