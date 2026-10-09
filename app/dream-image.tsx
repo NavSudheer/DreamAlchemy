@@ -12,6 +12,7 @@ import { DREAM_IMAGE_CONSENT_COPY, DREAM_IMAGE_UNAVAILABLE_COPY } from '@/data/d
 import { DREAM_IMAGE_SAFETY_CHECKLIST } from '@/data/dreamImageSafetyGuidelines';
 import { getAltTextForTemplate } from '@/data/dreamImageAltTextTemplates';
 import { getDreamImageFailureCopy, resolveDreamImageFailure } from '@/data/dreamImageFailureCopy';
+import { DREAM_IMAGE_GENERATED_DISCLOSURE_BUNDLE } from '@/data/dreamImageGeneratedDisclosureCopy';
 import { DreamImageError, generateDreamImage, getDreamImageAvailability } from '@/services/dreamImage';
 import {
   canStartDreamImageGeneration,
@@ -39,6 +40,7 @@ export default function DreamImageScreen() {
   );
   const availability = getDreamImageAvailability();
   const unavailableCopy = getDreamImageFailureCopy('provider-unavailable');
+  const resultDisclosure = DREAM_IMAGE_GENERATED_DISCLOSURE_BUNDLE;
   const template = useMemo(
     () => DREAM_IMAGE_PROMPT_TEMPLATES.find(item => item.id === templateId) ?? defaultTemplate,
     [defaultTemplate, templateId],
@@ -255,13 +257,28 @@ export default function DreamImageScreen() {
 
         {generation.phase === 'succeeded' && generation.result && (
           <Card style={styles.generation} backgroundColor={surface}>
-            <Text variant="h4" color={textColor}>Visual reflection ready</Text>
+            <Text variant="caption" color={muted} accessibilityLabel={resultDisclosure.sections['ai-art-labeling'].accessibilityLabel}>
+              {resultDisclosure.artBadgeLabel}
+            </Text>
+            <Text variant="h4" color={textColor} style={styles.noticeText}>Visual reflection ready</Text>
             <Image
               source={{ uri: generation.result.imageUrl }}
               accessibilityLabel={generation.result.altText}
               style={styles.resultImage}
             />
             <Text variant="caption" color={muted} style={styles.noticeText}>{generation.result.altText}</Text>
+            <Text variant="body2" color={textColor} style={styles.disclosureText}>
+              {resultDisclosure.conciseNotice}
+            </Text>
+            <Text variant="caption" color={muted} style={styles.noticeText}>
+              {resultDisclosure.privacyGuarantee}
+            </Text>
+            <Text variant="caption" color={muted} style={styles.noticeText}>
+              {resultDisclosure.sections['local-copy-scope'].summary}
+            </Text>
+            <Text variant="caption" color={muted} style={styles.noticeText}>
+              {resultDisclosure.sections['provider-retention-limitations'].summary}
+            </Text>
             <DreamImageResultActions
               handlers={{
                 regenerate: () => { void createImage(); },
@@ -297,4 +314,5 @@ const styles = StyleSheet.create({
   previewLabel: { marginTop: spacing[3], textTransform: 'capitalize' },
   prompt: { lineHeight: 21, marginVertical: spacing[3] },
   disclaimer: { fontStyle: 'italic', marginTop: spacing[2] },
+  disclosureText: { lineHeight: 20, marginTop: spacing[3] },
 });

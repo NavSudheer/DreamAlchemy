@@ -120,6 +120,13 @@ describe('Dream Image preparation screen', () => {
     expect(screen.root.findByProps({
       accessibilityLabel: 'Watercolor scene of a luminous doorway beneath a violet sky.',
     })).toBeDefined();
+    expect(screen.root.findByProps({
+      accessibilityLabel: 'Disclosure indicating that the artwork is synthetically created by generative artificial intelligence.',
+    })).toBeDefined();
+    const resultText = JSON.stringify(screen.toJSON());
+    expect(resultText).toContain('AI-generated reflection based on a curated scene template');
+    expect(resultText).toContain('held only in this screen');
+    expect(resultText).toContain('their own reviewed policies');
     expect(mockGenerateDreamImage).toHaveBeenCalledWith({
       dreamId: 'dream-1',
       visualReflectionPrompt: expect.stringContaining('glassy alpine lake'),
