@@ -1,32 +1,55 @@
-import React, { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useEffect, useMemo, useReducer, useState } from 'react';
+import { Image, ScrollView, StyleSheet, Switch, TouchableOpacity, View } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import Header from '@/components/ui/Header';
 import Card from '@/components/ui/Card';
 import Text from '@/components/ui/Text';
+import Button from '@/components/ui/Button';
 import { useTheme } from '@/providers/ThemeProvider';
 import { DREAM_IMAGE_PROMPT_TEMPLATES, getDefaultPromptTemplate } from '@/data/dreamImagePromptTemplates';
 import { DREAM_IMAGE_STYLE_LIST } from '@/data/dreamImageStyleMetadata';
 import { DREAM_IMAGE_CONSENT_COPY, DREAM_IMAGE_UNAVAILABLE_COPY } from '@/data/dreamImageConsentCopy';
 import { DREAM_IMAGE_SAFETY_CHECKLIST } from '@/data/dreamImageSafetyGuidelines';
 import { getAltTextForTemplate } from '@/data/dreamImageAltTextTemplates';
-import { getDreamImageFailureCopy } from '@/data/dreamImageFailureCopy';
-import { getDreamImageAvailability } from '@/services/dreamImage';
+import { getDreamImageFailureCopy, resolveDreamImageFailure } from '@/data/dreamImageFailureCopy';
+import { generateDreamImage, getDreamImageAvailability } from '@/services/dreamImage';
+import {
+  canStartDreamImageGeneration,
+  INITIAL_DREAM_IMAGE_GENERATION_STATE,
+  reduceDreamImageGeneration,
+} from '@/services/dreamImageGenerationState';
+import { DreamImageProgress } from '@/components/dream-image/DreamImageProgress';
 import { DreamImageStyle } from '@/types/dreamImage';
 import { BorderRadius, Colors, spacing } from '@/utils/theme';
 
 export default function DreamImageScreen() {
   const router = useRouter();
+  const { dreamId } = useLocalSearchParams<{ dreamId?: string }>();
   const { isDark } = useTheme();
   const defaultTemplate = getDefaultPromptTemplate();
   const [templateId, setTemplateId] = useState(defaultTemplate.id);
   const [style, setStyle] = useState<DreamImageStyle>(defaultTemplate.recommendedStyle);
+  const [generation, dispatchGeneration] = useReducer(
+    reduceDreamImageGeneration,
+    INITIAL_DREAM_IMAGE_GENERATION_STATE,
+  );
   const availability = getDreamImageAvailability();
   const unavailableCopy = getDreamImageFailureCopy('provider-unavailable');
   const template = useMemo(
     () => DREAM_IMAGE_PROMPT_TEMPLATES.find(item => item.id === templateId) ?? defaultTemplate,
     [defaultTemplate, templateId],
   );
+
+  useEffect(() => {
+    dispatchGeneration({
+      type: 'prepare',
+      request: {
+        dreamId: dreamId ?? '',
+        visualReflectionPrompt: template.promptText,
+        style,
+      },
+    });
+  }, [dreamId, style, template.promptText]);
 
   const surface = isDark ? Colors.neutral[800] : Colors.neutral[50];
   const selectedSurface = isDark ? Colors.primary[900] : Colors.primary[50];
@@ -36,6 +59,21 @@ export default function DreamImageScreen() {
   const chooseTemplate = (id: string, recommendedStyle: DreamImageStyle) => {
     setTemplateId(id);
     setStyle(recommendedStyle);
+  };
+
+  const activeProgress = ['queued', 'moderating', 'rendering', 'finalizing'].includes(generation.phase);
+
+  const createImage = async () => {
+    if (!availability.available || !generation.request || !canStartDreamImageGeneration(generation)) return;
+    dispatchGeneration({ type: 'start' });
+    dispatchGeneration({ type: 'progress', phase: 'rendering' });
+    try {
+      const result = await generateDreamImage(generation.request);
+      dispatchGeneration({ type: 'progress', phase: 'finalizing' });
+      dispatchGeneration({ type: 'succeed', result });
+    } catch (error) {
+      dispatchGeneration({ type: 'fail', message: error instanceof Error ? error.message : 'Image generation failed.' });
+    }
   };
 
   return (
@@ -124,6 +162,62 @@ export default function DreamImageScreen() {
           </Text>
           <Text variant="caption" color={muted} style={styles.disclaimer}>{DREAM_IMAGE_CONSENT_COPY.nonInterpretiveDisclaimer}</Text>
         </Card>
+
+        <Card style={styles.generation} backgroundColor={surface}>
+          <Text variant="h4" color={textColor}>Optional generation</Text>
+          <View style={styles.consentRow}>
+            <Switch
+              value={generation.consented}
+              onValueChange={consented => dispatchGeneration({ type: 'set-consent', consented })}
+              accessibilityLabel="Consent to process curated Dream Image scene"
+              accessibilityHint="Allows only the selected catalog scene and art style to be sent when generation is available"
+            />
+            <Text variant="body2" color={muted} style={styles.consentText}>
+              {DREAM_IMAGE_CONSENT_COPY.consentCheckboxLabel}
+            </Text>
+          </View>
+          <Text variant="caption" color={muted} style={styles.noticeText}>
+            {dreamId
+              ? 'The saved-dream association stays on this device and is excluded from the provider payload.'
+              : 'Generation is available only when this studio is opened from a saved dream analysis. Explore mode remains a private preparation preview.'}
+          </Text>
+          <Button
+            fullWidth
+            isLoading={activeProgress}
+            isDisabled={!availability.available || !canStartDreamImageGeneration(generation)}
+            accessibilityLabel={DREAM_IMAGE_CONSENT_COPY.confirmButtonLabel}
+            accessibilityHint="Sends only the selected curated scene and art style when the image service is configured"
+            onPress={() => { void createImage(); }}
+            style={styles.generateButton}
+          >
+            {availability.available ? DREAM_IMAGE_CONSENT_COPY.confirmButtonLabel : 'Image Service Unavailable'}
+          </Button>
+        </Card>
+
+        {activeProgress && <DreamImageProgress state={generation.phase as 'queued' | 'moderating' | 'rendering' | 'finalizing'} />}
+
+        {generation.phase === 'failed' && (() => {
+          const failure = resolveDreamImageFailure(generation.errorMessage);
+          return (
+            <Card style={styles.generation} backgroundColor={surface}>
+              <Text variant="subtitle1" color={textColor}>{failure.title}</Text>
+              <Text variant="body2" color={muted} style={styles.noticeText}>{failure.message}</Text>
+              <Text variant="body2" color={muted} style={styles.noticeText}>{failure.recoveryAction}</Text>
+            </Card>
+          );
+        })()}
+
+        {generation.phase === 'succeeded' && generation.result && (
+          <Card style={styles.generation} backgroundColor={surface}>
+            <Text variant="h4" color={textColor}>Visual reflection ready</Text>
+            <Image
+              source={{ uri: generation.result.imageUrl }}
+              accessibilityLabel={generation.result.altText}
+              style={styles.resultImage}
+            />
+            <Text variant="caption" color={muted} style={styles.noticeText}>{generation.result.altText}</Text>
+          </Card>
+        )}
       </ScrollView>
     </View>
   );
@@ -143,6 +237,11 @@ const styles = StyleSheet.create({
   styleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3], marginBottom: spacing[5] },
   styleOption: { borderRadius: BorderRadius.lg, padding: spacing[3], width: '47%' },
   preview: { padding: spacing[4] },
+  generation: { marginTop: spacing[4], padding: spacing[4] },
+  consentRow: { alignItems: 'center', flexDirection: 'row', marginTop: spacing[3] },
+  consentText: { flex: 1, lineHeight: 20, marginLeft: spacing[3] },
+  generateButton: { marginTop: spacing[3] },
+  resultImage: { borderRadius: BorderRadius.lg, height: 280, marginTop: spacing[3], width: '100%' },
   previewLabel: { marginTop: spacing[3], textTransform: 'capitalize' },
   prompt: { lineHeight: 21, marginVertical: spacing[3] },
   disclaimer: { fontStyle: 'italic', marginTop: spacing[2] },

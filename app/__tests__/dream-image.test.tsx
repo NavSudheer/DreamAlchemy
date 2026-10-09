@@ -2,16 +2,29 @@ import React from 'react';
 import { act, create, ReactTestRenderer } from 'react-test-renderer';
 import DreamImageScreen from '../dream-image';
 
-jest.mock('expo-router', () => ({ useRouter: () => ({ back: jest.fn() }) }));
+let mockDreamId: string | undefined;
+const mockGenerateDreamImage = jest.fn();
+
+jest.mock('expo-router', () => ({
+  useRouter: () => ({ back: jest.fn() }),
+  useLocalSearchParams: () => ({ dreamId: mockDreamId }),
+}));
 jest.mock('@/components/ui/Header', () => 'Header');
 jest.mock('@/components/ui/Text', () => 'Text');
 jest.mock('@/components/ui/Card', () => 'Card');
+jest.mock('@/components/ui/Button', () => 'Button');
 jest.mock('@/providers/ThemeProvider', () => ({ useTheme: () => ({ isDark: true }) }));
+jest.mock('@/services/dreamImage', () => ({
+  getDreamImageAvailability: () => ({ available: false, reason: 'not-configured' }),
+  generateDreamImage: (...args: unknown[]) => mockGenerateDreamImage(...args),
+}));
 
 describe('Dream Image preparation screen', () => {
   let screen: ReactTestRenderer;
 
   beforeEach(() => {
+    mockDreamId = undefined;
+    mockGenerateDreamImage.mockReset();
     act(() => { screen = create(<DreamImageScreen />); });
   });
 
@@ -41,5 +54,22 @@ describe('Dream Image preparation screen', () => {
       .toEqual({ selected: true });
     expect(radios().find(node => node.props.accessibilityLabel === 'Watercolor artistic style')?.props.accessibilityState)
       .toEqual({ selected: true });
+  });
+
+  it('keeps generation disabled in Explore preview and never calls the unavailable service', () => {
+    const button = screen.root.findByType('Button' as never);
+    expect(button.props.isDisabled).toBe(true);
+    expect(button.props.children).toBe('Image Service Unavailable');
+
+    act(() => button.props.onPress());
+
+    expect(mockGenerateDreamImage).not.toHaveBeenCalled();
+  });
+
+  it('requires a saved-dream association in addition to explicit consent', () => {
+    const consent = screen.root.findByProps({ accessibilityLabel: 'Consent to process curated Dream Image scene' });
+    act(() => consent.props.onValueChange(true));
+
+    expect(screen.root.findByType('Button' as never).props.isDisabled).toBe(true);
   });
 });
