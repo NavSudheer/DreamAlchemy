@@ -152,8 +152,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-105 | Codex -> Antigravity | new `docs/DREAM_IMAGE_TESTER_FEEDBACK_TEMPLATE.md` only | Draft a concise Mac tester feedback template aligned to H-102, separating preparation-screen findings from blocked provider/result integration, with environment/build, case ID, expected/actual, reproduction, severity, accessibility, and privacy-safe redaction fields. Do not alter code, providers, credentials, or existing docs. | reviewed, accepted with current-scene, evidence-label, alt-text-standard, and commit-placeholder corrections (committing) |
 | H-106 | Codex -> Codex | current Dream Image preparation screen, tests, and H-102 matrix only | Execute the provider-neutral Dream Image Mac web smoke pass, reconcile rendered accessibility and copy against H-102, and fix only verified preparation-screen blockers without adding a provider. | done (committing) |
 | H-107 | Codex -> Codex | current Dream Image preparation screen and provider-neutral service only | Design the next disabled-by-default generation integration boundary from prepared selection to progress/error/result state without adding a provider, storage backend, photo permissions, or credentials. | done (committing) |
-| H-108 | Codex -> Antigravity | new `docs/DREAM_IMAGE_DEPLOYMENT_BOUNDARY_DRAFT.md` only | Draft a provider-neutral deployment checklist for the future Dream Image proxy covering curated-prompt allowlisting, moderation, server-only secrets, cost/rate controls, transient image retention, privacy-safe logs, accessibility metadata, iOS photo permission copy, and disabled-by-default rollout. Do not select a vendor or alter code, providers, credentials, or existing docs. | in progress |
+| H-108 | Codex -> Antigravity | new `docs/DREAM_IMAGE_DEPLOYMENT_BOUNDARY_DRAFT.md` only | Draft a provider-neutral deployment checklist for the future Dream Image proxy covering curated-prompt allowlisting, moderation, server-only secrets, cost/rate controls, transient image retention, privacy-safe logs, accessibility metadata, iOS photo permission copy, and disabled-by-default rollout. Do not select a vendor or alter code, providers, credentials, or existing docs. | reviewed, accepted with retention, durable-limit, moderation, accessibility-standard, and rollout corrections (committing) |
 | H-109 | Codex -> Codex | Dream Image preparation screen and H-107 state boundary only | Integrate explicit consent and a disabled-by-default Generate action that requires a saved-dream association, while keeping provider-unavailable preview fully usable and making no network call when unavailable. | in progress |
+| H-110 | Codex -> Antigravity | new `docs/DREAM_IMAGE_PROVIDER_EVALUATION_TEMPLATE.md` only | Draft a vendor-neutral provider evaluation template covering current pricing model, moderation controls, input/output retention, training/data-use terms, commercial output rights, regional availability, latency/async API, signed-URL behavior, spend controls, and server-side key support. Do not recommend or select a provider, browse, or alter code, credentials, or existing docs. | in progress |
 
 ## Completion format
 
@@ -1197,4 +1198,24 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (17 suites, 95 tests passing).
+- **Follow-up:** Ready for Codex review and integration.
+
+### H-108 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `docs/DREAM_IMAGE_DEPLOYMENT_BOUNDARY_DRAFT.md`
+- **Summary of Implementation:**
+  - Authored a comprehensive, provider-neutral deployment checklist and proxy architecture draft for the future Dream Image service proxy, covering all 9 required verification dimensions:
+    1. **Curated-Prompt Allowlisting & Input Sanitization:** Mandates server proxy enforcement that incoming prompts match approved catalog scenes (`DREAM_IMAGE_PROMPT_TEMPLATES`), strict rejection of freeform or raw personal dream text, strict style enum validation, and payload size ceilings (<=16KB JSON).
+    2. **Content Moderation & Safety Pipeline:** Two-tier moderation strategy (client catalog pre-flight + proxy safety filter), PII/clinical language rejection, and standardized error mapping (`moderation_rejected`).
+    3. **Server-Only Secrets & Environment Variables:** Strict containment of `DREAM_IMAGE_API_KEY`, `DREAM_IMAGE_API_URL`, and rate limiter secrets on the server; zero `EXPO_PUBLIC_` credential leaks to clients.
+    4. **Cost & Durable Rate Controls:** Anonymous HMAC-hashed device/network identifier rate limiting, daily/hourly quota caps (e.g. 1–3 requests/24h), HTTP 429 response with `Retry-After` headers, and provider console hard spending caps/alerts.
+    5. **Transient Image Retention & Ephemeral Delivery:** Ephemeral signed URLs (1–2 hour TTL), automated CDN cache expiration (24–48h max), zero cloud association with user accounts, and local device storage as the sole permanent destination upon user save.
+    6. **Privacy-Safe Logging & Observability:** Minimal operational logs (UUID, coarse status, HTTP code, latency); strict logging ban on prompts, IP addresses, image URLs, binary data, and authentication tokens.
+    7. **Accessibility Metadata Enforcement (WCAG 2.1 AA):** Mandatory descriptive alternative text generation accompanying every response, evaluated against `isDescriptiveAltText`, with fallback to pre-composed catalog templates.
+    8. **iOS Photo Permission Copy:** Least-privilege `NSPhotoLibraryAddUsageDescription` recommendation for iOS camera roll saving, avoiding read access, with zero personal dream text or EXIF metadata injection.
+    9. **Disabled-by-Default Rollout & Phased Gates:** `DREAM_IMAGE_FEATURE_ENABLED=false` default fail-closed behavior, structured rollout gates (Preview -> Spend Caps & Logs -> Controlled Production).
+  - Vendor-neutral specification throughout; zero vendors selected, zero credentials added, and zero code, routes, or existing documentation modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (19 suites, 101 tests passing).
 - **Follow-up:** Ready for Codex review and integration.
