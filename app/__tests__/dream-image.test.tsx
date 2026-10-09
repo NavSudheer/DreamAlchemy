@@ -89,7 +89,11 @@ describe('Dream Image preparation screen', () => {
     act(() => screen.unmount());
     mockDreamId = 'dream-1';
     mockAvailable = true;
-    mockGetDreams.mockResolvedValue([{ id: 'dream-1', analysis: { interpretation: 'local only' } }]);
+    mockGetDreams.mockResolvedValue([{
+      id: 'dream-1',
+      content: 'SECRET_DREAM_CONTENT',
+      analysis: { interpretation: 'SECRET_ANALYSIS_CONTENT' },
+    }]);
     mockGenerateDreamImage.mockResolvedValue({
       id: 'image-1',
       imageUrl: 'https://images.example/image-1.png',
@@ -99,6 +103,10 @@ describe('Dream Image preparation screen', () => {
     });
     await act(async () => { screen = create(<DreamImageScreen />); });
 
+    const mirror = screen.root.findAll(node => typeof node.type === 'string' && node.props.accessibilityLabel === 'Mirror of Stillness')[0];
+    const surreal = screen.root.findAll(node => typeof node.type === 'string' && node.props.accessibilityLabel === 'Surreal artistic style')[0];
+    act(() => mirror.props.onClick({}));
+    act(() => surreal.props.onClick({}));
     const consent = screen.root.findByProps({ accessibilityLabel: 'Consent to process curated Dream Image scene' });
     act(() => consent.props.onValueChange(true));
     const generate = screen.root.findAllByType('Button' as never)
@@ -111,13 +119,32 @@ describe('Dream Image preparation screen', () => {
     expect(screen.root.findByProps({
       accessibilityLabel: 'Watercolor scene of a luminous doorway beneath a violet sky.',
     })).toBeDefined();
+    expect(mockGenerateDreamImage).toHaveBeenCalledWith({
+      dreamId: 'dream-1',
+      visualReflectionPrompt: expect.stringContaining('glassy alpine lake'),
+      style: 'surreal',
+    });
+    expect(JSON.stringify(mockGenerateDreamImage.mock.calls)).not.toContain('SECRET_DREAM_CONTENT');
+    expect(JSON.stringify(mockGenerateDreamImage.mock.calls)).not.toContain('SECRET_ANALYSIS_CONTENT');
+
+    await act(async () => { await actions.props.handlers.regenerate(); });
+    expect(mockGenerateDreamImage).toHaveBeenCalledTimes(2);
+    expect(Object.keys(mockGenerateDreamImage.mock.calls[1][0]).sort()).toEqual([
+      'dreamId',
+      'style',
+      'visualReflectionPrompt',
+    ]);
   });
 
   it('offers an accessible retry after a retryable generation failure', async () => {
     act(() => screen.unmount());
     mockDreamId = 'dream-1';
     mockAvailable = true;
-    mockGetDreams.mockResolvedValue([{ id: 'dream-1', analysis: { interpretation: 'local only' } }]);
+    mockGetDreams.mockResolvedValue([{
+      id: 'dream-1',
+      content: 'SECRET_RETRY_DREAM',
+      analysis: { interpretation: 'SECRET_RETRY_ANALYSIS' },
+    }]);
     mockGenerateDreamImage.mockRejectedValueOnce(new Error('Could not reach the dream image service. Check your connection and try again.'));
     await act(async () => { screen = create(<DreamImageScreen />); });
 
@@ -131,6 +158,17 @@ describe('Dream Image preparation screen', () => {
       .find(node => node.props.children === 'Try Again');
     expect(retry).toBeDefined();
     expect(screen.root.findAllByProps({ accessibilityLiveRegion: 'polite' }).length).toBeGreaterThan(0);
+    mockGenerateDreamImage.mockResolvedValueOnce({
+      id: 'image-2',
+      imageUrl: 'https://images.example/image-2.png',
+      altText: 'Ethereal scene of a luminous doorway beneath a violet sky.',
+      generatedAt: '2026-10-09T00:00:00.000Z',
+      style: 'ethereal',
+    });
+    await act(async () => { await retry?.props.onPress(); });
+    expect(mockGenerateDreamImage).toHaveBeenCalledTimes(2);
+    expect(JSON.stringify(mockGenerateDreamImage.mock.calls)).not.toContain('SECRET_RETRY_DREAM');
+    expect(JSON.stringify(mockGenerateDreamImage.mock.calls)).not.toContain('SECRET_RETRY_ANALYSIS');
   });
 
   it('does not enable generation for an unknown route-provided dream id', async () => {
