@@ -149,8 +149,10 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-102 | Codex -> Antigravity | new `docs/DREAM_IMAGE_MAC_TEST_MATRIX.md` only | Draft a concise Mac manual-test matrix for the current provider-neutral Dream Image preparation/result experience: curated prompt boundary, style selection, consent, disabled/offline/failure states, progress accessibility, local result actions, deletion, and explicit provider-connected blockers. Do not alter code, providers, credentials, or existing docs. | reviewed, accepted with default-scene, component-vs-integration, storage, and accessibility corrections (committing) |
 | H-103 | Codex -> Codex | `src/services/astrologyRemote.ts`, Astrology error presentation, and focused tests only | Consume stable server error codes directly, preserve retryability and rate-limit semantics without message matching, and keep unavailable/offline behavior unchanged. | done (committing) |
 | H-104 | Codex -> Codex | Astrology Vercel routes, deployment documentation, and focused tests only | Specify and prepare the durable anonymous request-limiter integration boundary without choosing a paid provider, storing raw birth data, or enabling production. | done (committing) |
-| H-105 | Codex -> Antigravity | new `docs/DREAM_IMAGE_TESTER_FEEDBACK_TEMPLATE.md` only | Draft a concise Mac tester feedback template aligned to H-102, separating preparation-screen findings from blocked provider/result integration, with environment/build, case ID, expected/actual, reproduction, severity, accessibility, and privacy-safe redaction fields. Do not alter code, providers, credentials, or existing docs. | in progress |
-| H-106 | Codex -> Codex | current Dream Image preparation screen, tests, and H-102 matrix only | Execute the provider-neutral Dream Image Mac web smoke pass, reconcile rendered accessibility and copy against H-102, and fix only verified preparation-screen blockers without adding a provider. | in progress |
+| H-105 | Codex -> Antigravity | new `docs/DREAM_IMAGE_TESTER_FEEDBACK_TEMPLATE.md` only | Draft a concise Mac tester feedback template aligned to H-102, separating preparation-screen findings from blocked provider/result integration, with environment/build, case ID, expected/actual, reproduction, severity, accessibility, and privacy-safe redaction fields. Do not alter code, providers, credentials, or existing docs. | reviewed, accepted with current-scene, evidence-label, alt-text-standard, and commit-placeholder corrections (committing) |
+| H-106 | Codex -> Codex | current Dream Image preparation screen, tests, and H-102 matrix only | Execute the provider-neutral Dream Image Mac web smoke pass, reconcile rendered accessibility and copy against H-102, and fix only verified preparation-screen blockers without adding a provider. | done (committing) |
+| H-107 | Codex -> Codex | current Dream Image preparation screen and provider-neutral service only | Design the next disabled-by-default generation integration boundary from prepared selection to progress/error/result state without adding a provider, storage backend, photo permissions, or credentials. | in progress |
+| H-108 | Codex -> Antigravity | new `docs/DREAM_IMAGE_DEPLOYMENT_BOUNDARY_DRAFT.md` only | Draft a provider-neutral deployment checklist for the future Dream Image proxy covering curated-prompt allowlisting, moderation, server-only secrets, cost/rate controls, transient image retention, privacy-safe logs, accessibility metadata, iOS photo permission copy, and disabled-by-default rollout. Do not select a vendor or alter code, providers, credentials, or existing docs. | in progress |
 
 ## Completion format
 
@@ -1178,4 +1180,20 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 91 tests passing).
+- **Follow-up:** Ready for Codex review and integration.
+
+### H-105 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `docs/DREAM_IMAGE_TESTER_FEEDBACK_TEMPLATE.md`
+- **Summary of Implementation:**
+  - Created a concise, structured Mac tester feedback template and defect-reporting guide for the provider-neutral Dream Image Studio, strictly aligned to `docs/DREAM_IMAGE_MAC_TEST_MATRIX.md`:
+    1. **Scope Separation Matrix:** Explicitly distinguishes **Scope A (Preparation Screen)**—which is active and testable on `/dream-image` (catalog scenes, art styles, alt text generation, safety checklist, consent/disclaimers, preview card, theming, VoiceOver)—from **Scope B (Provider & Result Integration)**—which is architecturally blocked by `BLK-IMG-01` through `BLK-IMG-05` (backend proxy, live generation, progress overlay transitions, Photo Library saving, native sharing, disk deletion).
+    2. **Strict Redaction & Privacy Mandate:** Mandates zero provider secrets or bearer tokens, zero raw dream journal narratives, reflections, tags, personal names, or voice transcripts, and zero personal device paths or user account identifiers in reports, screenshots, or logs.
+    3. **Severity Classification Guide:** Tiering from P0 (Crash / Data Loss / Raw Dream Leak) down to P3 (Cosmetic / Usability suggestion) with dream image-specific criteria.
+    4. **Standardized Fillable Markdown Template:** Standardized sections covering environment/build metadata (OS, architecture, surface, commit hash, configuration status), scope selection (Scope A vs Scope B), test matrix case ID (cross-referenced to `docs/DREAM_IMAGE_MAC_TEST_MATRIX.md`), expected vs. actual behavior, numbered reproduction steps, VoiceOver/accessibility observations, and sanitized logs/evidence.
+    5. **Concrete Scope A Reference Example:** Fully populated sample feedback report demonstrating proper classification, redaction checklist, and reproduction steps for a style reset behavior on catalog re-selection.
+  - Zero code, routes, providers, credentials, or existing documentation modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (17 suites, 95 tests passing).
 - **Follow-up:** Ready for Codex review and integration.
