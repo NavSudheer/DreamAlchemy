@@ -138,8 +138,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-091 | Codex -> Codex | Astrology form UI and H-090 location-label help copy only | Integrate reviewed local-label privacy guidance beside the optional label field without adding geocoding, provider changes, or new storage. | done (committing) |
 | H-092 | Codex -> Antigravity | new `src/data/astrologyRequestSummaryCopy.ts` only | Create typed, content-only review-before-submit copy that distinguishes fields sent for chart calculation, fields kept local, chart data sent for optional AI reflection, and dream data never included. Do not alter UI, services, providers, storage, credentials, or existing files. | reviewed, accepted with two-hop reflection and local-storage boundary corrections (committing) |
 | H-093 | Codex -> Codex | Astrology consent UI and H-092 request-summary copy only | Integrate reviewed sent-versus-local request summary into the explicit consent area without changing request, provider, or storage behavior. | done (committing) |
-| H-094 | Codex -> Antigravity | new `src/data/astrologyDeletionSummaryCopy.ts` only | Create typed, content-only deletion disclosure explaining which local profile/chart/reflection records are removed, that dream journals are unaffected, and that local deletion cannot retract data already processed under external-provider policies. Do not alter UI, services, providers, storage, credentials, or existing files. | in progress |
+| H-094 | Codex -> Antigravity | new `src/data/astrologyDeletionSummaryCopy.ts` only | Create typed, content-only deletion disclosure explaining which local profile/chart/reflection records are removed, that dream journals are unaffected, and that local deletion cannot retract data already processed under external-provider policies. Do not alter UI, services, providers, storage, credentials, or existing files. | reviewed, accepted with provider-retention, platform, and safety-claim corrections (committing) |
 | H-095 | Codex -> Codex | Astrology deletion UI and H-094 deletion-summary copy only | Integrate reviewed deletion scope and external-processing caveat into the existing destructive confirmation without changing deletion behavior or storage keys. | queued after H-094 |
+| H-096 | Codex -> Antigravity | new `docs/ASTROLOGY_MAC_TEST_MATRIX.md` only | Draft a concise Mac manual-test matrix covering valid/invalid dates, optional/invalid timezones, coordinates, consent, disabled/offline/provider errors, local persistence, reflection boundaries, accessibility, and deletion scope. Do not alter code, providers, credentials, or existing docs. | in progress |
 
 ## Completion format
 
@@ -1088,3 +1089,27 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 73 tests passing).
 - **Follow-up:** Ready for Codex review and integration into H-093 consent UI.
+
+### H-094 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyDeletionSummaryCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only educational and user-facing data deletion disclosure bundle detailing deletion scope across 3 core pillars:
+    1. **Removed From This Device (`local-removed`):** Details local astrology records permanently removed upon deletion: saved birth profile (`LocalBirthProfile`, storage key `dreamalchemy.astrology.profile.v1`), calculated chart bundle (`AstrologyChart`, storage key `dreamalchemy.astrology.bundle.v1`), generated AI reflection (`AstrologyReflection`), and active in-memory screen/form draft inputs.
+    2. **Dream Journals & Other Data Unaffected (`unaffected-journal`):** Enforces DreamAlchemy's strict local privacy and isolation boundaries; confirms that personal dream journals, morning reflections, voice transcripts, dream tags/themes/patterns, and general app settings remain completely untouched and safe.
+    3. **External Provider Processing Caveats (`external-caveat`):** Clarifies that while local deletion immediately erases all stored data on this device, it cannot retroactively retract or recall requests previously sent across the network for chart calculation or AI reflection, which are governed by external providers' stateless processing and independent retention policies; notes that DreamAlchemy maintains no remote user accounts or cloud databases to purge.
+  - Sourced structured interfaces (`AstrologyDeletionScopeCategory`, `AstrologyDeletionImpact`, `AstrologyDeletionScopeItem`, `AstrologyDeletionScopeSection`, `AstrologyDeletionDialogCopy`, `AstrologyDeletionSummaryBundle`), constants (`ASTROLOGY_DELETION_ITEMS`, `ASTROLOGY_DELETION_SECTIONS`, `ASTROLOGY_DELETION_ORDERED_CATEGORIES`, `ASTROLOGY_DELETION_DIALOG_COPY`, `ASTROLOGY_DELETION_SUMMARY_BUNDLE`), and lookup/validation helpers:
+    - `getDeletionScopeSection(category)`
+    - `getAllDeletionScopeSections()`
+    - `getDeletionItemsByCategory(category)`
+    - `getAllDeletionItems()`
+    - `getJournalUnaffectedStatement()`
+    - `getExternalProcessingCaveatStatement()`
+    - `formatDeletionConfirmDialogMessage()`
+    - `formatDetailedDeletionDisclosure()`
+    - `isRecognizedDeletionScopeCategory(value)` (TypeScript type guard)
+  - Completely non-predictive, non-diagnostic, privacy-first; zero modifications to UI, services, providers, storage, credentials, or existing files.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 74 tests passing).
+- **Follow-up:** Ready for Codex review and integration into H-095 deletion UI.
