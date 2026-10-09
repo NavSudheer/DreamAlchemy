@@ -17,7 +17,12 @@ const json = (body, status = 200, extraHeaders = {}) => new Response(JSON.string
   },
 });
 
-const errorJson = (error, code, status) => json({ error, code }, status);
+const errorJson = (error, code, status, extraHeaders = {}) => json({ error, code }, status, extraHeaders);
+
+const safeRetryAfter = (response) => {
+  const value = response.headers?.get?.('retry-after');
+  return /^\d{1,6}$/.test(value ?? '') ? value : null;
+};
 
 class RequestValidationError extends Error {
   constructor(message, code, status) {
@@ -143,7 +148,13 @@ export default async function handler(request) {
 
     if (!providerResponse.ok) {
       if (providerResponse.status === 429) {
-        return errorJson('The astrology calculation service is rate limited.', 'provider_rate_limited', 429);
+        const retryAfter = safeRetryAfter(providerResponse);
+        return errorJson(
+          'The astrology calculation service is rate limited.',
+          'provider_rate_limited',
+          429,
+          retryAfter ? { 'Retry-After': retryAfter } : {},
+        );
       }
       return errorJson('The astrology calculation service is unavailable.', 'provider_unavailable', 502);
     }
@@ -152,13 +163,24 @@ export default async function handler(request) {
     const planets = Array.isArray(providerChart.planets) ? providerChart.planets : [];
     const aspects = Array.isArray(providerChart.aspects) ? providerChart.aspects : [];
     const warnings = Array.isArray(providerChart.warnings) ? providerChart.warnings.map(String) : [];
-    const placements = planets.map((planet) => ({
+    const planetPlacements = planets.map((planet) => ({
       body: String(planet.name ?? ''),
       sign: String(planet.sign ?? ''),
       ...(Number.isFinite(planet.longitude) ? { longitude: planet.longitude } : {}),
-      ...(Number.isFinite(planet.house) ? { house: planet.house } : {}),
+      ...(birth.time && Number.isFinite(planet.house) ? { house: planet.house } : {}),
       ...(typeof planet.retrograde === 'boolean' ? { retrograde: planet.retrograde } : {}),
     })).filter((placement) => placement.body && placement.sign);
+    const anglePlacements = birth.time
+      ? [
+        ['Ascendant', providerChart.angles?.ascendant],
+        ['Midheaven', providerChart.angles?.midheaven],
+      ].map(([body, angle]) => ({
+        body,
+        sign: String(angle?.sign ?? ''),
+        ...(Number.isFinite(angle?.longitude) ? { longitude: angle.longitude } : {}),
+      })).filter((placement) => placement.sign)
+      : [];
+    const placements = [...planetPlacements, ...anglePlacements];
     if (!placements.length) {
       return errorJson('The astrology calculation service returned an invalid chart.', 'provider_invalid_response', 502);
     }
@@ -174,7 +196,12 @@ export default async function handler(request) {
         toBody: String(aspect.planet2 ?? aspect.toBody ?? ''),
         ...(Number.isFinite(aspect.orb) ? { orbDegrees: aspect.orb } : {}),
       })).filter((aspect) => aspect.type && aspect.fromBody && aspect.toBody),
-      uncertaintyNotes: birth.time ? warnings : ['Birth time was not provided; time-dependent placements are omitted or approximate.'],
+      uncertaintyNotes: birth.time
+        ? warnings
+        : [...new Set([
+          'Birth time was not provided; time-dependent placements and houses are omitted.',
+          ...warnings,
+        ])],
       reflectiveDisclosure: 'For personal reflection and entertainment only; this chart is not factual or predictive advice and is not medical, legal, or financial guidance.',
     });
   } catch (error) {

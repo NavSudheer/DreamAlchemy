@@ -102,6 +102,13 @@ describe('astrology chart route', () => {
         { name: 'Sun', sign: 'Taurus', longitude: 21.4, house: 11, retrograde: false },
         { name: '', sign: 'Gemini' },
       ],
+      angles: {
+        ascendant: { sign: 'Cancer', longitude: 12.5 },
+        midheaven: { sign: 'Pisces', longitude: 2.1 },
+      },
+      houses: [
+        { house: 1, sign: 'Cancer', longitude: 12.5 },
+      ],
       aspects: [
         { aspect: 'trine', planet1: 'Sun', planet2: 'Moon', orb: 2.3 },
       ],
@@ -121,11 +128,41 @@ describe('astrology chart route', () => {
     expect(result).toMatchObject({
       providerId: 'natalchart-ai',
       precision: 'date-time-timezone',
-      placements: [{ body: 'Sun', sign: 'Taurus', longitude: 21.4, house: 11, retrograde: false }],
+      placements: [
+        { body: 'Sun', sign: 'Taurus', longitude: 21.4, house: 11, retrograde: false },
+        { body: 'Ascendant', sign: 'Cancer', longitude: 12.5 },
+        { body: 'Midheaven', sign: 'Pisces', longitude: 2.1 },
+      ],
       aspects: [{ type: 'trine', fromBody: 'Sun', toBody: 'Moon', orbDegrees: 2.3 }],
       uncertaintyNotes: ['House placements depend on the supplied birth time.'],
     });
     expect(result.reflectiveDisclosure).toContain('not factual or predictive');
+  });
+
+  it('omits houses and angles when birth time is unknown', async () => {
+    global.fetch.mockResolvedValue(new Response(JSON.stringify({
+      planets: [{ name: 'Moon', sign: 'Libra', longitude: 5.2, house: 4 }],
+      angles: {
+        ascendant: { sign: 'Cancer', longitude: 12.5 },
+        midheaven: { sign: 'Pisces', longitude: 2.1 },
+      },
+      warnings: ['The Moon may change sign on this date.'],
+    }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    const response = await handler(request({
+      ...validBody,
+      birth: { ...validBody.birth, time: null },
+    }));
+    const result = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(JSON.parse(global.fetch.mock.calls[0][1].body).birth.time).toBeNull();
+    expect(result.precision).toBe('date-only');
+    expect(result.placements).toEqual([{ body: 'Moon', sign: 'Libra', longitude: 5.2 }]);
+    expect(result.uncertaintyNotes).toEqual([
+      'Birth time was not provided; time-dependent placements and houses are omitted.',
+      'The Moon may change sign on this date.',
+    ]);
   });
 
   it('does not return a successful chart for an invalid provider payload', async () => {
@@ -144,12 +181,29 @@ describe('astrology chart route', () => {
   });
 
   it('propagates provider rate limiting as a stable public error', async () => {
-    global.fetch.mockResolvedValue(new Response('', { status: 429 }));
+    global.fetch.mockResolvedValue(new Response(JSON.stringify({
+      error: { code: 'daily_limit_reached', message: 'Provider-specific details must stay private.' },
+    }), { status: 429, headers: { 'Retry-After': '3600' } }));
 
     const response = await handler(request());
 
     expect(response.status).toBe(429);
+    expect(response.headers.get('Retry-After')).toBe('3600');
     await expect(response.json()).resolves.toMatchObject({ code: 'provider_rate_limited' });
+  });
+
+  it('does not expose provider authentication details', async () => {
+    global.fetch.mockResolvedValue(new Response(JSON.stringify({
+      error: { code: 'invalid_api_key', message: 'The provider rejected a private credential.' },
+    }), { status: 401 }));
+
+    const response = await handler(request());
+
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toEqual({
+      error: 'The astrology calculation service is unavailable.',
+      code: 'provider_unavailable',
+    });
   });
 
   it('maps an aborted provider request to a timeout error', async () => {
