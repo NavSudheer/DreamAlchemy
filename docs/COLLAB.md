@@ -176,7 +176,8 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-129 | Codex -> Antigravity | new `src/data/astrologyCalculationDisclosureCopy.ts` only | Create typed, content-only disclosure copy for external chart calculation: fields sent, local-only location label, unknown-time uncertainty, calculation-versus-AI distinction, provider-side processing limitation, and dream-journal exclusion. Keep it non-predictive and provider-neutral; do not alter existing files, UI, routes, services, storage, or credentials. | reviewed; accepted with date-only, AI-summary, external-processing, and journal-boundary corrections (committing) |
 | H-130 | Codex -> Codex | Astrology Preview activation runbook and deployment verification only | Document the exact Vercel project/environment boundary, server-only variables, disabled-by-default rollout, provider sandbox smoke test, rollback, rate-limit verification, and Mac handoff without storing or exposing credentials. | in progress |
 | H-131 | Codex -> Antigravity | new `src/data/astrologyResultSourceCopy.ts` only | Create typed, content-only source and precision labels for calculated Astrology results: calculated chart, optional AI reflection, date-only uncertainty, timed-chart precision, provider processing, and local saved-copy scope. Keep wording provider-neutral, non-predictive, and free of guarantees; do not alter existing files, UI, routes, services, storage, or credentials. | reviewed; accepted with date-only, precision, provider-retention, and training-claim corrections (committing) |
-| H-132 | Codex -> Antigravity | new `src/data/astrologyPreviewStatusCopy.ts` only | Create typed, content-only status copy for optional Astrology Preview states: disabled, configuration pending, provider unavailable, rate limited, private Preview active, and Production blocked. Keep wording concise, provider-neutral, non-predictive, and free of uptime or launch-date promises; do not alter existing files, UI, routes, services, storage, or credentials. | assigned |
+| H-132 | Codex -> Antigravity | new `src/data/astrologyPreviewStatusCopy.ts` only | Create typed, content-only status copy for optional Astrology Preview states: disabled, configuration pending, provider unavailable, rate limited, private Preview active, and Production blocked. Keep wording concise, provider-neutral, non-predictive, and free of uptime or launch-date promises; do not alter existing files, UI, routes, services, storage, or credentials. | reviewed; accepted with request-scope, recovery, retention, and training-claim corrections (committing) |
+| H-133 | Codex -> Antigravity | new `src/data/astrologyPreviewFaq.ts` only | Create a typed, content-only FAQ for the optional private Astrology Preview covering calculation versus AI reflection, fields sent, local location labels, missing birth time, provider processing, local deletion limits, and why Production remains blocked. Keep answers concise, provider-neutral, non-predictive, and free of guarantees; do not alter existing files, UI, routes, services, storage, or credentials. | assigned |
 
 ## Completion format
 
@@ -208,7 +209,6 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - Automated graph check passed: 0 invalid references, 0 duplicate references, 0 self-references across all 17 symbols.
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
 - **Follow-up:** Ready for Codex review and integration.
-
 ### H-004 Completion Notes (Gemini)
 - **Status:** done (uncommitted; awaiting Codex integration)
 - **Changed files:** `src/data/psychologyCheckpoints.ts`
@@ -1338,7 +1338,7 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Follow-up:** Ready for Codex review and integration.
 
 ### H-131 Completion Notes (Antigravity)
-- **Status:** done (uncommitted; awaiting Codex integration)
+- **Status:** done (`ec866b6`)
 - **Changed files:** `src/data/astrologyResultSourceCopy.ts`
 - **Summary of Implementation:**
   - Created a fully typed, content-only dataset of user-facing source attribution, precision levels, and processing scopes for calculated Astrology results covering all 6 required dimensions:
@@ -1350,6 +1350,24 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
     6. **Local Saved-Copy Scope (`local-saved-scope`):** Guarantees that saved birth profiles, computed charts, and reflections reside exclusively in local device storage, completely isolated from Jungian dream records (`badgeLabel: 'Saved on Device'`).
   - Defined clean interfaces (`AstrologyResultSourceId`, `AstrologyResultCategory`, `AstrologyResultSourceItem`, `AstrologyPrecisionDetail`, `AstrologyResultSourceBundle`), constants (`ASTROLOGY_RESULT_SOURCE_ORDERED_IDS`, `ASTROLOGY_RESULT_SOURCE_ITEMS`, `ASTROLOGY_PRECISION_DETAILS`, `ASTROLOGY_RESULT_SOURCE_BUNDLE`), and lookup helpers (`getAstrologyResultSourceItem`, `getAllAstrologyResultSourceItems`, `getAstrologyResultSourceItemsByCategory`, `getAstrologyResultSourceBundle`, `getResultSourceBadgeLabel`, `getPrecisionCopyForTime`, `getPrecisionDetailForTime`, `getCalculatedChartSourceCopy`, `getAiReflectionSourceCopy`, `getLocalSavedScopeCopy`, `getProviderProcessingCopy`, `isRecognizedResultSourceId`).
   - Strictly provider-neutral, non-predictive, privacy-preserving, and free of guarantees. Existing files, UI, routes, services, storage, and credentials left untouched.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (22 suites, 132 tests passing).
+- **Follow-up:** Ready for Codex review and integration.
+
+### H-132 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyPreviewStatusCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only dataset of user-facing status copy for all 6 optional Astrology Preview and deployment states:
+    1. **Disabled (`disabled`):** Clear notification that calculation features are turned off for this build; reassures users that offline drafting and Jungian dream journaling remain fully accessible without transmitting data (`badgeLabel: 'Disabled'`).
+    2. **Configuration Pending (`configuration-pending`):** Informs users that server routes and environment setup are being finalized before calculations can be safely processed; drafts stay on-device (`badgeLabel: 'Setup Pending'`).
+    3. **Provider Unavailable (`provider-unavailable`):** Explains that the external ephemeris calculation provider is temporarily offline or experiencing connection issues; notes retryability and local data safety (`badgeLabel: 'Service Unavailable'`).
+    4. **Rate Limited (`rate-limited`):** Informs users that the request rate limit or safety threshold has been reached; instructs a brief pause/cooldown to protect upstream infrastructure (`badgeLabel: 'Rate Limited'`).
+    5. **Private Preview Active (`private-preview-active`):** Communicates active private testing preview under strict privacy safeguards (only coordinates and timestamp transmitted; friendly city names, user accounts, and dream logs never leave device) (`badgeLabel: 'Preview Active'`).
+    6. **Production Blocked (`production-blocked`):** Explicitly states that general production rollout is restricted pending verification gates (durable limiters, spending alerts, redacted observability, test checklists) (`badgeLabel: 'Production Blocked'`).
+  - Defined clean interfaces (`AstrologyPreviewStatus`, `AstrologyPreviewStatusCopy`, `AstrologyPreviewStatusBundle`), constants (`ASTROLOGY_PREVIEW_STATUSES`, `ASTROLOGY_PREVIEW_STATUS_COPY`, `ASTROLOGY_PREVIEW_STATUS_BUNDLE`), and lookup helpers (`getAstrologyPreviewStatusCopy`, `getAllAstrologyPreviewStatusCopies`, `getAllAstrologyPreviewStatuses`, `getAstrologyPreviewStatusBadgeLabel`, `isCalculationPermittedForStatus`, `getAstrologyPreviewStatusBundle`, `isValidAstrologyPreviewStatus`, `getDisabledPreviewStatusCopy`, `getConfigurationPendingStatusCopy`, `getProviderUnavailableStatusCopy`, `getRateLimitedStatusCopy`, `getPrivatePreviewActiveStatusCopy`, `getProductionBlockedStatusCopy`).
+  - Strictly concise, provider-neutral, non-predictive, privacy-preserving, and free of uptime or launch-date promises. Existing files, UI, routes, services, storage, and credentials left untouched.
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (22 suites, 132 tests passing).
