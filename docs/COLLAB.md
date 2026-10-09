@@ -142,10 +142,11 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-095 | Codex -> Codex | Astrology deletion UI and H-094 deletion-summary copy only | Integrate reviewed deletion scope and external-processing caveat into the existing destructive confirmation without changing deletion behavior or storage keys. | done (`fe640ce`) |
 | H-096 | Codex -> Antigravity | new `docs/ASTROLOGY_MAC_TEST_MATRIX.md` only | Draft a concise Mac manual-test matrix covering valid/invalid dates, optional/invalid timezones, coordinates, consent, disabled/offline/provider errors, local persistence, reflection boundaries, accessibility, and deletion scope. Do not alter code, providers, credentials, or existing docs. | reviewed, accepted with storage-key, reflection-boundary, provider-retention, and rate-limit corrections (committing) |
 | H-097 | Codex -> Codex | `docs/ASTROLOGY_MAC_TEST_MATRIX.md` and current Astrology implementation only | Execute and reconcile the reviewed Mac test matrix against automated coverage and local web smoke checks; fix only verified release blockers and update readiness notes. | done (committing) |
-| H-098 | Codex -> Antigravity | new `docs/ASTROLOGY_TESTER_FEEDBACK_TEMPLATE.md` only | Draft a concise Mac tester feedback template covering environment/build, test-case ID, expected versus actual behavior, reproduction steps, severity, accessibility observations, and privacy-safe screenshots/logs with secrets and birth details redacted. Do not alter code, providers, credentials, or existing docs. | in progress |
+| H-098 | Codex -> Antigravity | new `docs/ASTROLOGY_TESTER_FEEDBACK_TEMPLATE.md` only | Draft a concise Mac tester feedback template covering environment/build, test-case ID, expected versus actual behavior, reproduction steps, severity, accessibility observations, and privacy-safe screenshots/logs with secrets and birth details redacted. Do not alter code, providers, credentials, or existing docs. | reviewed, accepted with evidence-label and commit-placeholder corrections (committing) |
 | H-099 | Codex -> Codex | Astrology readiness docs and current implementation only | Review H-098, reconcile H-097 evidence, and publish a final enabled/blocked Mac testing readiness decision with exact unresolved gates. | queued after H-097 |
 | H-100 | Codex -> Codex | Astrology Vercel routes, tests, and deployment documentation only | Audit the production deployment boundary for feature flags, server-only secrets, CORS, request throttling, and provider-error propagation; document exact safe implementation choices without enabling the feature or changing providers. | done (committing) |
 | H-101 | Codex -> Codex | Astrology Vercel routes and focused route tests only | Add bounded JSON/content-type validation, sensitive-field rejection, upstream timeouts, and stable public error codes without changing providers, enabling production, or adding credentials. | in progress |
+| H-102 | Codex -> Antigravity | new `docs/DREAM_IMAGE_MAC_TEST_MATRIX.md` only | Draft a concise Mac manual-test matrix for the current provider-neutral Dream Image preparation/result experience: curated prompt boundary, style selection, consent, disabled/offline/failure states, progress accessibility, local result actions, deletion, and explicit provider-connected blockers. Do not alter code, providers, credentials, or existing docs. | in progress |
 
 ## Completion format
 
@@ -1139,3 +1140,18 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 75 tests passing).
 - **Follow-up:** Ready for Codex execution and reconciliation in H-097.
+
+### H-098 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `docs/ASTROLOGY_TESTER_FEEDBACK_TEMPLATE.md`
+- **Summary of Implementation:**
+  - Created a concise, structured Mac tester feedback template and defect-reporting guide for the hybrid Astrology feature:
+    1. **Privacy Mandate & Strict Redaction:** Explicit instructions mandating zero API keys or secrets (`ASTROLOGY_API_KEY`, `OPENAI_API_KEY`, Bearer tokens), zero real personal birth records/times/coordinates, and zero personal dream journal entries or voice transcripts in reports, logs, or screenshots.
+    2. **Severity Classification Guide:** Clear tiering from P0 (Crash / Data Loss / Privacy Leak) down to P3 (Cosmetic / Usability suggestion) with astrology-specific examples.
+    3. **Structured Fillable Markdown Template:** Standardized sections covering environment/build metadata (OS, architecture, surface, commit hash, feature flag state, network mode), test matrix case ID (cross-referenced to `docs/ASTROLOGY_MAC_TEST_MATRIX.md`), expected vs. actual behavior, numbered reproduction steps, VoiceOver/accessibility observations, and sanitized logs/evidence.
+    4. **Concrete Reference Example:** Fully populated sample feedback report demonstrating proper redaction and clear reporting of a layout issue under narrow viewports.
+  - Zero code, routes, providers, credentials, or existing docs modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 75 tests passing).
+- **Follow-up:** Ready for Codex review and integration into H-099 readiness assessment.
