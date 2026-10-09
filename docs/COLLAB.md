@@ -136,8 +136,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-089 | Codex -> Codex | Astrology form UI and H-088 birth-date help copy only | Integrate reviewed birth-date format/privacy guidance beside validation without adding date lookup, provider changes, or new storage. | done (committing) |
 | H-090 | Codex -> Antigravity | new `src/data/astrologyLocationLabelHelpCopy.ts` only | Create typed, content-only guidance for the optional local location label: it is display-only, may use a broad city/region, should avoid street addresses, is stored locally, and is not included in chart/reflection requests. Do not add UI, geocoding, providers, storage, credentials, or modify existing files. | reviewed, accepted with persistence timing and platform wording corrections (committing) |
 | H-091 | Codex -> Codex | Astrology form UI and H-090 location-label help copy only | Integrate reviewed local-label privacy guidance beside the optional label field without adding geocoding, provider changes, or new storage. | done (committing) |
-| H-092 | Codex -> Antigravity | new `src/data/astrologyRequestSummaryCopy.ts` only | Create typed, content-only review-before-submit copy that distinguishes fields sent for chart calculation, fields kept local, chart data sent for optional AI reflection, and dream data never included. Do not alter UI, services, providers, storage, credentials, or existing files. | in progress |
+| H-092 | Codex -> Antigravity | new `src/data/astrologyRequestSummaryCopy.ts` only | Create typed, content-only review-before-submit copy that distinguishes fields sent for chart calculation, fields kept local, chart data sent for optional AI reflection, and dream data never included. Do not alter UI, services, providers, storage, credentials, or existing files. | reviewed, accepted with two-hop reflection and local-storage boundary corrections (committing) |
 | H-093 | Codex -> Codex | Astrology consent UI and H-092 request-summary copy only | Integrate reviewed sent-versus-local request summary into the explicit consent area without changing request, provider, or storage behavior. | queued after H-092 |
+| H-094 | Codex -> Antigravity | new `src/data/astrologyDeletionSummaryCopy.ts` only | Create typed, content-only deletion disclosure explaining which local profile/chart/reflection records are removed, that dream journals are unaffected, and that local deletion cannot retract data already processed under external-provider policies. Do not alter UI, services, providers, storage, credentials, or existing files. | in progress |
 
 ## Completion format
 
@@ -1063,3 +1064,26 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 71 tests passing).
 - **Follow-up:** Ready for Codex review and integration into H-091 form UI.
+
+### H-092 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyRequestSummaryCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only educational and pre-submission disclosure bundle detailing data destinations across 4 critical categories:
+    1. **Sent for Chart Calculation (`sent-for-calculation`):** Details fields transmitted to the chart calculation service endpoint (`birthDate`, optional `birthTime`, `coordinates`, `timezone`, and explicit `consent`); explains that coordinates are used ephemerally to compute celestial positions and are never stored locally.
+    2. **Kept Strictly on Device (`kept-local`):** Details fields stored solely in local device storage or screen memory (`locationLabel`, `savedProfile`, `calculatedChart`, `formDraftState`); clarifies that friendly labels and calculated charts remain offline and can be permanently deleted at any time.
+    3. **Sent for Optional AI Reflection (`sent-for-reflection`):** Details data sent only if the user explicitly triggers AI reflection synthesis (`compactPlacements`, `compactAspects`, `uncertaintyNotes`); guarantees that birth date, birth time, coordinates, and personal identity are completely excluded from reflection payloads.
+    4. **Never Included in Astrology Requests (`never-included`):** Enforces DreamAlchemy's strict privacy boundary; guarantees that raw dream journal narratives (`dreamJournalText`), tags/patterns (`dreamPatterns`), and personal identity/names (`personalIdentity`) are never accessed, bundled, or transmitted by astrology services.
+  - Sourced structured interfaces (`AstrologyDataDestinationCategory`, `AstrologyRequestDataFieldItem`, `AstrologyRequestCategorySection`, `AstrologyRequestSummaryBundle`), constants (`ASTROLOGY_REQUEST_FIELDS`, `ASTROLOGY_REQUEST_SECTIONS`, `ASTROLOGY_REQUEST_ORDERED_CATEGORIES`, `ASTROLOGY_REQUEST_SUMMARY_BUNDLE`), and lookup/validation helpers:
+    - `getRequestSummarySection(category)`
+    - `getAllRequestSummarySections()`
+    - `getRequestFieldsByCategory(category)`
+    - `getAllRequestSummaryFields()`
+    - `getDreamJournalIsolationGuarantee()`
+    - `formatRequestReviewSummary()`
+    - `isRecognizedDataDestinationCategory(value)` (TypeScript type guard)
+  - Completely non-predictive, non-diagnostic, privacy-first; zero modifications to UI, services, providers, storage, credentials, or existing files.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 73 tests passing).
+- **Follow-up:** Ready for Codex review and integration into H-093 consent UI.
