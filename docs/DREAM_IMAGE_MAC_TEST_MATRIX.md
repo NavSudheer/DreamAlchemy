@@ -16,7 +16,7 @@ This test matrix defines the manual test cases for DreamAlchemy's provider-neutr
 2. **Local Dream Association Only:** The local dream identifier (`dreamId`) remains strictly app-local and is stripped from the provider payload (`createDreamImageProviderPayload` omits `dreamId`).
 3. **Provider-Neutral Preparation:** The app contains zero image provider credentials, zero direct billing/quota dependencies, and operates in offline/preview preparation mode when unconfigured.
 4. **Accessible Alternative Text:** Every curated scene and style combination provides descriptive alt text (`getAltTextForTemplate`) checked by the project's local `isDescriptiveAltText` heuristic; VoiceOver quality still requires manual review.
-5. **Result Actions Are a Component Boundary:** Share, save, regenerate, and delete copy/confirmations exist as a reusable component, but the current preparation screen does not yet render a generated result or implement local image-file persistence.
+5. **Result Scope Is Deliberately In-Memory:** A successful response renders descriptive alt text, transparent AI/privacy disclosures, regenerate, and in-memory discard. Photo-library saving, native sharing, and persistent image-file storage are not implemented.
 
 ---
 
@@ -25,7 +25,8 @@ This test matrix defines the manual test cases for DreamAlchemy's provider-neutr
 | Environment / Variable | Value / Configuration | Purpose |
 | :--- | :--- | :--- |
 | `EXPO_PUBLIC_DREAM_IMAGE_API_URL` | Unset (Current / Default) | Verify provider-neutral preview & offline preparation behavior |
-| `EXPO_PUBLIC_DREAM_IMAGE_API_URL` | Mock / Test Proxy URL (Future) | Verify generation network handshake when proxy is available |
+| `EXPO_PUBLIC_DREAM_IMAGE_API_URL` | Application-owned `/api/dream-image` URL (Preview only) | Verify the disabled-by-default request boundary and stable server errors; the current route calls no provider |
+| `DREAM_IMAGE_FEATURE_ENABLED` | `false` or unset (Default) | Server route returns `feature_disabled`; set to `true` only in a controlled Preview test |
 | Client Environment | macOS Web (`npx expo start --web`) or iOS Simulator | Verification target platforms |
 | VoiceOver | macOS VoiceOver (`Cmd+F5`) | Screen reader and live region verification |
 
@@ -42,7 +43,7 @@ This test matrix defines the manual test cases for DreamAlchemy's provider-neutr
 | **TC-IMG-SCENE-03** | Auto-Select Recommended Style | Select `Mirror of Stillness` (`watercolor`) or `Celestial Ascent` (`surreal`) | Active art style automatically updates to match the template's `recommendedStyle`. | `app/dream-image.tsx` |
 | **TC-IMG-SCENE-04** | Raw Journal Text Exclusion | Inspect entire screen and form inputs | Zero input fields exist for entering personal dream text; prepared reflection displays abstract curated `promptText` only. | `dreamImage.test.ts` |
 | **TC-IMG-SCENE-05** | Dynamic Alt Text Preview | Switch scenes and inspect "Accessible scene description" | Alt text updates dynamically to match the active template and style via `getAltTextForTemplate`. | `dreamImageSafetyGuidelines.test.ts` |
-| **TC-IMG-SCENE-06** | Payload Boundary Enforcement | Inspect output of `createDreamImageProviderPayload` | Payload contains **only** `visualReflectionPrompt` and `style`; `dreamId` is strictly omitted. | `dreamImage.test.ts` |
+| **TC-IMG-SCENE-06** | Payload Boundary Enforcement | Inspect output of `createDreamImageProviderPayload` | Payload contains **only** `visualReflectionPrompt`, `style`, and explicit artistic/external-processing consent; `dreamId`, dream text, and analysis are strictly omitted. | `dreamImage.test.ts`, `dreamImageRoute.test.js` |
 
 ---
 
@@ -72,17 +73,17 @@ This test matrix defines the manual test cases for DreamAlchemy's provider-neutr
 | Test ID | Test Scenario | Steps / Input | Expected Result | Automated Test Ref |
 | :--- | :--- | :--- | :--- | :--- |
 | **TC-IMG-FAIL-01** | Provider Unconfigured / Preview | Open studio with `EXPO_PUBLIC_DREAM_IMAGE_API_URL` unset | Preview banner renders: `Preview Mode`, `Image Service Unavailable`, explanation, and `"You can safely explore and preview curated scene templates and art styles offline."` | `dreamImage.test.ts`, `app/dream-image.tsx` |
-| **TC-IMG-FAIL-02** | Offline Copy Contract | Inspect focused failure-copy tests | `No Internet Connection` copy includes a recovery action and states that raw journal text was not sent. This state is not yet wired into the preparation screen. | `dreamImageFailureCopy.test.ts` |
-| **TC-IMG-FAIL-03** | Moderation Copy Contract | Inspect focused failure-copy tests | Non-retryable `Scene Description Not Allowed` recovery copy exists. End-to-end moderation remains blocked on the future server proxy. | `dreamImageFailureCopy.test.ts` |
-| **TC-IMG-FAIL-04** | Rate-Limit Copy Contract | Inspect focused failure-copy tests | `Generation Limit Reached` cooldown copy exists. A real HTTP 429 path remains blocked on proxy and limiter implementation. | `dreamImageFailureCopy.test.ts` |
-| **TC-IMG-FAIL-05** | Timeout Service Contract | Exercise `generateDreamImage` with a controlled abort in tests | Service maps aborts to a retry message. The current preparation screen has no Generate action, so manual network execution is not yet available. | `dreamImage.test.ts` |
+| **TC-IMG-FAIL-02** | Offline Recovery | Use the controlled service test or disconnect the Preview client before generation | Typed `offline` failure renders `No Internet Connection`, preserves the prepared selection, and permits retry without including journal text. | `dreamImageRemoteErrors.test.ts`, `app/__tests__/dream-image.test.tsx` |
+| **TC-IMG-FAIL-03** | Moderation Recovery | Return HTTP 422 or `moderation_rejected` from a controlled proxy | Non-retryable `Scene Description Not Allowed` recovery renders. Live upstream moderation remains a provider-activation gate. | `dreamImageRemoteErrors.test.ts`, `dreamImageFailureCopy.test.ts` |
+| **TC-IMG-FAIL-04** | Rate-Limit Recovery | Return HTTP 429 or `rate_limited` from a controlled proxy | Typed rate-limit recovery copy renders without message parsing. A durable production limiter remains an activation gate. | `dreamImageRemoteErrors.test.ts`, `dreamImageFailureCopy.test.ts` |
+| **TC-IMG-FAIL-05** | Timeout Service Contract | Exercise `generateDreamImage` with a controlled abort in tests | Service maps aborts to a retryable typed timeout and the screen exposes the retry action. | `dreamImageRemoteErrors.test.ts`, `app/__tests__/dream-image.test.tsx` |
 | **TC-IMG-FAIL-06** | Privacy Preservation in Failure Copy | Inspect the failure-copy dataset | Failure states state that raw dream journal text was not included. Verify rendered error-card integration after generation UI exists. | `dreamImageFailureCopy.ts` |
 
 ---
 
 ### Group 5: Generation Progress Accessibility
 
-These cases validate the standalone progress component. It is not yet mounted by the current preparation screen.
+These cases validate the progress component mounted by the current generation screen. The provider-neutral route does not yet produce live upstream progress.
 
 | Test ID | Test Scenario | Steps / Input | Expected Result | Automated Test Ref |
 | :--- | :--- | :--- | :--- | :--- |
@@ -137,8 +138,8 @@ The following items are explicit architecture and infrastructure blockers that *
 
 | Blocker ID | Category | Current State | Required Release Gate |
 | :--- | :--- | :--- | :--- |
-| **BLK-IMG-01** | Server Proxy Infrastructure | `EXPO_PUBLIC_DREAM_IMAGE_API_URL` is unset; no serverless route exists for image generation. | Deploy a dedicated serverless proxy (e.g. `/api/dream-image`) that holds provider secrets and handles client requests. |
-| **BLK-IMG-02** | Provider Credentials & Key Storage | No image generation provider selected or funded; zero API keys stored. | Choose an enterprise image generation provider (e.g. Imagen, DALL-E, Stability), secure server-only API keys, and configure spend alerts. |
+| **BLK-IMG-01** | Preview Deployment | A disabled-by-default `/api/dream-image` validation route exists locally but is not deployed and connected to the client. | Deploy the application-owned route to Preview, set the client endpoint, and verify disabled/validation responses before provider work. |
+| **BLK-IMG-02** | Provider Approval & Secret Storage | No image generation provider has passed the reviewed evaluation or been connected. | Approve one provider, keep its credential server-only, and configure provider-console spending controls. |
 | **BLK-IMG-03** | Upstream Content Moderation | Client enforces catalog curation; proxy moderation contract unconfigured. | Implement server-side prompt moderation checks before calling the image generation provider. |
 | **BLK-IMG-04** | Durable Request Throttling | No rate limiter exists for image requests. | Implement an anonymous, server-side rate limiter / cooldown window to prevent quota exhaustion and cost spikes. |
 | **BLK-IMG-05** | Image CDN & Transient Storage | No remote image hosting or CDN caching pipeline configured. | Configure transient image storage / delivery CDN with safe retention windows that do not link images to personal user accounts. |
@@ -181,7 +182,7 @@ The Dream Image Studio preparation experience passes its current provider-neutra
 - [ ] `npx tsc --noEmit` exits with code 0.
 - [ ] All 5 provider-connected release blockers (`BLK-IMG-01` to `BLK-IMG-05`) remain acknowledged and documented as blockers to live production enablement.
 
-**Readiness boundary:** the curated preparation screen is eligible for local Mac UI testing. Generation, progress integration, image persistence, save/share, and deletion workflows are not user-test-ready end to end until the provider-connected blockers and result integration are implemented.
+**Readiness boundary:** the curated preparation, consent, progress/error presentation, and in-memory result UI are eligible for local Mac testing. Real generation, asset delivery, persistence, Photos save, native sharing, and provider-side deletion are not user-test-ready until the provider activation gates are complete.
 
 ---
 

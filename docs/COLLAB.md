@@ -170,8 +170,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-123 | Codex -> Codex | Dream Image successful-result UI and reviewed H-117 disclosure copy only | Integrate accurate generated-art, curated-input, non-diagnostic, session-scope, and provider-dependent retention disclosures without adding persistence, sharing, or provider behavior. | done (committing) |
 | H-124 | Codex -> Antigravity | new `src/data/dreamImageProviderDecisionCopy.ts` only | Create a small typed, content-only set of neutral labels and explanations for provider evaluation states: not reviewed, under review, blocked, approved for sandbox, and approved for limited production. Avoid vendor names, pricing claims, SLAs, retention durations, or implementation instructions. Do not alter existing files. | reviewed; accepted (committing) |
 | H-125 | Codex -> Codex | Dream Image route allowlist drift protection and focused tests only | Prevent the server route's curated prompt and style allowlists from silently drifting from the application catalog while preserving the strict server-owned request boundary. | done (committing) |
-| H-126 | Codex -> Antigravity | new `src/data/dreamImageAvailabilityCopy.ts` only | Create typed, content-only user copy for feature disabled, sandbox-only, provider paused, budget protection, and limited-production availability states. Keep wording provider-neutral, non-predictive, privacy-preserving, and free of timing, pricing, uptime, or retention promises. Do not alter existing files, UI, routes, services, storage, or credentials. | assigned |
-| H-127 | Codex -> Codex | Dream Image route contract and deployment documentation only | Reconcile the new proxy request contract, consent fields, stable public errors, feature flag, provider-unavailable behavior, and exact remaining provider activation gates in setup and Mac-test documentation. | in progress |
+| H-126 | Codex -> Antigravity | new `src/data/dreamImageAvailabilityCopy.ts` only | Create typed, content-only user copy for feature disabled, sandbox-only, provider paused, budget protection, and limited-production availability states. Keep wording provider-neutral, non-predictive, privacy-preserving, and free of timing, pricing, uptime, or retention promises. Do not alter existing files, UI, routes, services, storage, or credentials. | done (uncommitted) |
+| H-127 | Codex -> Codex | Dream Image route contract and deployment documentation only | Reconcile the new proxy request contract, consent fields, stable public errors, feature flag, provider-unavailable behavior, and exact remaining provider activation gates in setup and Mac-test documentation. | done (committing) |
+| H-128 | Codex -> Codex | Astrology provider contract and focused route tests only | Reconcile the selected NatalChart.AI full-chart response with the current adapter, including time-unknown behavior, angles, houses, rate-limit headers, and stable provider errors without enabling deployment or exposing the new key. | in progress |
 
 ## Completion format
 
@@ -1292,6 +1293,23 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
     5. **Approved for Limited Production (`approved-for-limited-production`):** Clearance indicating verification of required deployment gates for controlled, disabled-by-default production rollout with active safeguards and monitoring (`badgeLabel: 'Limited Production'`).
   - Defined clean interfaces (`DreamImageProviderEvaluationState`, `DreamImageProviderDecisionCopy`), constants (`DREAM_IMAGE_PROVIDER_EVALUATION_STATES`, `DREAM_IMAGE_PROVIDER_DECISION_COPY`), and helper functions (`getProviderDecisionCopy`, `getAllProviderDecisionCopies`, `getAllProviderEvaluationStates`, `getProviderEvaluationStateBadgeLabel`, `isApprovedForProduction`, `isApprovedForSandbox`, `isValidProviderEvaluationState`).
   - Strictly neutral framing: zero vendor names, zero pricing claims, zero SLAs, zero retention durations, and zero implementation instructions. Existing files, UI, services, providers, storage, and credentials left untouched.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (22 suites, 130 tests passing).
+- **Follow-up:** Ready for Codex review and integration.
+
+### H-126 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dreamImageAvailabilityCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only dataset of user-facing copy for all 5 feature availability states:
+    1. **Feature Disabled (`feature-disabled`):** Clear notice that visual reflection generation is inactive for this build, with reassuring guidance that curated scene templates and artistic styles remain fully available to explore offline without transmitting data (`badgeLabel: 'Feature Disabled'`).
+    2. **Sandbox Only (`sandbox-only`):** Clarifies that generation is currently restricted to isolated validation sandboxes without live production requests enabled from standard builds (`badgeLabel: 'Sandbox Only'`).
+    3. **Provider Paused (`provider-paused`):** Informs users that the external rendering service is temporarily paused during service checks or updates, while local dream journals and templates remain fully accessible (`badgeLabel: 'Service Paused'`).
+    4. **Budget Protection (`budget-protection`):** Explains that generation requests are resting under automated usage safeguards to prevent service overages, keeping private journal records completely unaffected (`badgeLabel: 'Usage Safeguard'`).
+    5. **Limited Production (`limited-production`):** Communicates active generation in a controlled limited release with privacy safeguards (only curated prompts and styles transmitted; zero personal dream text leaves the device) (`badgeLabel: 'Limited Release'`).
+  - Defined clean interfaces (`DreamImageAvailabilityState`, `DreamImageAvailabilityCopy`, `DreamImageAvailabilityBundle`), constants (`DREAM_IMAGE_AVAILABILITY_STATES`, `DREAM_IMAGE_AVAILABILITY_COPY`, `DREAM_IMAGE_AVAILABILITY_BUNDLE`), and lookup helpers (`getDreamImageAvailabilityCopy`, `getAllDreamImageAvailabilityCopies`, `getAllDreamImageAvailabilityStates`, `getAvailabilityBadgeLabel`, `isGenerationAllowedForAvailabilityState`, `getDreamImageAvailabilityBundle`, `isValidDreamImageAvailabilityState`).
+  - Strictly provider-neutral, non-predictive, privacy-preserving, and free of timing, pricing, uptime, or retention promises. Existing files, UI, routes, services, storage, and credentials left untouched.
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (22 suites, 130 tests passing).
