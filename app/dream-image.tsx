@@ -70,25 +70,27 @@ export default function DreamImageScreen() {
         </Card>
 
         <Text variant="h4" color={textColor} style={styles.heading}>Choose a curated scene</Text>
-        {DREAM_IMAGE_PROMPT_TEMPLATES.map(item => {
-          const selected = item.id === template.id;
-          return (
-            <TouchableOpacity
-              key={item.id}
-              accessibilityRole="radio"
-              accessibilityState={{ selected }}
-              accessibilityLabel={item.title}
-              accessibilityHint={item.description}
-              onPress={() => chooseTemplate(item.id, item.recommendedStyle)}
-            >
-              <Card style={selected ? { ...styles.option, ...styles.selected } : styles.option} backgroundColor={selected ? selectedSurface : surface}>
-                <Text variant="subtitle1" color={textColor}>{item.title}</Text>
-                <Text variant="body2" color={muted} style={styles.optionText}>{item.description}</Text>
-                <Text variant="caption" color={muted}>{item.suggestedAtmosphere}</Text>
-              </Card>
-            </TouchableOpacity>
-          );
-        })}
+        <View accessibilityRole="radiogroup">
+          {DREAM_IMAGE_PROMPT_TEMPLATES.map(item => {
+            const selected = item.id === template.id;
+            return (
+              <TouchableOpacity
+                key={item.id}
+                accessibilityRole="radio"
+                accessibilityState={{ selected }}
+                accessibilityLabel={item.title}
+                accessibilityHint={item.description}
+                onPress={() => chooseTemplate(item.id, item.recommendedStyle)}
+              >
+                <Card style={selected ? { ...styles.option, ...styles.selected } : styles.option} backgroundColor={selected ? selectedSurface : surface}>
+                  <Text variant="subtitle1" color={textColor}>{item.title}</Text>
+                  <Text variant="body2" color={muted} style={styles.optionText}>{item.description}</Text>
+                  <Text variant="caption" color={muted}>{item.suggestedAtmosphere}</Text>
+                </Card>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
 
         <Text variant="h4" color={textColor} style={styles.heading}>Choose an art style</Text>
         <View accessibilityRole="radiogroup" style={styles.styleGrid}>

@@ -182,3 +182,16 @@ The Dream Image Studio preparation experience passes its current provider-neutra
 - [ ] All 5 provider-connected release blockers (`BLK-IMG-01` to `BLK-IMG-05`) remain acknowledged and documented as blockers to live production enablement.
 
 **Readiness boundary:** the curated preparation screen is eligible for local Mac UI testing. Generation, progress integration, image persistence, save/share, and deletion workflows are not user-test-ready end to end until the provider-connected blockers and result integration are implemented.
+
+---
+
+## 7. Codex Execution Record — 2026-10-09
+
+| Check | Result | Evidence / Remaining Work |
+| :--- | :--- | :--- |
+| Focused automated coverage | Pass | Dream Image service, safety, failure-copy, progress, result-action, and preparation-screen tests pass. |
+| Local web route smoke | Pass | Fresh Expo web build rendered `/dream-image`; accessibility inspection exposed the title, preview/unavailable notice, safety boundaries, seven scene radios, four style radios, prepared prompt, alt text, consent copy, and non-interpretive disclosure. |
+| Default selection and recommendation | Pass | Rendered preview starts at `Luminous Threshold · Ethereal`; automated UI coverage verifies selecting `Mirror of Stillness` also selects Watercolor. |
+| Scene grouping | Fixed and tested | Added the missing scene `radiogroup` boundary so both scene and style choices have explicit assistive grouping. |
+| VoiceOver phrasing, light/dark contrast, and responsive layout | Pending Mac operator | Record actual Safari/Chrome/iOS Simulator announcements and visual evidence with synthetic content only. |
+| Generation and result workflows | Blocked by design | No Generate action, proxy, result persistence, or save/share/delete integration exists yet; component contracts alone must not be reported as end-to-end passes. |
