@@ -175,7 +175,8 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-128 | Codex -> Codex | Astrology provider contract and focused route tests only | Reconcile the selected NatalChart.AI full-chart response with the current adapter, including time-unknown behavior, angles, houses, rate-limit headers, and stable provider errors without enabling deployment or exposing the new key. | done (`f883e5d`) |
 | H-129 | Codex -> Antigravity | new `src/data/astrologyCalculationDisclosureCopy.ts` only | Create typed, content-only disclosure copy for external chart calculation: fields sent, local-only location label, unknown-time uncertainty, calculation-versus-AI distinction, provider-side processing limitation, and dream-journal exclusion. Keep it non-predictive and provider-neutral; do not alter existing files, UI, routes, services, storage, or credentials. | reviewed; accepted with date-only, AI-summary, external-processing, and journal-boundary corrections (committing) |
 | H-130 | Codex -> Codex | Astrology Preview activation runbook and deployment verification only | Document the exact Vercel project/environment boundary, server-only variables, disabled-by-default rollout, provider sandbox smoke test, rollback, rate-limit verification, and Mac handoff without storing or exposing credentials. | in progress |
-| H-131 | Codex -> Antigravity | new `src/data/astrologyResultSourceCopy.ts` only | Create typed, content-only source and precision labels for calculated Astrology results: calculated chart, optional AI reflection, date-only uncertainty, timed-chart precision, provider processing, and local saved-copy scope. Keep wording provider-neutral, non-predictive, and free of guarantees; do not alter existing files, UI, routes, services, storage, or credentials. | assigned |
+| H-131 | Codex -> Antigravity | new `src/data/astrologyResultSourceCopy.ts` only | Create typed, content-only source and precision labels for calculated Astrology results: calculated chart, optional AI reflection, date-only uncertainty, timed-chart precision, provider processing, and local saved-copy scope. Keep wording provider-neutral, non-predictive, and free of guarantees; do not alter existing files, UI, routes, services, storage, or credentials. | reviewed; accepted with date-only, precision, provider-retention, and training-claim corrections (committing) |
+| H-132 | Codex -> Antigravity | new `src/data/astrologyPreviewStatusCopy.ts` only | Create typed, content-only status copy for optional Astrology Preview states: disabled, configuration pending, provider unavailable, rate limited, private Preview active, and Production blocked. Keep wording concise, provider-neutral, non-predictive, and free of uptime or launch-date promises; do not alter existing files, UI, routes, services, storage, or credentials. | assigned |
 
 ## Completion format
 
@@ -1316,4 +1317,40 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (22 suites, 130 tests passing).
+- **Follow-up:** Ready for Codex review and integration.
+
+### H-129 Completion Notes (Antigravity)
+- **Status:** done (`6db0ffe`)
+- **Changed files:** `src/data/astrologyCalculationDisclosureCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only dataset of user-facing disclosures and technical boundaries for external chart calculation across all 6 specified topics:
+    1. **Fields Sent (`fields-sent`):** Clarifies that calculation requires mathematical ephemeris formulas using birth date, optional birth time, geographic coordinates, and optional timezone; personal names and account credentials are never requested or sent (`badgeLabel: 'Sent to Server'`).
+    2. **Local-Only Location Label (`local-location-label`):** Guarantees that friendly city or place names (e.g. "San Francisco, CA") remain exclusively on-device, and only mathematical latitude/longitude numbers are transmitted (`badgeLabel: 'Kept on Device'`).
+    3. **Unknown-Time Uncertainty (`unknown-time-uncertainty`):** Explains that omitting birth time calculates a midday UTC snapshot, omitting the Ascendant and houses while noting ~13° daily lunar variance (`badgeLabel: 'Approximate Snapshot'`).
+    4. **Calculation vs. AI Distinction (`calculation-vs-ai`):** Delineates deterministic astronomical ephemeris mechanics from separate, optional generative AI text reflection; calculation does not evaluate, judge, or synthesize prose (`badgeLabel: 'Ephemeris Math'`).
+    5. **Provider-Side Processing Limitation (`provider-processing-limitations`):** Discloses stateless client requests, absence of user accounts, and provider-side network logging; notes that local app deletion removes device storage but cannot retroactively scrub external transit logs (`badgeLabel: 'External Processing'`).
+    6. **Dream-Journal Exclusion (`dream-journal-exclusion`):** Affirms that personal dream entries, titles, narratives, notes, and analysis remain strictly in device storage and are completely excluded from astrology payloads (`badgeLabel: 'Device-Only'`).
+  - Defined clean interfaces (`AstrologyCalculationDisclosureTopic`, `AstrologyCalculationDisclosureItem`, `AstrologyCalculationDisclosureBundle`), constants (`ASTROLOGY_CALCULATION_DISCLOSURE_ORDERED_TOPICS`, `ASTROLOGY_CALCULATION_DISCLOSURE_ITEMS`, `ASTROLOGY_CALCULATION_DISCLOSURE_BUNDLE`), and lookup helpers (`getAstrologyCalculationDisclosureItem`, `getAllAstrologyCalculationDisclosureItems`, `getAllAstrologyCalculationDisclosureTopics`, `getAstrologyCalculationDisclosureBundle`, `getAstrologyDisclosureBadgeLabel`, `getAstrologyCalculationPrivacyGuarantee`, `isRecognizedAstrologyDisclosureTopic`).
+  - Strictly non-predictive, non-diagnostic, privacy-preserving, and provider-neutral. Existing files, UI, routes, services, storage, and credentials left untouched.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (22 suites, 132 tests passing).
+- **Follow-up:** Ready for Codex review and integration.
+
+### H-131 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyResultSourceCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only dataset of user-facing source attribution, precision levels, and processing scopes for calculated Astrology results covering all 6 required dimensions:
+    1. **Calculated Chart (`calculated-chart`):** Explains that planetary coordinates and aspect geometry are calculated with deterministic astronomical ephemeris algorithms, free of AI interpretation or fortune-telling (`badgeLabel: 'Calculated'`).
+    2. **Optional AI Reflection (`optional-ai-reflection`):** Transparently delineates generative artificial intelligence language model synthesis for open-ended journaling and contemplation from the underlying mathematical ephemeris calculation; non-predictive and non-diagnostic (`badgeLabel: 'AI Reflection'`).
+    3. **Date-Only Uncertainty (`date-only-uncertainty`):** Clarifies that calculations without a birth time use a midday (12:00 UTC) snapshot; explicitly discloses that Ascendant and houses are omitted, and notes ~13° daily lunar variance (`badgeLabel: 'Approximate Snapshot'`).
+    4. **Timed-Chart Precision (`timed-chart-precision`):** Details high-resolution calculations with a verified clock time, resolving Ascendant, Midheaven, twelve house cusps, and specific lunar degrees (`badgeLabel: 'Timed Precision'`).
+    5. **Provider Processing (`provider-processing`):** Discloses stateless external server computation without user accounts or identity linkage; notes contractual boundaries preventing external providers from training models on user data (`badgeLabel: 'External Processing'`).
+    6. **Local Saved-Copy Scope (`local-saved-scope`):** Guarantees that saved birth profiles, computed charts, and reflections reside exclusively in local device storage, completely isolated from Jungian dream records (`badgeLabel: 'Saved on Device'`).
+  - Defined clean interfaces (`AstrologyResultSourceId`, `AstrologyResultCategory`, `AstrologyResultSourceItem`, `AstrologyPrecisionDetail`, `AstrologyResultSourceBundle`), constants (`ASTROLOGY_RESULT_SOURCE_ORDERED_IDS`, `ASTROLOGY_RESULT_SOURCE_ITEMS`, `ASTROLOGY_PRECISION_DETAILS`, `ASTROLOGY_RESULT_SOURCE_BUNDLE`), and lookup helpers (`getAstrologyResultSourceItem`, `getAllAstrologyResultSourceItems`, `getAstrologyResultSourceItemsByCategory`, `getAstrologyResultSourceBundle`, `getResultSourceBadgeLabel`, `getPrecisionCopyForTime`, `getPrecisionDetailForTime`, `getCalculatedChartSourceCopy`, `getAiReflectionSourceCopy`, `getLocalSavedScopeCopy`, `getProviderProcessingCopy`, `isRecognizedResultSourceId`).
+  - Strictly provider-neutral, non-predictive, privacy-preserving, and free of guarantees. Existing files, UI, routes, services, storage, and credentials left untouched.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (22 suites, 132 tests passing).
 - **Follow-up:** Ready for Codex review and integration.
