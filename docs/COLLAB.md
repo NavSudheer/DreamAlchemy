@@ -134,8 +134,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-087 | Codex -> Codex | Astrology form UI and H-086 birth-time help copy only | Integrate reviewed optional birth-time guidance beside validation without adding time lookup, provider changes, or new storage. | done (committing) |
 | H-088 | Codex -> Antigravity | new `src/data/astrologyBirthDateHelpCopy.ts` only | Create typed, content-only guidance for required `YYYY-MM-DD` birth-date format, valid calendar/leap dates, future-date rejection, and why full names are unnecessary. Keep wording privacy-preserving and non-predictive; do not add UI, providers, storage, credentials, or modify existing files. | reviewed, accepted with supported-range, privacy, and calendar-validation corrections (committing) |
 | H-089 | Codex -> Codex | Astrology form UI and H-088 birth-date help copy only | Integrate reviewed birth-date format/privacy guidance beside validation without adding date lookup, provider changes, or new storage. | done (committing) |
-| H-090 | Codex -> Antigravity | new `src/data/astrologyLocationLabelHelpCopy.ts` only | Create typed, content-only guidance for the optional local location label: it is display-only, may use a broad city/region, should avoid street addresses, is stored locally, and is not included in chart/reflection requests. Do not add UI, geocoding, providers, storage, credentials, or modify existing files. | in progress |
+| H-090 | Codex -> Antigravity | new `src/data/astrologyLocationLabelHelpCopy.ts` only | Create typed, content-only guidance for the optional local location label: it is display-only, may use a broad city/region, should avoid street addresses, is stored locally, and is not included in chart/reflection requests. Do not add UI, geocoding, providers, storage, credentials, or modify existing files. | reviewed, accepted with persistence timing and platform wording corrections (committing) |
 | H-091 | Codex -> Codex | Astrology form UI and H-090 location-label help copy only | Integrate reviewed local-label privacy guidance beside the optional label field without adding geocoding, provider changes, or new storage. | queued after H-090 |
+| H-092 | Codex -> Antigravity | new `src/data/astrologyRequestSummaryCopy.ts` only | Create typed, content-only review-before-submit copy that distinguishes fields sent for chart calculation, fields kept local, chart data sent for optional AI reflection, and dream data never included. Do not alter UI, services, providers, storage, credentials, or existing files. | in progress |
 
 ## Completion format
 
@@ -1037,3 +1038,27 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 68 tests passing).
 - **Follow-up:** Ready for Codex review and integration into H-089 form UI.
+
+### H-090 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyLocationLabelHelpCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only educational dataset and accessible guidance bundle explaining:
+    1. **Display-Only Context (`display-only`):** Explains that the optional location label is strictly a human-readable display note for the user's reference on screen; it has no mathematical or astrological effect on chart calculations (which depend solely on separate numeric coordinates); can be left blank.
+    2. **Broad City or Region (`broad-city-region`):** Recommends broad city, town, metropolitan, or regional descriptions (e.g. "Chicago, IL", "Greater London", "Kyoto, Japan"); keeps profile concise and familiar; enforces a 100-character maximum length.
+    3. **Avoid Street Addresses & Residences (`avoid-street-addresses`):** Privacy-first guidance instructing dreamers never to enter street names, building numbers, apartment/unit numbers, hospital names, or postal codes; celestial mechanics operate on regional geometry and never benefit from street-level specificity.
+    4. **Stored Locally on Device (`local-storage-only`):** Confirms that entered labels are saved strictly in local device storage with the local birth profile; never synced to remote accounts, cloud databases, or analytics; permanently removed when the local birth profile is deleted.
+    5. **Excluded From Network Requests (`excluded-from-requests`):** Guarantees that the location label is strictly excluded from network request payloads sent to calculation or reflection servers; only coordinates and date/time parameters are sent for charts, and only astronomical placement summaries for reflections; personal dream journals remain completely separate.
+  - Sourced structured interfaces (`LocationLabelHelpSectionId`, `LocationLabelExample`, `LocationLabelDiscouragedExample`, `LocationLabelHelpSection`, `AstrologyLocationLabelHelpBundle`), constants (`LOCATION_LABEL_RECOMMENDED_EXAMPLES`, `LOCATION_LABEL_DISCOURAGED_EXAMPLES`, `LOCATION_LABEL_HELP_SECTIONS`, `LOCATION_LABEL_HELP_SECTION_IDS`, `ASTROLOGY_LOCATION_LABEL_HELP`), and validation/heuristic helpers:
+    - `getLocationLabelHelpSection(id)`
+    - `getAllLocationLabelHelpSections()`
+    - `containsDetailedAddressIndicators(label)` (detects street/apartment/hospital patterns to encourage privacy)
+    - `validateLocationLabel(label)`
+    - `explainLocationLabelIssue(label)`
+    - `getLocationLabelPrivacyStatement()`
+    - `isRecognizedLocationLabelHelpSectionId(value)` (TypeScript type guard)
+  - Completely non-predictive, non-diagnostic, privacy-first; zero UI, geocoding, providers, storage, credentials, or existing files modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 71 tests passing).
+- **Follow-up:** Ready for Codex review and integration into H-091 form UI.
