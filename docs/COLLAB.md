@@ -146,9 +146,10 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-099 | Codex -> Codex | Astrology readiness docs and current implementation only | Review H-098, reconcile H-097 evidence, and publish a final enabled/blocked Mac testing readiness decision with exact unresolved gates. | queued after H-097 |
 | H-100 | Codex -> Codex | Astrology Vercel routes, tests, and deployment documentation only | Audit the production deployment boundary for feature flags, server-only secrets, CORS, request throttling, and provider-error propagation; document exact safe implementation choices without enabling the feature or changing providers. | done (committing) |
 | H-101 | Codex -> Codex | Astrology Vercel routes and focused route tests only | Add bounded JSON/content-type validation, sensitive-field rejection, upstream timeouts, and stable public error codes without changing providers, enabling production, or adding credentials. | done (committing) |
-| H-102 | Codex -> Antigravity | new `docs/DREAM_IMAGE_MAC_TEST_MATRIX.md` only | Draft a concise Mac manual-test matrix for the current provider-neutral Dream Image preparation/result experience: curated prompt boundary, style selection, consent, disabled/offline/failure states, progress accessibility, local result actions, deletion, and explicit provider-connected blockers. Do not alter code, providers, credentials, or existing docs. | in progress |
+| H-102 | Codex -> Antigravity | new `docs/DREAM_IMAGE_MAC_TEST_MATRIX.md` only | Draft a concise Mac manual-test matrix for the current provider-neutral Dream Image preparation/result experience: curated prompt boundary, style selection, consent, disabled/offline/failure states, progress accessibility, local result actions, deletion, and explicit provider-connected blockers. Do not alter code, providers, credentials, or existing docs. | reviewed, accepted with default-scene, component-vs-integration, storage, and accessibility corrections (committing) |
 | H-103 | Codex -> Codex | `src/services/astrologyRemote.ts`, Astrology error presentation, and focused tests only | Consume stable server error codes directly, preserve retryability and rate-limit semantics without message matching, and keep unavailable/offline behavior unchanged. | done (committing) |
 | H-104 | Codex -> Codex | Astrology Vercel routes, deployment documentation, and focused tests only | Specify and prepare the durable anonymous request-limiter integration boundary without choosing a paid provider, storing raw birth data, or enabling production. | in progress |
+| H-105 | Codex -> Antigravity | new `docs/DREAM_IMAGE_TESTER_FEEDBACK_TEMPLATE.md` only | Draft a concise Mac tester feedback template aligned to H-102, separating preparation-screen findings from blocked provider/result integration, with environment/build, case ID, expected/actual, reproduction, severity, accessibility, and privacy-safe redaction fields. Do not alter code, providers, credentials, or existing docs. | in progress |
 
 ## Completion format
 
@@ -1157,3 +1158,23 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 75 tests passing).
 - **Follow-up:** Ready for Codex review and integration into H-099 readiness assessment.
+
+### H-102 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `docs/DREAM_IMAGE_MAC_TEST_MATRIX.md`
+- **Summary of Implementation:**
+  - Authored a comprehensive Mac manual-test matrix for the provider-neutral Dream Image preparation and result studio across 37 test cases in 8 structured functional groups, plus 5 explicit provider release blockers:
+    1. **Curated Scene Selection & Prompt Boundary (TC-IMG-SCENE-01 to 06):** Default scene initialization (`threshold-passage`), catalog scene switching across all 7 templates, auto-updating recommended styles, strict exclusion of raw dream journal text, dynamic accessible alt text synchronization via `getAltTextForTemplate`, and payload boundary enforcement omitting local `dreamId`.
+    2. **Art Style Selection & Matrix (TC-IMG-STYLE-01 to 04):** Switching between `ethereal`, `surreal`, `watercolor`, and `cinematic`, primary border selection styling, manual override persistence, artistic descriptions, and `radiogroup`/`radio` accessibility attributes.
+    3. **Consent & Non-Interpretive Disclaimers (TC-IMG-CONSENT-01 to 03):** Explicit user consent agreement copy, non-interpretive and non-diagnostic framing disclaimers, and 4-point safety checklist verification card.
+    4. **Disabled, Offline & Failure States (TC-IMG-FAIL-01 to 06):** Provider unconfigured / preview presentation (`EXPO_PUBLIC_DREAM_IMAGE_API_URL` unset), offline error presentation, moderation rejection notice, rate limiting (HTTP 429), retryable timeout handling (>60s), and privacy preservation during failures.
+    5. **Generation Progress Accessibility (TC-IMG-PROG-01 to 06):** 4 distinct sequential progress phases (`queued`, `moderating`, `rendering`, `finalizing`), step counter ("Step X of 4"), `ActivityIndicator`, `accessibilityRole="progressbar"` with `accessibilityValue`, `accessibilityLiveRegion="polite"` dynamic announcements, and phase-specific privacy reassurances.
+    6. **Local Result Actions & Workflows (TC-IMG-ACT-01 to 05):** Dynamic action filtering in `DreamImageResultActions`, direct execution for non-destructive actions (Share, Save to Photos without metadata), confirmation dialog for Regenerate, and universal privacy guarantee statement.
+    7. **Deletion Scope & Limitations (TC-IMG-DEL-01 to 05):** Destructive confirmation alert ("Delete generated artwork?"), cancel dismissal without data loss, local image removal upon confirmation, 100% preservation of written dream journal entries, tags, and Jungian analysis, and success feedback notice.
+    8. **VoiceOver Accessibility & Theming (TC-IMG-A11Y-01 to 05):** Radio role announcements on catalog scenes, accessible style labels, WCAG AA compliance verified across all 28 alt text combinations via `isDescriptiveAltText`, light/dark contrast, and responsive viewports.
+    9. **Explicit Provider-Connected Blockers (BLK-IMG-01 to 05):** Documented release blockers including lack of serverless proxy deployment, missing provider credentials and spend caps, unconfigured upstream content moderation, absence of durable anonymous rate limiting, and unconfigured transient image CDN storage.
+  - Zero code, routes, providers, credentials, or existing documentation modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 91 tests passing).
+- **Follow-up:** Ready for Codex review and integration.
