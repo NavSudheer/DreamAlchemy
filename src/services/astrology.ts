@@ -43,7 +43,7 @@ export const validateBirthProfileDraft = (
   const issues: BirthProfileValidationIssue[] = [];
   const { birthDate, birthTime, timezone, locationLabel } = draft;
 
-  if (!birthDate || !isIntegerInRange(birthDate.year, 1, 9999) || !isIntegerInRange(birthDate.month, 1, 12) || !isIntegerInRange(birthDate.day, 1, 31) || !isValidDate(birthDate.year, birthDate.month, birthDate.day)) {
+  if (!birthDate || !isIntegerInRange(birthDate.year, 1800, 9999) || !isIntegerInRange(birthDate.month, 1, 12) || !isIntegerInRange(birthDate.day, 1, 31) || !isValidDate(birthDate.year, birthDate.month, birthDate.day)) {
     issues.push({ field: 'birthDate', code: !birthDate ? 'required' : 'invalid_date', message: 'Enter a valid birth date.' });
   } else {
     const birthDateValue = new Date(Date.UTC(birthDate.year, birthDate.month - 1, birthDate.day));

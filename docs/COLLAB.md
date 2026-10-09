@@ -132,8 +132,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-085 | Codex -> Codex | Astrology form UI and H-084 timezone help copy only | Integrate reviewed timezone guidance beside field-specific validation without adding timezone lookup, geocoding, provider changes, or new storage. | done (committing) |
 | H-086 | Codex -> Antigravity | new `src/data/astrologyBirthTimeHelpCopy.ts` only | Create typed, content-only guidance for optional birth time, 24-hour `HH:mm` format, unknown-time/date-only mode, recorded-time rounding, and avoiding guessed times. Keep wording non-predictive; do not add UI, providers, storage, credentials, or modify existing files. | reviewed, accepted with date-only/provider and validation hardening (committing) |
 | H-087 | Codex -> Codex | Astrology form UI and H-086 birth-time help copy only | Integrate reviewed optional birth-time guidance beside validation without adding time lookup, provider changes, or new storage. | done (committing) |
-| H-088 | Codex -> Antigravity | new `src/data/astrologyBirthDateHelpCopy.ts` only | Create typed, content-only guidance for required `YYYY-MM-DD` birth-date format, valid calendar/leap dates, future-date rejection, and why full names are unnecessary. Keep wording privacy-preserving and non-predictive; do not add UI, providers, storage, credentials, or modify existing files. | in progress |
+| H-088 | Codex -> Antigravity | new `src/data/astrologyBirthDateHelpCopy.ts` only | Create typed, content-only guidance for required `YYYY-MM-DD` birth-date format, valid calendar/leap dates, future-date rejection, and why full names are unnecessary. Keep wording privacy-preserving and non-predictive; do not add UI, providers, storage, credentials, or modify existing files. | reviewed, accepted with supported-range, privacy, and calendar-validation corrections (committing) |
 | H-089 | Codex -> Codex | Astrology form UI and H-088 birth-date help copy only | Integrate reviewed birth-date format/privacy guidance beside validation without adding date lookup, provider changes, or new storage. | queued after H-088 |
+| H-090 | Codex -> Antigravity | new `src/data/astrologyLocationLabelHelpCopy.ts` only | Create typed, content-only guidance for the optional local location label: it is display-only, may use a broad city/region, should avoid street addresses, is stored locally, and is not included in chart/reflection requests. Do not add UI, geocoding, providers, storage, credentials, or modify existing files. | in progress |
 
 ## Completion format
 
@@ -1009,3 +1010,29 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 67 tests passing).
 - **Follow-up:** Ready for Codex review and integration into H-087 form UI.
+
+### H-088 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/astrologyBirthDateHelpCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only educational dataset and accessible guidance bundle explaining:
+    1. **Required Date Format (`required-format`):** Explains that a birth date is the sole mandatory input for chart calculation; details the four-digit year, two-digit month, and two-digit day ISO convention `YYYY-MM-DD` (e.g. `1995-04-12`), requiring leading zeroes for single-digit months and days (`1998-03-05`).
+    2. **Valid Calendar & Leap Dates (`calendar-leap-dates`):** Details Gregorian calendar rules (30 vs 31 days per month, February having 28 days or 29 in valid leap years such as 2000, 2004, 2020, 2024); specifies supported modern historical ephemeris dates from 1800 onward.
+    3. **Future Date Rejection (`future-date-rejection`):** Explains why future dates are rejected (birth charts model celestial positions at the time an individual was actually born; DreamAlchemy is designed for personal self-reflection, not predictive forecasts or hypothetical projections).
+    4. **Why Full Names Are Unnecessary (`no-names-privacy`):** Emphasizes DreamAlchemy's privacy-first design; planetary calculations depend solely on celestial physics (date, time, coordinates) and have no connection to human names; omitting name fields protects dreamer identity and ensures zero personal identifiers are ever collected, stored, or transmitted; personal dream journals remain completely separate and offline.
+  - Sourced structured interfaces (`BirthDateHelpSectionId`, `BirthDateFormatExample`, `BirthDateHelpSection`, `AstrologyBirthDateHelpBundle`), constants (`BIRTH_DATE_FORMAT_EXAMPLES`, `BIRTH_DATE_HELP_SECTIONS`, `BIRTH_DATE_HELP_SECTION_IDS`, `ASTROLOGY_BIRTH_DATE_HELP`), and validation/parsing helpers:
+    - `getBirthDateHelpSection(id)`
+    - `getAllBirthDateHelpSections()`
+    - `isLeapYear(year)`
+    - `getDaysInMonth(year, month)`
+    - `isValidBirthDateFormat(value)`
+    - `parseDateString(dateStr)`
+    - `formatBirthDate(year, month, day)`
+    - `validateBirthDateValues(year, month, day, referenceDate)`
+    - `explainBirthDateIssue(dateInput, referenceDate)`
+    - `isRecognizedBirthDateHelpSectionId(value)` (TypeScript type guard)
+  - Completely non-predictive, non-diagnostic, privacy-first; zero UI, routes, services, providers, storage, credentials, or existing files modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 68 tests passing).
+- **Follow-up:** Ready for Codex review and integration into H-089 form UI.

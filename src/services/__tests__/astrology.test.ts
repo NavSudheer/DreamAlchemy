@@ -37,6 +37,16 @@ describe('astrology profile validation', () => {
     ]));
   });
 
+  it('rejects dates outside the chart route supported range', () => {
+    const result = validateBirthProfileDraft({
+      birthDate: { year: 1799, month: 12, day: 31 },
+    }, referenceDate);
+
+    expect(result.issues).toEqual(expect.arrayContaining([
+      expect.objectContaining({ field: 'birthDate', code: 'invalid_date' }),
+    ]));
+  });
+
   it('rejects a partial birth time', () => {
     const result = validateBirthProfileDraft({
       birthDate: { year: 1995, month: 4, day: 12 },
