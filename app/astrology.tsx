@@ -22,9 +22,9 @@ import { getBodyGlossaryEntry, getSignGlossaryEntry } from '@/data/astrologyPlac
 import { getAspectGlossaryEntry } from '@/data/astrologyAspectGlossary';
 import {
   ASTROLOGY_CONSENT_COPY,
-  ASTROLOGY_DELETION_COPY,
   ASTROLOGY_PENDING_COPY,
 } from '@/data/astrologyConsentCopy';
+import { ASTROLOGY_DELETION_DIALOG_COPY } from '@/data/astrologyDeletionSummaryCopy';
 import { ASTROLOGY_UNCERTAINTY_COPY, getUncertaintyCopyByPrecision } from '@/data/astrologyUncertaintyCopy';
 import { getHouseGlossaryEntry } from '@/data/astrologyHouseGlossary';
 import { getMinorBodyGlossaryEntry } from '@/data/astrologyMinorBodyGlossary';
@@ -200,12 +200,12 @@ export default function AstrologyScreen() {
 
   const removeData = () => {
     Alert.alert(
-      ASTROLOGY_DELETION_COPY.dialogTitle,
-      ASTROLOGY_DELETION_COPY.dialogMessage,
+      ASTROLOGY_DELETION_DIALOG_COPY.dialogTitle,
+      ASTROLOGY_DELETION_DIALOG_COPY.dialogMessage,
       [
-        { text: ASTROLOGY_DELETION_COPY.cancelButtonLabel, style: 'cancel' },
+        { text: ASTROLOGY_DELETION_DIALOG_COPY.cancelButtonLabel, style: 'cancel' },
         {
-          text: ASTROLOGY_DELETION_COPY.confirmButtonLabel,
+          text: ASTROLOGY_DELETION_DIALOG_COPY.confirmButtonLabel,
           style: 'destructive',
           onPress: () => {
             void deleteLocalAstrologyData().then(() => {
@@ -222,8 +222,8 @@ export default function AstrologyScreen() {
               setLongitude('');
               setConsented(false);
               setFieldErrors({});
-              setMessage(ASTROLOGY_DELETION_COPY.successMessage);
-            }).catch(() => setMessage('Local astrology data could not be deleted.'));
+              setMessage(ASTROLOGY_DELETION_DIALOG_COPY.successMessage);
+            }).catch(() => setMessage(ASTROLOGY_DELETION_DIALOG_COPY.errorMessage));
           },
         },
       ],

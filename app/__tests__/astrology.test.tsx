@@ -1,4 +1,5 @@
 import React from 'react';
+import { Alert } from 'react-native';
 import { act, create, ReactTestRenderer } from 'react-test-renderer';
 import AstrologyScreen from '../astrology';
 
@@ -28,6 +29,7 @@ describe('astrology form validation', () => {
 
   afterEach(() => {
     act(() => screen.unmount());
+    jest.restoreAllMocks();
   });
 
   const field = (label: string) => screen.root.findByProps({ accessibilityLabel: label });
@@ -150,5 +152,21 @@ describe('astrology form validation', () => {
     expect(visibleText()).toContain('Astrology Data Sharing Summary');
     expect(visibleText()).toContain('Sent for Chart Calculation · Sent to Server');
     expect(visibleText()).toContain('Never Included in Astrology Requests · Strictly Isolated');
+  });
+
+  it('explains deletion scope and the external-provider limitation before deletion', () => {
+    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+    const button = screen.root.findAllByType('Button' as never)
+      .find(node => node.props.children === 'Delete local astrology data');
+    if (!button) throw new Error('Delete local astrology data button not found');
+
+    act(() => button.props.onPress());
+
+    expect(alert).toHaveBeenCalledWith(
+      'Delete local astrology data?',
+      expect.stringContaining('Your dream journals remain unaffected'),
+      expect.any(Array),
+    );
+    expect(alert.mock.calls[0][1]).toContain('data previously sent to external providers cannot be retracted');
   });
 });
