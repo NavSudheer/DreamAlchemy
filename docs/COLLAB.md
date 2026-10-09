@@ -148,7 +148,7 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-101 | Codex -> Codex | Astrology Vercel routes and focused route tests only | Add bounded JSON/content-type validation, sensitive-field rejection, upstream timeouts, and stable public error codes without changing providers, enabling production, or adding credentials. | done (committing) |
 | H-102 | Codex -> Antigravity | new `docs/DREAM_IMAGE_MAC_TEST_MATRIX.md` only | Draft a concise Mac manual-test matrix for the current provider-neutral Dream Image preparation/result experience: curated prompt boundary, style selection, consent, disabled/offline/failure states, progress accessibility, local result actions, deletion, and explicit provider-connected blockers. Do not alter code, providers, credentials, or existing docs. | in progress |
 | H-103 | Codex -> Codex | `src/services/astrologyRemote.ts`, Astrology error presentation, and focused tests only | Consume stable server error codes directly, preserve retryability and rate-limit semantics without message matching, and keep unavailable/offline behavior unchanged. | done (committing) |
-| H-104 | Codex -> Codex | Astrology Vercel routes, deployment documentation, and focused tests only | Specify and prepare the durable anonymous request-limiter integration boundary without choosing a paid provider, storing raw birth data, or enabling production. | queued after H-102/H-103 review |
+| H-104 | Codex -> Codex | Astrology Vercel routes, deployment documentation, and focused tests only | Specify and prepare the durable anonymous request-limiter integration boundary without choosing a paid provider, storing raw birth data, or enabling production. | in progress |
 
 ## Completion format
 
