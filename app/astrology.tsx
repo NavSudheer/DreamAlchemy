@@ -33,6 +33,7 @@ import { AstrologyProgress } from '@/components/astrology/AstrologyProgress';
 import { ASTROLOGY_COORDINATE_HELP } from '@/data/astrologyCoordinateHelpCopy';
 import { ASTROLOGY_TIMEZONE_HELP, suggestAlternativeForCommonInput } from '@/data/astrologyTimezoneHelpCopy';
 import { ASTROLOGY_BIRTH_TIME_HELP } from '@/data/astrologyBirthTimeHelpCopy';
+import { ASTROLOGY_BIRTH_DATE_HELP, explainBirthDateIssue } from '@/data/astrologyBirthDateHelpCopy';
 
 type FormField = 'birthDate' | 'birthTime' | 'timezone' | 'locationLabel' | 'latitude' | 'longitude';
 type FormErrors = Partial<Record<FormField, string>>;
@@ -66,6 +67,7 @@ export default function AstrologyScreen() {
   const [showCoordinateHelp, setShowCoordinateHelp] = useState(false);
   const [showTimezoneHelp, setShowTimezoneHelp] = useState(false);
   const [showBirthTimeHelp, setShowBirthTimeHelp] = useState(false);
+  const [showBirthDateHelp, setShowBirthDateHelp] = useState(false);
   const [busy, setBusy] = useState<'chart' | 'reflection' | null>(null);
   const [message, setMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
@@ -115,6 +117,9 @@ export default function AstrologyScreen() {
       errors.birthDate = birthDate.trim()
         ? `Birth date "${birthDate.trim()}" is not valid. Use YYYY-MM-DD.`
         : 'Birth date is required. Use YYYY-MM-DD.';
+    } else {
+      const birthDateIssue = explainBirthDateIssue(birthDate);
+      if (birthDateIssue) errors.birthDate = `Birth date: ${birthDateIssue}`;
     }
     if (birthTime.trim() && !parseTime(birthTime)) {
       errors.birthTime = `Birth time "${birthTime.trim()}" is not valid. Use 24-hour HH:mm.`;
@@ -261,6 +266,28 @@ export default function AstrologyScreen() {
         <Card style={styles.card} backgroundColor={surface}>
           <Text variant="h4" color={textColor}>Local birth profile</Text>
           {field('birthDate', 'Birth date', birthDate, setBirthDate, 'YYYY-MM-DD')}
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityState={{ expanded: showBirthDateHelp }}
+            accessibilityLabel="Birth date help"
+            accessibilityHint="Explains date format, calendar validity, supported years, and privacy"
+            onPress={() => setShowBirthDateHelp(value => !value)}
+            style={[styles.coordinateHelpToggle, { backgroundColor: inputSurface }]}
+          >
+            <Text variant="subtitle2" color={textColor}>{showBirthDateHelp ? 'Hide birth date help' : 'What birth date format should I use?'}</Text>
+          </TouchableOpacity>
+          {showBirthDateHelp && (
+            <View style={[styles.coordinateHelp, { backgroundColor: inputSurface }]}>
+              <Text variant="subtitle1" color={textColor}>{ASTROLOGY_BIRTH_DATE_HELP.title}</Text>
+              <Text variant="caption" color={muted} style={styles.optionText}>{ASTROLOGY_BIRTH_DATE_HELP.guidanceNote}</Text>
+              {ASTROLOGY_BIRTH_DATE_HELP.sections.map(section => (
+                <View key={section.id} accessibilityLabel={section.accessibilityLabel} style={styles.coordinateHelpSection}>
+                  <Text variant="subtitle2" color={textColor}>{section.title}</Text>
+                  <Text variant="caption" color={muted} style={styles.optionText}>{section.summary}</Text>
+                </View>
+              ))}
+            </View>
+          )}
           {field('birthTime', 'Birth time (optional)', birthTime, setBirthTime, 'HH:mm')}
           <TouchableOpacity
             accessibilityRole="button"

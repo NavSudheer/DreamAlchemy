@@ -61,6 +61,14 @@ describe('astrology form validation', () => {
     expect(visibleText()).toContain('Birth date "11/15/1997" is not valid. Use YYYY-MM-DD.');
   });
 
+  it('explains invalid leap-day dates precisely', () => {
+    act(() => field('Birth date').props.onChangeText('1997-02-29'));
+
+    calculate();
+
+    expect(visibleText()).toContain('Birth date: 1997 is not a leap year. February has only 28 days in 1997.');
+  });
+
   it('identifies a missing latitude after profile validation succeeds', () => {
     act(() => field('Birth date').props.onChangeText('1997-11-15'));
 
@@ -100,5 +108,16 @@ describe('astrology form validation', () => {
     expect(screen.root.findByProps({ accessibilityLabel: 'Birth time help' }).props.accessibilityState).toEqual({ expanded: true });
     expect(visibleText()).toContain('Birth Time Guidance');
     expect(visibleText()).toContain('Date-Only Mode & Unknown Times');
+  });
+
+  it('reveals birth-date format and privacy guidance on demand', () => {
+    const toggle = screen.root.findByProps({ accessibilityLabel: 'Birth date help' });
+    expect(toggle.props.accessibilityState).toEqual({ expanded: false });
+
+    act(() => toggle.props.onPress());
+
+    expect(screen.root.findByProps({ accessibilityLabel: 'Birth date help' }).props.accessibilityState).toEqual({ expanded: true });
+    expect(visibleText()).toContain('Birth Date Guidance');
+    expect(visibleText()).toContain('Why Full Names Are Unnecessary');
   });
 });
