@@ -139,9 +139,11 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-092 | Codex -> Antigravity | new `src/data/astrologyRequestSummaryCopy.ts` only | Create typed, content-only review-before-submit copy that distinguishes fields sent for chart calculation, fields kept local, chart data sent for optional AI reflection, and dream data never included. Do not alter UI, services, providers, storage, credentials, or existing files. | reviewed, accepted with two-hop reflection and local-storage boundary corrections (committing) |
 | H-093 | Codex -> Codex | Astrology consent UI and H-092 request-summary copy only | Integrate reviewed sent-versus-local request summary into the explicit consent area without changing request, provider, or storage behavior. | done (committing) |
 | H-094 | Codex -> Antigravity | new `src/data/astrologyDeletionSummaryCopy.ts` only | Create typed, content-only deletion disclosure explaining which local profile/chart/reflection records are removed, that dream journals are unaffected, and that local deletion cannot retract data already processed under external-provider policies. Do not alter UI, services, providers, storage, credentials, or existing files. | done (`7de17bc`) |
-| H-095 | Codex -> Codex | Astrology deletion UI and H-094 deletion-summary copy only | Integrate reviewed deletion scope and external-processing caveat into the existing destructive confirmation without changing deletion behavior or storage keys. | done (committing) |
-| H-096 | Codex -> Antigravity | new `docs/ASTROLOGY_MAC_TEST_MATRIX.md` only | Draft a concise Mac manual-test matrix covering valid/invalid dates, optional/invalid timezones, coordinates, consent, disabled/offline/provider errors, local persistence, reflection boundaries, accessibility, and deletion scope. Do not alter code, providers, credentials, or existing docs. | in progress |
-| H-097 | Codex -> Codex | `docs/ASTROLOGY_MAC_TEST_MATRIX.md` and current Astrology implementation only | Execute and reconcile the reviewed Mac test matrix against automated coverage and local web smoke checks; fix only verified release blockers and update readiness notes. | queued after H-096 |
+| H-095 | Codex -> Codex | Astrology deletion UI and H-094 deletion-summary copy only | Integrate reviewed deletion scope and external-processing caveat into the existing destructive confirmation without changing deletion behavior or storage keys. | done (`fe640ce`) |
+| H-096 | Codex -> Antigravity | new `docs/ASTROLOGY_MAC_TEST_MATRIX.md` only | Draft a concise Mac manual-test matrix covering valid/invalid dates, optional/invalid timezones, coordinates, consent, disabled/offline/provider errors, local persistence, reflection boundaries, accessibility, and deletion scope. Do not alter code, providers, credentials, or existing docs. | reviewed, accepted with storage-key, reflection-boundary, provider-retention, and rate-limit corrections (committing) |
+| H-097 | Codex -> Codex | `docs/ASTROLOGY_MAC_TEST_MATRIX.md` and current Astrology implementation only | Execute and reconcile the reviewed Mac test matrix against automated coverage and local web smoke checks; fix only verified release blockers and update readiness notes. | in progress |
+| H-098 | Codex -> Antigravity | new `docs/ASTROLOGY_TESTER_FEEDBACK_TEMPLATE.md` only | Draft a concise Mac tester feedback template covering environment/build, test-case ID, expected versus actual behavior, reproduction steps, severity, accessibility observations, and privacy-safe screenshots/logs with secrets and birth details redacted. Do not alter code, providers, credentials, or existing docs. | in progress |
+| H-099 | Codex -> Codex | Astrology readiness docs and current implementation only | Review H-098, reconcile H-097 evidence, and publish a final enabled/blocked Mac testing readiness decision with exact unresolved gates. | queued after H-097 |
 
 ## Completion format
 
@@ -1114,3 +1116,24 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 74 tests passing).
 - **Follow-up:** Ready for Codex review and integration into H-095 deletion UI.
+
+### H-096 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `docs/ASTROLOGY_MAC_TEST_MATRIX.md`
+- **Summary of Implementation:**
+  - Authored a comprehensive Mac manual-test matrix covering all 9 required verification dimensions across 49 structured test cases:
+    1. **Birth Date Validation & Bounds (TC-DATE-01 to 08):** Standard dates, leap days, invalid leap days on non-leap years, month/day ranges, malformed date formats, future dates, historical ephemeris bounds (>=1800), and format/privacy help disclosure.
+    2. **Birth Time & Timezone Handling (TC-TIME-01 to 07):** Blank time / date-only mode, valid 24-hour time (`HH:mm`), invalid time formats, timezone requires time validation, valid IANA identifiers (`Asia/Kolkata`, `America/New_York`), rejected country names / abbreviations with suggestion mapping, and help accordions.
+    3. **Coordinates & Local Location Label (TC-COORD-01 to 08):** Valid decimal coordinates, missing coordinates, out-of-range latitude/longitude (-90..+90, -180..+180), coordinate ephemerality (never persisted), optional local location label, detailed street address warning detection, and help disclosures.
+    4. **Consent & Pre-Submit Disclosures (TC-CONSENT-01 to 04):** Unchecked consent blocking calculation, checked consent flag transmission, expandable data sharing summary review (4 distinct categories), and non-predictive/non-diagnostic framing.
+    5. **Disabled, Offline & Provider Error Handling (TC-ERR-01 to 05):** Feature flag disabled / preview recovery without form loss, offline/network disconnected notice, rate limiting (HTTP 429), provider outage/failure (502/500), and accessible progress indicators.
+    6. **Local Persistence & App Relaunch (TC-PERSIST-01 to 03):** Post-calculation storage (`dreamalchemy.astrology.profile.v1` and `dreamalchemy.astrology.bundle.v1`), app reload/relaunch restoration, and coordinate non-restoration verification.
+    7. **AI Reflection Boundaries & Privacy Isolation (TC-REFL-01 to 04):** Explicit opt-in button trigger, client payload boundary, server-side compact allowlisting, dream journal isolation, and reflection output display with disclosure.
+    8. **Accessibility & Platform Usability (TC-A11Y-01 to 05):** VoiceOver element labels and hints, dynamic expand/collapse accessibility states, polite live region error announcements, light/dark mode contrast, and Mac keyboard navigation / tap handling.
+    9. **Deletion Scope & Limitations (TC-DEL-01 to 05):** Destructive alert confirmation, external provider limitation notice, full local storage purge, dream journal preservation, and post-deletion persistence check.
+  - Included environment configuration table, automated test cross-references, Mac execution quick-check commands, and pass/fail acceptance gates.
+  - No code, routes, providers, credentials, or existing documentation modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --watchAll=false` passed cleanly (16 suites, 75 tests passing).
+- **Follow-up:** Ready for Codex execution and reconciliation in H-097.
