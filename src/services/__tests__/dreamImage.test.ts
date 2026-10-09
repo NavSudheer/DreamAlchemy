@@ -10,7 +10,7 @@ describe('dream image foundation', () => {
       dreamId: 'local-dream',
       visualReflectionPrompt: 'An abstract moonlit landscape',
       style: 'ethereal',
-    })).rejects.toThrow('not available yet');
+    }, true)).rejects.toThrow('not available yet');
   });
 
   it('keeps the local dream id out of the future provider payload', () => {
@@ -18,11 +18,15 @@ describe('dream image foundation', () => {
       dreamId: 'local-dream-id',
       visualReflectionPrompt: '  An abstract moonlit landscape  ',
       style: 'ethereal',
-    });
+    }, true);
 
     expect(payload).toEqual({
       visualReflectionPrompt: 'An abstract moonlit landscape',
       style: 'ethereal',
+      consent: {
+        artisticUseAcknowledged: true,
+        externalProcessingAllowed: true,
+      },
     });
     expect(payload).not.toHaveProperty('dreamId');
   });

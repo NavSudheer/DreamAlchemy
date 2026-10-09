@@ -54,7 +54,7 @@ export const canStartDreamImageGeneration = (state: DreamImageGenerationState): 
 
 export const getPreparedDreamImageProviderPayload = (state: DreamImageGenerationState) =>
   canStartDreamImageGeneration(state) && state.request
-    ? createDreamImageProviderPayload(state.request)
+    ? createDreamImageProviderPayload(state.request, state.consented)
     : undefined;
 
 export function reduceDreamImageGeneration(

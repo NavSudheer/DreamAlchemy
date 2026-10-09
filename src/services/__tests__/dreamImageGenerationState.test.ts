@@ -39,6 +39,10 @@ describe('Dream Image generation state boundary', () => {
     expect(payload).toEqual({
       visualReflectionPrompt: 'A quiet forest threshold.',
       style: 'watercolor',
+      consent: {
+        artisticUseAcknowledged: true,
+        externalProcessingAllowed: true,
+      },
     });
     expect(payload).not.toHaveProperty('dreamId');
   });

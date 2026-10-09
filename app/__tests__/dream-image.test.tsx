@@ -124,7 +124,7 @@ describe('Dream Image preparation screen', () => {
       dreamId: 'dream-1',
       visualReflectionPrompt: expect.stringContaining('glassy alpine lake'),
       style: 'surreal',
-    });
+    }, true);
     expect(JSON.stringify(mockGenerateDreamImage.mock.calls)).not.toContain('SECRET_DREAM_CONTENT');
     expect(JSON.stringify(mockGenerateDreamImage.mock.calls)).not.toContain('SECRET_ANALYSIS_CONTENT');
 

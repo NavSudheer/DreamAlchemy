@@ -95,7 +95,7 @@ export default function DreamImageScreen() {
     dispatchGeneration({ type: 'start' });
     dispatchGeneration({ type: 'progress', phase: 'rendering' });
     try {
-      const result = await generateDreamImage(generation.request);
+      const result = await generateDreamImage(generation.request, generation.consented);
       dispatchGeneration({ type: 'progress', phase: 'finalizing' });
       dispatchGeneration({ type: 'succeed', result });
     } catch (error) {

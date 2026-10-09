@@ -34,7 +34,7 @@ describe('Dream Image typed remote errors', () => {
     } as never);
     const { DreamImageError, generateDreamImage } = require('../dreamImage');
 
-    const error = await generateDreamImage(request).catch((value: unknown) => value);
+    const error = await generateDreamImage(request, true).catch((value: unknown) => value);
 
     expect(error).toBeInstanceOf(DreamImageError);
     expect(error).toMatchObject({ code: expectedCode, serverCode, message: 'Stable public failure.' });
@@ -44,9 +44,43 @@ describe('Dream Image typed remote errors', () => {
     jest.spyOn(global, 'fetch').mockRejectedValue(new Error('opaque transport failure'));
     const { generateDreamImage } = require('../dreamImage');
 
-    await expect(generateDreamImage(request)).rejects.toMatchObject({
+    await expect(generateDreamImage(request, true)).rejects.toMatchObject({
       code: 'offline',
       retryable: true,
     });
+  });
+
+  it('sends only the curated scene, style, and explicit consent', async () => {
+    const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: false,
+      status: 503,
+      json: jest.fn().mockResolvedValue({ code: 'provider_unavailable' }),
+    } as never);
+    const { generateDreamImage } = require('../dreamImage');
+
+    await expect(generateDreamImage(request, true)).rejects.toMatchObject({ code: 'not_available' });
+
+    const body = JSON.parse(fetchSpy.mock.calls[0][1]?.body as string);
+    expect(body).toEqual({
+      visualReflectionPrompt: request.visualReflectionPrompt,
+      style: request.style,
+      consent: {
+        artisticUseAcknowledged: true,
+        externalProcessingAllowed: true,
+      },
+    });
+    expect(body).not.toHaveProperty('dreamId');
+    expect(body).not.toHaveProperty('dreamText');
+    expect(body).not.toHaveProperty('analysis');
+  });
+
+  it('does not contact the proxy without current explicit consent', async () => {
+    const fetchSpy = jest.spyOn(global, 'fetch');
+    const { generateDreamImage } = require('../dreamImage');
+
+    await expect(generateDreamImage(request, false)).rejects.toMatchObject({
+      code: 'invalid_request',
+    });
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });

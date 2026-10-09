@@ -165,7 +165,8 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-118 | Codex -> Codex | Dream Image result UI and H-117 disclosure copy only | Integrate reviewed generated-art, input-boundary, and retention disclosure into successful results without adding persistence, sharing, provider, or credential behavior. | queued after H-117 |
 | H-119 | Codex -> Codex | Dream Image client service, failure presentation, and focused tests only | Replace message-based Dream Image error classification with typed stable client error codes while preserving current retry, unavailable, moderation, and rate-limit behavior. | done (committing) |
 | H-120 | Codex -> Codex | new disabled-by-default Dream Image server route and focused tests only | Add provider-neutral proxy request validation, exact curated-template/style allowlisting, consent checks, body limits, and stable disabled/unconfigured errors without calling or selecting an image provider. | done (committing) |
-| H-121 | Codex -> Codex | Dream Image client proxy contract and focused tests only | Align the client request body with the application-owned route's explicit consent contract while continuing to exclude dream ids, dream text, analysis, and provider credentials. | in progress |
+| H-121 | Codex -> Codex | Dream Image client proxy contract and focused tests only | Align the client request body with the application-owned route's explicit consent contract while continuing to exclude dream ids, dream text, analysis, and provider credentials. | done (committing) |
+| H-122 | Codex -> Codex | Dream Image route/client failure contract and focused tests only | Map disabled, consent, allowlist, and provider-unavailable server codes to stable actionable client failures without message parsing or provider coupling. | in progress |
 
 ## Completion format
 

@@ -39,9 +39,16 @@ export const getDreamImageAvailability = (): DreamImageAvailability =>
  * Builds the only payload permitted to leave the device. The local dream id is
  * deliberately excluded; association with a saved dream remains app-local.
  */
-export const createDreamImageProviderPayload = (request: DreamImageRequest) => ({
+export const createDreamImageProviderPayload = (
+  request: DreamImageRequest,
+  consented: boolean,
+) => ({
   visualReflectionPrompt: request.visualReflectionPrompt.trim(),
   style: request.style,
+  consent: {
+    artisticUseAcknowledged: consented,
+    externalProcessingAllowed: consented,
+  },
 });
 
 /**
@@ -51,13 +58,14 @@ export const createDreamImageProviderPayload = (request: DreamImageRequest) => (
  */
 export async function generateDreamImage(
   request: DreamImageRequest,
+  consented: boolean,
 ): Promise<GeneratedDreamImage> {
   if (!DREAM_IMAGE_API_URL) {
     throw new DreamImageError('Dream images are not available yet.', 'not_available', false);
   }
 
   const prompt = request.visualReflectionPrompt.trim();
-  if (!request.dreamId.trim() || !prompt) {
+  if (!request.dreamId.trim() || !prompt || !consented) {
     throw new DreamImageError(
       'Choose a saved dream and visual reflection before generating an image.',
       'invalid_request',
@@ -75,7 +83,7 @@ export async function generateDreamImage(
       body: JSON.stringify(createDreamImageProviderPayload({
         ...request,
         visualReflectionPrompt: prompt,
-      })),
+      }, consented)),
       signal: controller.signal,
     });
 
