@@ -44,9 +44,9 @@ describe('Dream Image preparation screen', () => {
     expect(groups).toHaveLength(2);
     expect(radios).toHaveLength(11);
     expect(radios.find(node => node.props.accessibilityLabel === 'Luminous Threshold')?.props.accessibilityState)
-      .toEqual({ selected: true });
+      .toEqual({ selected: true, checked: true });
     expect(radios.find(node => node.props.accessibilityLabel === 'Ethereal artistic style')?.props.accessibilityState)
-      .toEqual({ selected: true });
+      .toEqual({ selected: true, checked: true });
   });
 
   it('updates the selected scene and its recommended style together', () => {
@@ -56,15 +56,16 @@ describe('Dream Image preparation screen', () => {
     act(() => mirror.props.onClick({}));
 
     expect(radios().find(node => node.props.accessibilityLabel === 'Mirror of Stillness')?.props.accessibilityState)
-      .toEqual({ selected: true });
+      .toEqual({ selected: true, checked: true });
     expect(radios().find(node => node.props.accessibilityLabel === 'Watercolor artistic style')?.props.accessibilityState)
-      .toEqual({ selected: true });
+      .toEqual({ selected: true, checked: true });
   });
 
   it('keeps generation disabled in Explore preview and never calls the unavailable service', () => {
     const button = screen.root.findByType('Button' as never);
     expect(button.props.isDisabled).toBe(true);
     expect(button.props.children).toBe('Image Service Unavailable');
+    expect(button.props.accessibilityLabel).toBe('Image service unavailable');
 
     act(() => button.props.onPress());
 

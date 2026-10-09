@@ -116,7 +116,7 @@ export default function DreamImageScreen() {
               <TouchableOpacity
                 key={item.id}
                 accessibilityRole="radio"
-                accessibilityState={{ selected }}
+                accessibilityState={{ selected, checked: selected }}
                 accessibilityLabel={item.title}
                 accessibilityHint={item.description}
                 onPress={() => chooseTemplate(item.id, item.recommendedStyle)}
@@ -139,7 +139,7 @@ export default function DreamImageScreen() {
               <TouchableOpacity
                 key={item.style}
                 accessibilityRole="radio"
-                accessibilityState={{ selected }}
+                accessibilityState={{ selected, checked: selected }}
                 accessibilityLabel={item.accessibilityLabel}
                 accessibilityHint={item.accessibilityHint}
                 onPress={() => setStyle(item.style)}
@@ -186,7 +186,7 @@ export default function DreamImageScreen() {
             fullWidth
             isLoading={activeProgress}
             isDisabled={!availability.available || !canStartDreamImageGeneration(generation)}
-            accessibilityLabel={DREAM_IMAGE_CONSENT_COPY.confirmButtonLabel}
+            accessibilityLabel={availability.available ? DREAM_IMAGE_CONSENT_COPY.confirmButtonLabel : 'Image service unavailable'}
             accessibilityHint="Sends only the selected curated scene and art style when the image service is configured"
             onPress={() => { void createImage(); }}
             style={styles.generateButton}

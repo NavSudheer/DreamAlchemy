@@ -194,4 +194,14 @@ The Dream Image Studio preparation experience passes its current provider-neutra
 | Default selection and recommendation | Pass | Rendered preview starts at `Luminous Threshold · Ethereal`; automated UI coverage verifies selecting `Mirror of Stillness` also selects Watercolor. |
 | Scene grouping | Fixed and tested | Added the missing scene `radiogroup` boundary so both scene and style choices have explicit assistive grouping. |
 | VoiceOver phrasing, light/dark contrast, and responsive layout | Pending Mac operator | Record actual Safari/Chrome/iOS Simulator announcements and visual evidence with synthetic content only. |
-| Generation and result workflows | Blocked by design | No Generate action, proxy, result persistence, or save/share/delete integration exists yet; component contracts alone must not be reported as end-to-end passes. |
+| Generation and result workflows | Local integration pass; provider path blocked | Consent, saved-dream routing, progress/error state, result alt text, regenerate, and in-memory delete are integrated and tested. No proxy, durable result persistence, Photos save, sharing, or provider-connected deletion path exists yet. |
+
+### Post-integration update
+
+- Saved analyses now open Dream Image Studio with only a local `dreamId`; dream text and Jungian analysis are not routed.
+- Explicit consent plus a saved-dream association are required before Generate can become eligible.
+- Provider-unavailable Explore preview makes no generation request and exposes a matching disabled accessibility label.
+- Provider-neutral success state renders descriptive alt text plus regenerate and in-memory delete only; save/share remain hidden.
+- Retryable failures announce recovery copy through a polite live region and expose Try Again.
+- Scene/style radios now expose both selected and checked state for cross-platform radio semantics.
+- Current regression baseline: 20 suites and 107 tests pass; deployed provider, persistence, Photos, sharing, and remote-deletion claims remain blocked.
