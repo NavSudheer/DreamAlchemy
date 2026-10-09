@@ -181,3 +181,19 @@ A build candidate may only pass release verification when:
 - [ ] Full Jest automated test suite passes with 0 failures (`16 suites, 74+ tests passing`).
 - [ ] `npx tsc --noEmit` exits with code 0.
 - [ ] Server-side request throttling is implemented and a real or controlled HTTP 429 path is verified before production enablement.
+
+---
+
+## 6. Codex Execution Record — 2026-10-09
+
+| Check | Result | Evidence / Remaining Work |
+| :--- | :--- | :--- |
+| TypeScript | Pass | `npx tsc --noEmit` exited 0. |
+| Full automated regression | Pass | 16 suites and 75 tests passed. |
+| Local web route smoke | Pass | Fresh Expo web server returned HTTP 200 for `/astrology`; the rendered accessibility tree exposed the route title, disclosure, all six inputs, four help controls, consent switch, Calculate action, and Delete action. |
+| Field-specific validation | Pass (automated) | UI coverage verifies malformed date, invalid leap day, missing latitude, and the exact invalid-timezone message for `India`. |
+| Provider-connected calculation/reflection | Blocked | Requires server-only provider/OpenAI keys and an enabled Preview deployment; H-046 remains awaiting access. |
+| HTTP 429 / request throttling | Blocked | Presentation copy is tested, but the current proxy neither enforces throttling nor propagates provider 429 responses. Required before production enablement. |
+| iOS Simulator, VoiceOver, relaunch, and destructive deletion | Pending Mac operator | These require the user's Mac/Xcode or interactive browser/device pass; use the cases above and record build/environment evidence. |
+
+**Readiness decision:** ready for local Mac UI testing with Astrology disabled or stubbed. Not ready for provider-connected production enablement until H-046 access, server-side rate controls, and the pending Mac operator cases are completed.
