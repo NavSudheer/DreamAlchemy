@@ -1,6 +1,6 @@
 import { DreamImageProgressState } from '../data/dreamImageProgressCopy';
 import { DreamImageRequest, GeneratedDreamImage } from '../types/dreamImage';
-import { createDreamImageProviderPayload } from './dreamImage';
+import { createDreamImageProviderPayload, DreamImageErrorCode } from './dreamImage';
 
 export type DreamImageGenerationPhase =
   | 'idle'
@@ -15,6 +15,7 @@ export interface DreamImageGenerationState {
   consented: boolean;
   result?: GeneratedDreamImage;
   errorMessage?: string;
+  errorCode?: DreamImageErrorCode;
 }
 
 export type DreamImageGenerationEvent =
@@ -23,7 +24,7 @@ export type DreamImageGenerationEvent =
   | { type: 'start' }
   | { type: 'progress'; phase: DreamImageProgressState }
   | { type: 'succeed'; result: GeneratedDreamImage }
-  | { type: 'fail'; message: string }
+  | { type: 'fail'; message: string; code?: DreamImageErrorCode }
   | { type: 'clear-result' }
   | { type: 'reset' };
 
@@ -71,11 +72,11 @@ export function reduceDreamImageGeneration(
       return {
         ...state,
         consented: event.consented,
-        ...(event.consented ? {} : { phase: 'idle' as const, result: undefined, errorMessage: undefined }),
+        ...(event.consented ? {} : { phase: 'idle' as const, result: undefined, errorMessage: undefined, errorCode: undefined }),
       };
     case 'start':
       return canStartDreamImageGeneration(state)
-        ? { ...state, phase: 'queued', result: undefined, errorMessage: undefined }
+        ? { ...state, phase: 'queued', result: undefined, errorMessage: undefined, errorCode: undefined }
         : state;
     case 'progress': {
       const currentIndex = ACTIVE_PHASES.indexOf(state.phase as DreamImageProgressState);
@@ -86,11 +87,11 @@ export function reduceDreamImageGeneration(
     }
     case 'succeed':
       return ACTIVE_PHASES.includes(state.phase as DreamImageProgressState)
-        ? { ...state, phase: 'succeeded', result: event.result, errorMessage: undefined }
+        ? { ...state, phase: 'succeeded', result: event.result, errorMessage: undefined, errorCode: undefined }
         : state;
     case 'fail':
       return ACTIVE_PHASES.includes(state.phase as DreamImageProgressState)
-        ? { ...state, phase: 'failed', result: undefined, errorMessage: event.message.trim() }
+        ? { ...state, phase: 'failed', result: undefined, errorMessage: event.message.trim(), errorCode: event.code }
         : state;
     case 'clear-result':
       return {
@@ -98,6 +99,7 @@ export function reduceDreamImageGeneration(
         phase: 'idle',
         result: undefined,
         errorMessage: undefined,
+        errorCode: undefined,
       };
     case 'reset':
       return INITIAL_DREAM_IMAGE_GENERATION_STATE;

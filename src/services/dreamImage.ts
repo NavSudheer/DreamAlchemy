@@ -8,8 +8,23 @@ import { isDescriptiveAltText } from '../data/dreamImageSafetyGuidelines';
 const DREAM_IMAGE_API_URL = process.env.EXPO_PUBLIC_DREAM_IMAGE_API_URL;
 const REQUEST_TIMEOUT_MS = 60_000;
 
+export type DreamImageErrorCode =
+  | 'not_available'
+  | 'invalid_request'
+  | 'offline'
+  | 'timeout'
+  | 'moderation_rejected'
+  | 'rate_limited'
+  | 'provider_error'
+  | 'invalid_response';
+
 export class DreamImageError extends Error {
-  constructor(message: string) {
+  constructor(
+    message: string,
+    public readonly code: DreamImageErrorCode,
+    public readonly retryable: boolean,
+    public readonly serverCode?: string,
+  ) {
     super(message);
     this.name = 'DreamImageError';
   }
@@ -38,12 +53,16 @@ export async function generateDreamImage(
   request: DreamImageRequest,
 ): Promise<GeneratedDreamImage> {
   if (!DREAM_IMAGE_API_URL) {
-    throw new DreamImageError('Dream images are not available yet.');
+    throw new DreamImageError('Dream images are not available yet.', 'not_available', false);
   }
 
   const prompt = request.visualReflectionPrompt.trim();
   if (!request.dreamId.trim() || !prompt) {
-    throw new DreamImageError('Choose a saved dream and visual reflection before generating an image.');
+    throw new DreamImageError(
+      'Choose a saved dream and visual reflection before generating an image.',
+      'invalid_request',
+      false,
+    );
   }
 
   const controller = new AbortController();
@@ -61,15 +80,50 @@ export async function generateDreamImage(
     });
 
     if (!response.ok) {
-      throw new DreamImageError('Could not create a dream image right now. Please try again later.');
+      const failure = await response.json().catch(() => ({}));
+      const serverCode = typeof failure?.code === 'string' ? failure.code : undefined;
+      if (response.status === 422 || serverCode === 'moderation_rejected') {
+        throw new DreamImageError(
+          failure?.error || 'The curated scene was not accepted by the image service.',
+          'moderation_rejected',
+          false,
+          serverCode,
+        );
+      }
+      if (response.status === 429 || serverCode === 'rate_limited') {
+        throw new DreamImageError(
+          failure?.error || 'The image generation request limit has been reached.',
+          'rate_limited',
+          false,
+          serverCode,
+        );
+      }
+      if (response.status === 503 || serverCode === 'provider_unavailable') {
+        throw new DreamImageError(
+          failure?.error || 'The dream image service is not available.',
+          'not_available',
+          false,
+          serverCode,
+        );
+      }
+      throw new DreamImageError(
+        failure?.error || 'Could not create a dream image right now. Please try again later.',
+        'provider_error',
+        response.status >= 500,
+        serverCode,
+      );
     }
 
     const image = await response.json() as Partial<GeneratedDreamImage>;
     if (!image.id || !image.imageUrl || !image.altText || !image.generatedAt) {
-      throw new DreamImageError('The dream image response was incomplete. Please try again.');
+      throw new DreamImageError('The dream image response was incomplete. Please try again.', 'invalid_response', true);
     }
     if (!isDescriptiveAltText(image.altText)) {
-      throw new DreamImageError('The dream image response did not include descriptive alternative text.');
+      throw new DreamImageError(
+        'The dream image response did not include descriptive alternative text.',
+        'invalid_response',
+        true,
+      );
     }
 
     return {
@@ -82,9 +136,17 @@ export async function generateDreamImage(
   } catch (error) {
     if (error instanceof DreamImageError) throw error;
     if ((error as Error)?.name === 'AbortError') {
-      throw new DreamImageError('Dream image generation is taking longer than expected. Please try again.');
+      throw new DreamImageError(
+        'Dream image generation is taking longer than expected. Please try again.',
+        'timeout',
+        true,
+      );
     }
-    throw new DreamImageError('Could not reach the dream image service. Check your connection and try again.');
+    throw new DreamImageError(
+      'Could not reach the dream image service. Check your connection and try again.',
+      'offline',
+      true,
+    );
   } finally {
     clearTimeout(timeout);
   }

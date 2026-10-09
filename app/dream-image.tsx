@@ -12,7 +12,7 @@ import { DREAM_IMAGE_CONSENT_COPY, DREAM_IMAGE_UNAVAILABLE_COPY } from '@/data/d
 import { DREAM_IMAGE_SAFETY_CHECKLIST } from '@/data/dreamImageSafetyGuidelines';
 import { getAltTextForTemplate } from '@/data/dreamImageAltTextTemplates';
 import { getDreamImageFailureCopy, resolveDreamImageFailure } from '@/data/dreamImageFailureCopy';
-import { generateDreamImage, getDreamImageAvailability } from '@/services/dreamImage';
+import { DreamImageError, generateDreamImage, getDreamImageAvailability } from '@/services/dreamImage';
 import {
   canStartDreamImageGeneration,
   INITIAL_DREAM_IMAGE_GENERATION_STATE,
@@ -99,7 +99,11 @@ export default function DreamImageScreen() {
       dispatchGeneration({ type: 'progress', phase: 'finalizing' });
       dispatchGeneration({ type: 'succeed', result });
     } catch (error) {
-      dispatchGeneration({ type: 'fail', message: error instanceof Error ? error.message : 'Image generation failed.' });
+      dispatchGeneration({
+        type: 'fail',
+        message: error instanceof Error ? error.message : 'Image generation failed.',
+        code: error instanceof DreamImageError ? error.code : undefined,
+      });
     }
   };
 
@@ -226,7 +230,10 @@ export default function DreamImageScreen() {
         {activeProgress && <DreamImageProgress state={generation.phase as 'queued' | 'moderating' | 'rendering' | 'finalizing'} />}
 
         {generation.phase === 'failed' && (() => {
-          const failure = resolveDreamImageFailure(generation.errorMessage);
+          const failure = resolveDreamImageFailure({
+            message: generation.errorMessage,
+            code: generation.errorCode,
+          });
           return (
             <Card style={styles.generation} backgroundColor={surface}>
               <Text variant="subtitle1" color={textColor}>{failure.title}</Text>

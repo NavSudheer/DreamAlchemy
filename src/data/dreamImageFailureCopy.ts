@@ -162,6 +162,17 @@ export function resolveDreamImageFailure(
     return DREAM_IMAGE_FAILURE_COPY['retryable-failure'];
   }
 
+  const code = typeof error === 'object' && error && 'code' in error
+    ? String((error as { code?: unknown }).code ?? '')
+    : '';
+  if (code === 'offline' || code === 'timeout') return DREAM_IMAGE_FAILURE_COPY.offline;
+  if (code === 'not_available') return DREAM_IMAGE_FAILURE_COPY['provider-unavailable'];
+  if (code === 'moderation_rejected') return DREAM_IMAGE_FAILURE_COPY['moderation-rejected'];
+  if (code === 'rate_limited') return DREAM_IMAGE_FAILURE_COPY['rate-limited'];
+  if (code === 'provider_error' || code === 'invalid_response') {
+    return DREAM_IMAGE_FAILURE_COPY['retryable-failure'];
+  }
+
   const message =
     error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
 

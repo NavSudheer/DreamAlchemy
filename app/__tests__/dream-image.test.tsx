@@ -18,6 +18,7 @@ jest.mock('@/components/ui/Card', () => 'Card');
 jest.mock('@/components/ui/Button', () => 'Button');
 jest.mock('@/providers/ThemeProvider', () => ({ useTheme: () => ({ isDark: true }) }));
 jest.mock('@/services/dreamImage', () => ({
+  DreamImageError: class DreamImageError extends Error {},
   getDreamImageAvailability: () => mockAvailable
     ? ({ available: true })
     : ({ available: false, reason: 'not-configured' }),

@@ -70,6 +70,7 @@ describe('Dream Image generation state boundary', () => {
       consented: false,
       result: undefined,
       errorMessage: undefined,
+      errorCode: undefined,
     });
     expect(reduceDreamImageGeneration(active, { type: 'reset' })).toEqual(INITIAL_DREAM_IMAGE_GENERATION_STATE);
   });
@@ -88,6 +89,7 @@ describe('Dream Image generation state boundary', () => {
       consented: true,
       result: undefined,
       errorMessage: undefined,
+      errorCode: undefined,
     });
   });
 });
