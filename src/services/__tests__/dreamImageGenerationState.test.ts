@@ -73,4 +73,21 @@ describe('Dream Image generation state boundary', () => {
     });
     expect(reduceDreamImageGeneration(active, { type: 'reset' })).toEqual(INITIAL_DREAM_IMAGE_GENERATION_STATE);
   });
+
+  it('clears an in-memory result without losing the prepared request or consent', () => {
+    const completed = {
+      phase: 'succeeded' as const,
+      request,
+      consented: true,
+      result,
+    };
+
+    expect(reduceDreamImageGeneration(completed, { type: 'clear-result' })).toEqual({
+      phase: 'idle',
+      request,
+      consented: true,
+      result: undefined,
+      errorMessage: undefined,
+    });
+  });
 });

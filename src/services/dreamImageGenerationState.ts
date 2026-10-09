@@ -24,6 +24,7 @@ export type DreamImageGenerationEvent =
   | { type: 'progress'; phase: DreamImageProgressState }
   | { type: 'succeed'; result: GeneratedDreamImage }
   | { type: 'fail'; message: string }
+  | { type: 'clear-result' }
   | { type: 'reset' };
 
 const ACTIVE_PHASES: readonly DreamImageProgressState[] = [
@@ -91,6 +92,13 @@ export function reduceDreamImageGeneration(
       return ACTIVE_PHASES.includes(state.phase as DreamImageProgressState)
         ? { ...state, phase: 'failed', result: undefined, errorMessage: event.message.trim() }
         : state;
+    case 'clear-result':
+      return {
+        ...state,
+        phase: 'idle',
+        result: undefined,
+        errorMessage: undefined,
+      };
     case 'reset':
       return INITIAL_DREAM_IMAGE_GENERATION_STATE;
     default:

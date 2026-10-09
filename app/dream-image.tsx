@@ -19,6 +19,7 @@ import {
   reduceDreamImageGeneration,
 } from '@/services/dreamImageGenerationState';
 import { DreamImageProgress } from '@/components/dream-image/DreamImageProgress';
+import { DreamImageResultActions } from '@/components/dream-image/DreamImageResultActions';
 import { DreamImageStyle } from '@/types/dreamImage';
 import { BorderRadius, Colors, spacing } from '@/utils/theme';
 
@@ -216,6 +217,12 @@ export default function DreamImageScreen() {
               style={styles.resultImage}
             />
             <Text variant="caption" color={muted} style={styles.noticeText}>{generation.result.altText}</Text>
+            <DreamImageResultActions
+              handlers={{
+                regenerate: () => { void createImage(); },
+                delete: () => dispatchGeneration({ type: 'clear-result' }),
+              }}
+            />
           </Card>
         )}
       </ScrollView>

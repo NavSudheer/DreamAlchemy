@@ -1,8 +1,10 @@
 import React from 'react';
 import { act, create, ReactTestRenderer } from 'react-test-renderer';
 import DreamImageScreen from '../dream-image';
+import { DreamImageResultActions } from '@/components/dream-image/DreamImageResultActions';
 
 let mockDreamId: string | undefined;
+let mockAvailable = false;
 const mockGenerateDreamImage = jest.fn();
 
 jest.mock('expo-router', () => ({
@@ -15,7 +17,9 @@ jest.mock('@/components/ui/Card', () => 'Card');
 jest.mock('@/components/ui/Button', () => 'Button');
 jest.mock('@/providers/ThemeProvider', () => ({ useTheme: () => ({ isDark: true }) }));
 jest.mock('@/services/dreamImage', () => ({
-  getDreamImageAvailability: () => ({ available: false, reason: 'not-configured' }),
+  getDreamImageAvailability: () => mockAvailable
+    ? ({ available: true })
+    : ({ available: false, reason: 'not-configured' }),
   generateDreamImage: (...args: unknown[]) => mockGenerateDreamImage(...args),
 }));
 
@@ -24,6 +28,7 @@ describe('Dream Image preparation screen', () => {
 
   beforeEach(() => {
     mockDreamId = undefined;
+    mockAvailable = false;
     mockGenerateDreamImage.mockReset();
     act(() => { screen = create(<DreamImageScreen />); });
   });
@@ -71,5 +76,32 @@ describe('Dream Image preparation screen', () => {
     act(() => consent.props.onValueChange(true));
 
     expect(screen.root.findByType('Button' as never).props.isDisabled).toBe(true);
+  });
+
+  it('shows only regenerate and in-memory delete actions after a successful result', async () => {
+    act(() => screen.unmount());
+    mockDreamId = 'dream-1';
+    mockAvailable = true;
+    mockGenerateDreamImage.mockResolvedValue({
+      id: 'image-1',
+      imageUrl: 'https://images.example/image-1.png',
+      altText: 'Watercolor scene of a luminous doorway beneath a violet sky.',
+      generatedAt: '2026-10-09T00:00:00.000Z',
+      style: 'ethereal',
+    });
+    await act(async () => { screen = create(<DreamImageScreen />); });
+
+    const consent = screen.root.findByProps({ accessibilityLabel: 'Consent to process curated Dream Image scene' });
+    act(() => consent.props.onValueChange(true));
+    const generate = screen.root.findAllByType('Button' as never)
+      .find(node => node.props.children === 'Generate Visual Reflection');
+    if (!generate) throw new Error('Generate Visual Reflection button not found');
+    await act(async () => { await generate.props.onPress(); });
+
+    const actions = screen.root.findByType(DreamImageResultActions);
+    expect(Object.keys(actions.props.handlers).sort()).toEqual(['delete', 'regenerate']);
+    expect(screen.root.findByProps({
+      accessibilityLabel: 'Watercolor scene of a luminous doorway beneath a violet sky.',
+    })).toBeDefined();
   });
 });
