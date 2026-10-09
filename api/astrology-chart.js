@@ -1,16 +1,19 @@
+import { checkAstrologyRateLimit } from './astrology-rate-limit';
+
 const DEFAULT_ASTROLOGY_API_URL = 'https://api.natalchart.ai/v1/chart/full';
 const MAX_REQUEST_BYTES = 16_384;
 const DEFAULT_UPSTREAM_TIMEOUT_MS = 15_000;
 
 export const config = { runtime: 'edge' };
 
-const json = (body, status = 200) => new Response(JSON.stringify(body), {
+const json = (body, status = 200, extraHeaders = {}) => new Response(JSON.stringify(body), {
   status,
   headers: {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    ...extraHeaders,
   },
 });
 
@@ -97,6 +100,20 @@ export default async function handler(request) {
     }
     if (birth?.time != null && !/^([01]\d|2[0-3]):[0-5]\d$/.test(birth.time)) {
       return errorJson('Birth time must use HH:mm or be omitted.', 'invalid_birth_time', 400);
+    }
+
+    const rateLimit = await checkAstrologyRateLimit(request, 'chart');
+    if (!rateLimit.allowed) {
+      return json(
+        {
+          error: rateLimit.status === 429
+            ? 'The astrology request limit has been reached.'
+            : 'Astrology request controls are temporarily unavailable.',
+          code: rateLimit.code,
+        },
+        rateLimit.status,
+        rateLimit.retryAfterSeconds ? { 'Retry-After': String(rateLimit.retryAfterSeconds) } : {},
+      );
     }
 
     const controller = new AbortController();

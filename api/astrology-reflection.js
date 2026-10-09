@@ -1,4 +1,5 @@
 import { OpenAI } from 'openai';
+import { checkAstrologyRateLimit } from './astrology-rate-limit';
 
 export const config = { runtime: 'edge' };
 
@@ -7,13 +8,14 @@ const MAX_OUTPUT_TOKENS = 350;
 const MAX_REQUEST_BYTES = 64_000;
 const DEFAULT_UPSTREAM_TIMEOUT_MS = 20_000;
 
-const json = (body, status = 200) => new Response(JSON.stringify(body), {
+const json = (body, status = 200, extraHeaders = {}) => new Response(JSON.stringify(body), {
   status,
   headers: {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    ...extraHeaders,
   },
 });
 
@@ -91,6 +93,20 @@ export default async function handler(request) {
     const serializedChart = JSON.stringify(compactChart);
     if (!compactChart.placements.length || serializedChart.length > MAX_SUMMARY_CHARS) {
       return errorJson('A compact calculated chart is required.', 'chart_required', 400);
+    }
+
+    const rateLimit = await checkAstrologyRateLimit(request, 'reflection');
+    if (!rateLimit.allowed) {
+      return json(
+        {
+          error: rateLimit.status === 429
+            ? 'The astrology request limit has been reached.'
+            : 'Astrology request controls are temporarily unavailable.',
+          code: rateLimit.code,
+        },
+        rateLimit.status,
+        rateLimit.retryAfterSeconds ? { 'Retry-After': String(rateLimit.retryAfterSeconds) } : {},
+      );
     }
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

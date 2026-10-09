@@ -9,6 +9,12 @@ DreamAlchemy keeps birth profiles, calculated charts, and AI reflections on the 
 - `ASTROLOGY_API_URL`: optional chart endpoint override. Defaults to NatalChart.AI `/v1/chart/full`.
 - `OPENAI_API_KEY`: existing server-only OpenAI key.
 - `ASTROLOGY_REFLECTION_MODEL`: optional model override. Defaults to `gpt-4o-mini`.
+- `ASTROLOGY_RATE_LIMIT_URL`: server-only URL for a durable limiter implementing the documented JSON contract.
+- `ASTROLOGY_RATE_LIMIT_TOKEN`: server-only bearer token for that limiter.
+- `ASTROLOGY_RATE_LIMIT_HASH_SECRET`: server-only HMAC key used to hash the anonymous client network identifier before it leaves the Vercel route.
+- `ASTROLOGY_RATE_LIMIT_REQUIRED`: optional `true` override that fails closed outside production when limiter configuration is absent. Production fails closed automatically.
+- `ASTROLOGY_CHART_RATE_LIMIT` / `ASTROLOGY_REFLECTION_RATE_LIMIT`: optional per-window budgets; each defaults to 10 and is bounded from 1 to 100.
+- `ASTROLOGY_RATE_LIMIT_WINDOW_SECONDS`: optional quota window; defaults to 3600 seconds and is bounded from 60 to 86400.
 
 Never prefix either secret with `EXPO_PUBLIC_`. Configure the variables for the intended Vercel environments and redeploy after changes.
 
@@ -25,7 +31,7 @@ The default provider contract was checked against the [NatalChart.AI developer d
 5. The generated reflection is capped and stored locally with the chart.
 6. Deleting local astrology data removes the profile, chart, and reflection bundle.
 
-Configure Vercel/provider rate limits and spending alerts before enabling the feature for users. The app should remain usable when either route is unavailable.
+Configure the durable limiter endpoint and spending alerts before enabling the feature for users. The limiter request contains only an HMAC client identifier, route scope, bounded limit, and window—never birth data, coordinates, chart content, or dream text. The app should remain usable when either route is unavailable.
 
 ## Mac test smoke checklist
 
