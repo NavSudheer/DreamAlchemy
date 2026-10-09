@@ -28,6 +28,7 @@ describe('dream image failure recovery copy', () => {
   it('prefers stable typed client codes over message wording', () => {
     expect(resolveDreamImageFailure(new DreamImageError('Opaque.', 'offline', true)).state).toBe('offline');
     expect(resolveDreamImageFailure(new DreamImageError('Opaque.', 'not_available', false)).state).toBe('provider-unavailable');
+    expect(resolveDreamImageFailure(new DreamImageError('Opaque.', 'invalid_request', false)).state).toBe('request-invalid');
     expect(resolveDreamImageFailure(new DreamImageError('Opaque.', 'moderation_rejected', false)).state).toBe('moderation-rejected');
     expect(resolveDreamImageFailure(new DreamImageError('Opaque.', 'rate_limited', false)).state).toBe('rate-limited');
   });

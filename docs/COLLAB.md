@@ -161,12 +161,13 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-114 | Codex -> Codex | Dream Image screen, current tests, and readiness docs only | Run the post-integration regression/smoke pass, reconcile H-102/H-108 boundaries with the new consent/result UI, and fix only verified provider-neutral blockers. | done (committing) |
 | H-115 | Codex -> Codex | Dream Image saved-dream association and current local storage only | Validate route-provided Dream Image associations against an existing saved dream before enabling generation, without reading dream text into provider payloads or adding sync. | done (committing) |
 | H-116 | Codex -> Codex | Dream Image UI tests and privacy boundary only | Verify that saved-dream validation, consent, template/style changes, retries, and regenerate never place dream content or analysis fields into provider requests. | done (committing) |
-| H-117 | Codex -> Antigravity | new `src/data/dreamImageGeneratedDisclosureCopy.ts` only | Create typed, content-only disclosure copy for generated Dream Image results covering AI-generated art labeling, curated prompt/style inputs, non-objective/non-diagnostic framing, external processing, local copy scope, and provider/CDN retention limitations. Do not alter UI, services, providers, storage, credentials, or existing files. | in progress |
+| H-117 | Codex -> Antigravity | new `src/data/dreamImageGeneratedDisclosureCopy.ts` only | Create typed, content-only disclosure copy for generated Dream Image results covering AI-generated art labeling, curated prompt/style inputs, non-objective/non-diagnostic framing, external processing, local copy scope, and provider/CDN retention limitations. Do not alter UI, services, providers, storage, credentials, or existing files. | done (uncommitted) |
 | H-118 | Codex -> Codex | Dream Image result UI and H-117 disclosure copy only | Integrate reviewed generated-art, input-boundary, and retention disclosure into successful results without adding persistence, sharing, provider, or credential behavior. | queued after H-117 |
 | H-119 | Codex -> Codex | Dream Image client service, failure presentation, and focused tests only | Replace message-based Dream Image error classification with typed stable client error codes while preserving current retry, unavailable, moderation, and rate-limit behavior. | done (committing) |
 | H-120 | Codex -> Codex | new disabled-by-default Dream Image server route and focused tests only | Add provider-neutral proxy request validation, exact curated-template/style allowlisting, consent checks, body limits, and stable disabled/unconfigured errors without calling or selecting an image provider. | done (committing) |
-| H-121 | Codex -> Codex | Dream Image client proxy contract and focused tests only | Align the client request body with the application-owned route's explicit consent contract while continuing to exclude dream ids, dream text, analysis, and provider credentials. | done (committing) |
-| H-122 | Codex -> Codex | Dream Image route/client failure contract and focused tests only | Map disabled, consent, allowlist, and provider-unavailable server codes to stable actionable client failures without message parsing or provider coupling. | in progress |
+| H-121 | Codex -> Codex | Dream Image client proxy contract and focused tests only | Align the client request body with the application-owned route's explicit consent contract while continuing to exclude dream ids, dream text, analysis, and provider credentials. | done (`7f1e96f`) |
+| H-122 | Codex -> Codex | Dream Image route/client failure contract and focused tests only | Map disabled, consent, allowlist, and provider-unavailable server codes to stable actionable client failures without message parsing or provider coupling. | done (committing) |
+| H-123 | Codex -> Codex | Dream Image successful-result UI and reviewed H-117 disclosure copy only | Integrate accurate generated-art, curated-input, non-diagnostic, session-scope, and provider-dependent retention disclosures without adding persistence, sharing, or provider behavior. | queued after H-117 review |
 
 ## Completion format
 
@@ -1256,3 +1257,21 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (20 suites, 108 tests passing).
 - **Follow-up:** Ready for Codex review and integration.
+
+### H-117 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/dreamImageGeneratedDisclosureCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only dataset of user-facing disclosures and disclaimers for generated Dream Image results covering all 6 required areas:
+    1. **AI-Generated Art Labeling (`ai-art-labeling`):** Explicit synthetic artwork badge (`AI-Generated Art`), summary, and accessibility announcements clarifying computational generation and distinguishing results from literal photography or human artistry.
+    2. **Curated Prompt & Style Boundary (`curated-inputs`):** Transparent guarantee that only curated catalog scene templates and selected visual styles were transmitted, while raw dream journal entries, subconscious reflections, tags, and personal identifiers remain strictly on-device.
+    3. **Non-Objective & Non-Diagnostic Framing (`non-diagnostic`):** Clear disclaimer that the image is an open-ended artistic reflection for contemplation, not psychological evaluation, clinical diagnosis, therapy, or future prediction.
+    4. **External Processing Disclosure (`external-processing`):** Details the secure external proxy transmission of abstract scene parameters while reassuring users that personal data is completely isolated.
+    5. **Local Copy Scope (`local-copy-scope`):** Explains that current results are held in transient screen/session memory, in-memory deletion discards the active copy, and any future saved copies remain local without personal journal metadata embedded in EXIF tags.
+    6. **Provider & CDN Retention Limitations (`provider-retention-limitations`):** Discloses that external cloud rendering providers and edge delivery CDNs may retain transient operational buffers (e.g. 24–48 hours) prior to automated expiration, and clarifies that local deletion removes the on-device file but cannot force early purge of upstream transit caches.
+  - Defined clean interfaces (`DreamImageDisclosureSectionId`, `DreamImageDisclosureSection`, `DreamImageGeneratedDisclosureBundle`), constants (`DREAM_IMAGE_DISCLOSURE_ORDERED_IDS`, `DREAM_IMAGE_DISCLOSURE_SECTIONS`, `DREAM_IMAGE_GENERATED_DISCLOSURE_BUNDLE`), and lookup utilities (`getDreamImageGeneratedDisclosureBundle`, `getDreamImageDisclosureSection`, `getAllDreamImageDisclosureSections`, `getConciseGeneratedArtDisclosure`, `getGeneratedArtBadgeLabel`, `getDreamImageInputBoundaryGuarantee`, `getDreamImageRetentionLimitationNotice`, `isRecognizedDisclosureSectionId`).
+  - Zero UI, routes, services, providers, storage, credentials, or existing files modified.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (22 suites, 129 tests passing).
+- **Follow-up:** Ready for Codex review and integration into H-118.

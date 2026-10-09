@@ -16,6 +16,7 @@
 export type DreamImageFailureState =
   | 'offline'
   | 'provider-unavailable'
+  | 'request-invalid'
   | 'moderation-rejected'
   | 'rate-limited'
   | 'retryable-failure';
@@ -64,6 +65,18 @@ export const DREAM_IMAGE_FAILURE_COPY: Record<
       'No personal dream data or prompt descriptions left your device.',
     actionButtonLabel: 'Continue Browsing',
   },
+  'request-invalid': {
+    state: 'request-invalid',
+    title: 'Scene Selection Needs Refreshing',
+    message:
+      'The visual reflection request no longer matches the currently approved scene, style, or consent settings.',
+    recoveryAction:
+      'Review your selected scene and style, confirm consent, then try again.',
+    retryable: false,
+    privacyReassurance:
+      'Your raw dream journal entry and analysis were not included in the request.',
+    actionButtonLabel: 'Review Selection',
+  },
   'moderation-rejected': {
     state: 'moderation-rejected',
     title: 'Scene Description Not Allowed',
@@ -105,6 +118,7 @@ export const DREAM_IMAGE_FAILURE_COPY: Record<
 export const DREAM_IMAGE_FAILURE_STATES: readonly DreamImageFailureState[] = [
   'offline',
   'provider-unavailable',
+  'request-invalid',
   'moderation-rejected',
   'rate-limited',
   'retryable-failure',
@@ -167,6 +181,7 @@ export function resolveDreamImageFailure(
     : '';
   if (code === 'offline' || code === 'timeout') return DREAM_IMAGE_FAILURE_COPY.offline;
   if (code === 'not_available') return DREAM_IMAGE_FAILURE_COPY['provider-unavailable'];
+  if (code === 'invalid_request') return DREAM_IMAGE_FAILURE_COPY['request-invalid'];
   if (code === 'moderation_rejected') return DREAM_IMAGE_FAILURE_COPY['moderation-rejected'];
   if (code === 'rate_limited') return DREAM_IMAGE_FAILURE_COPY['rate-limited'];
   if (code === 'provider_error' || code === 'invalid_response') {

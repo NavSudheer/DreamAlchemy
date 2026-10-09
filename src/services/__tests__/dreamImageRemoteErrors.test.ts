@@ -23,6 +23,10 @@ describe('Dream Image typed remote errors', () => {
   });
 
   it.each([
+    [400, 'consent_required', 'invalid_request'],
+    [400, 'prompt_not_allowed', 'invalid_request'],
+    [400, 'style_not_allowed', 'invalid_request'],
+    [503, 'feature_disabled', 'not_available'],
     [422, 'moderation_rejected', 'moderation_rejected'],
     [429, 'rate_limited', 'rate_limited'],
     [503, 'provider_unavailable', 'not_available'],

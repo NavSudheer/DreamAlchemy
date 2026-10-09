@@ -90,6 +90,28 @@ export async function generateDreamImage(
     if (!response.ok) {
       const failure = await response.json().catch(() => ({}));
       const serverCode = typeof failure?.code === 'string' ? failure.code : undefined;
+      if (serverCode === 'feature_disabled') {
+        throw new DreamImageError(
+          failure?.error || 'Dream images are not enabled for this build.',
+          'not_available',
+          false,
+          serverCode,
+        );
+      }
+      if (
+        serverCode === 'consent_required'
+        || serverCode === 'prompt_not_allowed'
+        || serverCode === 'style_not_allowed'
+        || serverCode === 'unexpected_field'
+        || serverCode === 'invalid_request'
+      ) {
+        throw new DreamImageError(
+          failure?.error || 'The Dream Image request was not accepted.',
+          'invalid_request',
+          false,
+          serverCode,
+        );
+      }
       if (response.status === 422 || serverCode === 'moderation_rejected') {
         throw new DreamImageError(
           failure?.error || 'The curated scene was not accepted by the image service.',
