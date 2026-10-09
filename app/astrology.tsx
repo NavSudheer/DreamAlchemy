@@ -34,6 +34,7 @@ import { ASTROLOGY_COORDINATE_HELP } from '@/data/astrologyCoordinateHelpCopy';
 import { ASTROLOGY_TIMEZONE_HELP, suggestAlternativeForCommonInput } from '@/data/astrologyTimezoneHelpCopy';
 import { ASTROLOGY_BIRTH_TIME_HELP } from '@/data/astrologyBirthTimeHelpCopy';
 import { ASTROLOGY_BIRTH_DATE_HELP, explainBirthDateIssue } from '@/data/astrologyBirthDateHelpCopy';
+import { ASTROLOGY_LOCATION_LABEL_HELP, validateLocationLabel } from '@/data/astrologyLocationLabelHelpCopy';
 
 type FormField = 'birthDate' | 'birthTime' | 'timezone' | 'locationLabel' | 'latitude' | 'longitude';
 type FormErrors = Partial<Record<FormField, string>>;
@@ -68,6 +69,7 @@ export default function AstrologyScreen() {
   const [showTimezoneHelp, setShowTimezoneHelp] = useState(false);
   const [showBirthTimeHelp, setShowBirthTimeHelp] = useState(false);
   const [showBirthDateHelp, setShowBirthDateHelp] = useState(false);
+  const [showLocationLabelHelp, setShowLocationLabelHelp] = useState(false);
   const [busy, setBusy] = useState<'chart' | 'reflection' | null>(null);
   const [message, setMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
@@ -231,6 +233,7 @@ export default function AstrologyScreen() {
   const textColor = isDark ? Colors.neutral[100] : Colors.neutral[800];
   const muted = isDark ? Colors.neutral[300] : Colors.neutral[600];
   const precisionCopy = chart ? getUncertaintyCopyByPrecision(chart.precision) : undefined;
+  const locationLabelValidation = validateLocationLabel(locationLabel);
 
   const field = (fieldName: FormField, label: string, value: string, onChangeText: (value: string) => void, placeholder: string, keyboardType: KeyboardTypeOptions = 'default') => {
     const error = fieldErrors[fieldName];
@@ -335,6 +338,33 @@ export default function AstrologyScreen() {
             </View>
           )}
           {field('locationLabel', 'Private location label (optional)', locationLabel, setLocationLabel, 'Home city')}
+          {!!locationLabelValidation.warningMessage && (
+            <Text variant="caption" color={Colors.warning[500]} accessibilityLiveRegion="polite" style={styles.optionText}>
+              {locationLabelValidation.warningMessage}
+            </Text>
+          )}
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityState={{ expanded: showLocationLabelHelp }}
+            accessibilityLabel="Location label help"
+            accessibilityHint="Explains the optional local-only label and address privacy"
+            onPress={() => setShowLocationLabelHelp(value => !value)}
+            style={[styles.coordinateHelpToggle, { backgroundColor: inputSurface }]}
+          >
+            <Text variant="subtitle2" color={textColor}>{showLocationLabelHelp ? 'Hide location label help' : 'How is this label used?'}</Text>
+          </TouchableOpacity>
+          {showLocationLabelHelp && (
+            <View style={[styles.coordinateHelp, { backgroundColor: inputSurface }]}>
+              <Text variant="subtitle1" color={textColor}>{ASTROLOGY_LOCATION_LABEL_HELP.title}</Text>
+              <Text variant="caption" color={muted} style={styles.optionText}>{ASTROLOGY_LOCATION_LABEL_HELP.privacyGuarantee}</Text>
+              {ASTROLOGY_LOCATION_LABEL_HELP.sections.map(section => (
+                <View key={section.id} accessibilityLabel={section.accessibilityLabel} style={styles.coordinateHelpSection}>
+                  <Text variant="subtitle2" color={textColor}>{section.title}</Text>
+                  <Text variant="caption" color={muted} style={styles.optionText}>{section.summary}</Text>
+                </View>
+              ))}
+            </View>
+          )}
           <Text variant="caption" color={muted}>The label stays on this device. Coordinates are sent only when you calculate a chart and are not saved.</Text>
           <View style={styles.coordinateRow}>
             <View style={styles.coordinate}>{field('latitude', 'Latitude', latitude, setLatitude, '43.65', 'numbers-and-punctuation')}</View>

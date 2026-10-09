@@ -120,4 +120,21 @@ describe('astrology form validation', () => {
     expect(visibleText()).toContain('Birth Date Guidance');
     expect(visibleText()).toContain('Why Full Names Are Unnecessary');
   });
+
+  it('warns against entering a detailed address without blocking the optional label', () => {
+    act(() => field('Private location label (optional)').props.onChangeText('123 Elm Street, Apt 4B'));
+
+    expect(visibleText()).toContain('To protect your privacy, avoid entering street names, house numbers, or specific addresses.');
+  });
+
+  it('reveals local location-label privacy guidance on demand', () => {
+    const toggle = screen.root.findByProps({ accessibilityLabel: 'Location label help' });
+    expect(toggle.props.accessibilityState).toEqual({ expanded: false });
+
+    act(() => toggle.props.onPress());
+
+    expect(screen.root.findByProps({ accessibilityLabel: 'Location label help' }).props.accessibilityState).toEqual({ expanded: true });
+    expect(visibleText()).toContain('Location Label Guidance');
+    expect(visibleText()).toContain('Excluded From Network Requests');
+  });
 });
