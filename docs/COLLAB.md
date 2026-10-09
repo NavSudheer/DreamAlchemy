@@ -154,13 +154,14 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-107 | Codex -> Codex | current Dream Image preparation screen and provider-neutral service only | Design the next disabled-by-default generation integration boundary from prepared selection to progress/error/result state without adding a provider, storage backend, photo permissions, or credentials. | done (committing) |
 | H-108 | Codex -> Antigravity | new `docs/DREAM_IMAGE_DEPLOYMENT_BOUNDARY_DRAFT.md` only | Draft a provider-neutral deployment checklist for the future Dream Image proxy covering curated-prompt allowlisting, moderation, server-only secrets, cost/rate controls, transient image retention, privacy-safe logs, accessibility metadata, iOS photo permission copy, and disabled-by-default rollout. Do not select a vendor or alter code, providers, credentials, or existing docs. | reviewed, accepted with retention, durable-limit, moderation, accessibility-standard, and rollout corrections (committing) |
 | H-109 | Codex -> Codex | Dream Image preparation screen and H-107 state boundary only | Integrate explicit consent and a disabled-by-default Generate action that requires a saved-dream association, while keeping provider-unavailable preview fully usable and making no network call when unavailable. | done (committing) |
-| H-110 | Codex -> Antigravity | new `docs/DREAM_IMAGE_PROVIDER_EVALUATION_TEMPLATE.md` only | Draft a vendor-neutral provider evaluation template covering current pricing model, moderation controls, input/output retention, training/data-use terms, commercial output rights, regional availability, latency/async API, signed-URL behavior, spend controls, and server-side key support. Do not recommend or select a provider, browse, or alter code, credentials, or existing docs. | in progress |
+| H-110 | Codex -> Antigravity | new `docs/DREAM_IMAGE_PROVIDER_EVALUATION_TEMPLATE.md` only | Draft a vendor-neutral provider evaluation template covering current pricing model, moderation controls, input/output retention, training/data-use terms, commercial output rights, regional availability, latency/async API, signed-URL behavior, spend controls, and server-side key support. Do not recommend or select a provider, browse, or alter code, credentials, or existing docs. | reviewed, accepted with owner-budget, retention, rights, SLA, execution-limit, and blocker-mapping corrections (committing) |
 | H-111 | Codex -> Codex | saved Dream Analysis/History navigation and Dream Image route params only | Add an explicit Create Dream Image action for saved analyses that passes only the local dream ID into H-109, without passing dream text or changing base Jungian analysis output. | done (committing) |
 | H-112 | Codex -> Codex | Dream Image generated-result UI and in-memory actions only | Connect successful H-109 results to regenerate and in-memory delete actions while keeping save/share hidden until permissions and persistence are implemented. | done (committing) |
 | H-113 | Codex -> Codex | Dream Image error/retry/result UI and focused tests only | Add accessible retry recovery for retryable generation failures and verify result alt text, regenerate, and in-memory deletion without exposing save/share prematurely. | done (committing) |
 | H-114 | Codex -> Codex | Dream Image screen, current tests, and readiness docs only | Run the post-integration regression/smoke pass, reconcile H-102/H-108 boundaries with the new consent/result UI, and fix only verified provider-neutral blockers. | done (committing) |
 | H-115 | Codex -> Codex | Dream Image saved-dream association and current local storage only | Validate route-provided Dream Image associations against an existing saved dream before enabling generation, without reading dream text into provider payloads or adding sync. | done (committing) |
 | H-116 | Codex -> Codex | Dream Image UI tests and privacy boundary only | Verify that saved-dream validation, consent, template/style changes, retries, and regenerate never place dream content or analysis fields into provider requests. | in progress |
+| H-117 | Codex -> Antigravity | new `src/data/dreamImageGeneratedDisclosureCopy.ts` only | Create typed, content-only disclosure copy for generated Dream Image results covering AI-generated art labeling, curated prompt/style inputs, non-objective/non-diagnostic framing, external processing, local copy scope, and provider/CDN retention limitations. Do not alter UI, services, providers, storage, credentials, or existing files. | in progress |
 
 ## Completion format
 
@@ -1224,4 +1225,29 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Validation:**
   - `npx tsc --noEmit` passed with 0 errors (clean exit).
   - Full Jest test suite `npx jest --watchAll=false` passed cleanly (19 suites, 101 tests passing).
+- **Follow-up:** Ready for Codex review and integration.
+
+### H-110 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `docs/DREAM_IMAGE_PROVIDER_EVALUATION_TEMPLATE.md`
+- **Summary of Implementation:**
+  - Authored a comprehensive, vendor-neutral provider evaluation template and candidate assessment worksheet for prospective generative image providers, strictly aligned to `docs/DREAM_IMAGE_DEPLOYMENT_BOUNDARY_DRAFT.md` and `docs/DREAM_IMAGE_MAC_TEST_MATRIX.md` (`BLK-IMG-01`):
+    1. **Non-Negotiable Boundaries:** Codified core architectural constraints including curated scene catalog only (zero raw dream text leaves device), provider-neutral serverless proxy (`/api/dream-image`), minimal remote retention target (ephemeral signed URLs), zero model training on customer data, hard budget ceilings, and disabled-by-default rollout (`DREAM_IMAGE_FEATURE_ENABLED=false`).
+    2. **10 Comprehensive Evaluation Dimensions:**
+       - *1. Pricing Model & Unit Economics:* Deterministic per-generation costs (<$0.05/image target), resolution tiers, payment structure (prepaid vs. invoiced), and elimination of mandatory monthly platform minimums.
+       - *2. Content Moderation & Upstream Safety Controls:* Automated pre- and post-generation safety screening, machine-readable rejection taxonomy mapping cleanly to `moderation_rejected`, and fail-closed error behavior.
+       - *3. Input & Output Retention Policies:* Ephemeral prompt and image retention targets (<=24–48 hours), elimination of human review of API inputs, and programmatic deletion endpoints.
+       - *4. Training & Data-Use Terms:* Strict contractual guarantees prohibiting foundation model training, fine-tuning, or RLHF on customer inputs/outputs by default.
+       - *5. Commercial Output Rights & Licensing:* Full commercial/user ownership of outputs, unencumbered mobile app display and local photo library export, zero mandatory visible watermarks, and privacy-safe provenance metadata.
+       - *6. Regional Availability, Data Residency & SLAs:* Datacenter distribution, GDPR compliance / SCCs / DPA availability, >=99.5% uptime SLA, and public incident status tracking.
+       - *7. Latency Profile & API Execution Model:* Synchronous vs. asynchronous execution paradigms, turnaround latency (p90 < 12s target), serverless timeout compatibility, GET status polling support, idempotency keys, and concurrency limits.
+       - *8. Signed-URL Behavior & Delivery Architecture:* Ephemeral signed URLs (15–120 min TTL), cross-origin resource sharing (`CORS`) support for web and mobile image caching, `noindex` bot protection, and unguessable tokenized endpoints.
+       - *9. Spend Controls & Denial-of-Wallet Protections:* Console hard budget caps that immediately halt requests when exceeded, multi-tier soft alerts (50%, 75%, 90%), prepaid balance safeguards, and one-click key revocation.
+       - *10. Server-Side Key Custody & Security Posture:* Server-only HTTP Bearer token custody, least-privilege scoping (inference only, blocking billing/admin APIs), zero-downtime key rotation support, and complete absence of client-side SDK requirements.
+    3. **Standardized Candidate Evaluation Worksheet:** Complete fillable template including candidate profile, 10-dimension Pass/Conditional/Fail scorecards with verifiable evidence prompts, 6 automatic disqualification triggers (`DQ-1` to `DQ-6`), and structured decision/sign-off blocks.
+    4. **Architectural Integration & Blocker Checklist:** Maps provider evaluation criteria to resolution gates for `BLK-IMG-01` through `BLK-IMG-05`.
+  - Strictly vendor-neutral; zero commercial vendors selected, recommended, or benchmarked; no web browsing performed; and zero code, credentials, or existing docs altered.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (20 suites, 108 tests passing).
 - **Follow-up:** Ready for Codex review and integration.
