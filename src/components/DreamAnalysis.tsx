@@ -115,6 +115,7 @@ interface DreamAnalysisProps {
   onEdit?: () => void;
   onDelete?: () => void;
   onBackToHistory?: () => void;
+  onCreateDreamImage?: () => void;
 }
 
 const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
@@ -129,7 +130,8 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
   isViewingSavedDream = false,
   onEdit,
   onDelete,
-  onBackToHistory
+  onBackToHistory,
+  onCreateDreamImage,
 }) => {
   const { isDark } = useTheme();
   const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
@@ -835,6 +837,20 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
           <View style={styles.actions}>
             {isViewingSavedDream ? (
               <>
+                {onCreateDreamImage && (
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    leftIcon="image-outline"
+                    onPress={onCreateDreamImage}
+                    style={styles.actionButton}
+                    accessibilityLabel="Create Dream Image from saved dream"
+                    accessibilityHint="Opens the private curated Dream Image Studio without sending your written dream text"
+                    hapticFeedback
+                  >
+                    Create Dream Image
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   size="md"

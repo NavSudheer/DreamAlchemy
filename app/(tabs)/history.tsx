@@ -124,6 +124,7 @@ const HistoryScreen: React.FC = () => {
             isViewingSavedDream={true}
             onBackToHistory={handleBackToHistory}
             onDelete={() => handleDeleteDream(selectedDream.id)}
+            onCreateDreamImage={() => router.push({ pathname: '/dream-image', params: { dreamId: selectedDream.id } })}
           />
         </View>
       ) : (
