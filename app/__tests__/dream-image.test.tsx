@@ -104,4 +104,23 @@ describe('Dream Image preparation screen', () => {
       accessibilityLabel: 'Watercolor scene of a luminous doorway beneath a violet sky.',
     })).toBeDefined();
   });
+
+  it('offers an accessible retry after a retryable generation failure', async () => {
+    act(() => screen.unmount());
+    mockDreamId = 'dream-1';
+    mockAvailable = true;
+    mockGenerateDreamImage.mockRejectedValueOnce(new Error('Could not reach the dream image service. Check your connection and try again.'));
+    await act(async () => { screen = create(<DreamImageScreen />); });
+
+    act(() => screen.root.findByProps({ accessibilityLabel: 'Consent to process curated Dream Image scene' }).props.onValueChange(true));
+    const generate = screen.root.findAllByType('Button' as never)
+      .find(node => node.props.children === 'Generate Visual Reflection');
+    if (!generate) throw new Error('Generate Visual Reflection button not found');
+    await act(async () => { await generate.props.onPress(); });
+
+    const retry = screen.root.findAllByType('Button' as never)
+      .find(node => node.props.children === 'Try Again');
+    expect(retry).toBeDefined();
+    expect(screen.root.findAllByProps({ accessibilityLiveRegion: 'polite' }).length).toBeGreaterThan(0);
+  });
 });

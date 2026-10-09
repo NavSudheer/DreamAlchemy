@@ -202,8 +202,18 @@ export default function DreamImageScreen() {
           return (
             <Card style={styles.generation} backgroundColor={surface}>
               <Text variant="subtitle1" color={textColor}>{failure.title}</Text>
-              <Text variant="body2" color={muted} style={styles.noticeText}>{failure.message}</Text>
+              <Text variant="body2" color={muted} style={styles.noticeText} accessibilityLiveRegion="polite">{failure.message}</Text>
               <Text variant="body2" color={muted} style={styles.noticeText}>{failure.recoveryAction}</Text>
+              {failure.retryable && availability.available && canStartDreamImageGeneration(generation) && (
+                <Button
+                  fullWidth
+                  variant="outline"
+                  onPress={() => { void createImage(); }}
+                  style={styles.generateButton}
+                >
+                  {failure.actionButtonLabel}
+                </Button>
+              )}
             </Card>
           );
         })()}
