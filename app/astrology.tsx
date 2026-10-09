@@ -35,6 +35,7 @@ import { ASTROLOGY_TIMEZONE_HELP, suggestAlternativeForCommonInput } from '@/dat
 import { ASTROLOGY_BIRTH_TIME_HELP } from '@/data/astrologyBirthTimeHelpCopy';
 import { ASTROLOGY_BIRTH_DATE_HELP, explainBirthDateIssue } from '@/data/astrologyBirthDateHelpCopy';
 import { ASTROLOGY_LOCATION_LABEL_HELP, validateLocationLabel } from '@/data/astrologyLocationLabelHelpCopy';
+import { ASTROLOGY_REQUEST_SUMMARY_BUNDLE } from '@/data/astrologyRequestSummaryCopy';
 
 type FormField = 'birthDate' | 'birthTime' | 'timezone' | 'locationLabel' | 'latitude' | 'longitude';
 type FormErrors = Partial<Record<FormField, string>>;
@@ -70,6 +71,7 @@ export default function AstrologyScreen() {
   const [showBirthTimeHelp, setShowBirthTimeHelp] = useState(false);
   const [showBirthDateHelp, setShowBirthDateHelp] = useState(false);
   const [showLocationLabelHelp, setShowLocationLabelHelp] = useState(false);
+  const [showRequestSummary, setShowRequestSummary] = useState(false);
   const [busy, setBusy] = useState<'chart' | 'reflection' | null>(null);
   const [message, setMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
@@ -400,6 +402,35 @@ export default function AstrologyScreen() {
           </View>
           <Text variant="caption" color={muted} style={styles.disclosure}>{ASTROLOGY_CONSENT_COPY.externalProcessingNotice}</Text>
           <Text variant="caption" color={muted} style={styles.localNotice}>{ASTROLOGY_CONSENT_COPY.localStorageReassurance}</Text>
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityState={{ expanded: showRequestSummary }}
+            accessibilityLabel="Astrology data sharing summary"
+            accessibilityHint="Reviews what is sent for calculation and reflection, what is saved locally, and what is excluded"
+            onPress={() => setShowRequestSummary(value => !value)}
+            style={[styles.coordinateHelpToggle, { backgroundColor: inputSurface }]}
+          >
+            <Text variant="subtitle2" color={textColor}>{showRequestSummary ? 'Hide data sharing summary' : 'Review exactly what is sent'}</Text>
+          </TouchableOpacity>
+          {showRequestSummary && (
+            <View style={[styles.coordinateHelp, { backgroundColor: inputSurface }]}>
+              <Text variant="subtitle1" color={textColor}>{ASTROLOGY_REQUEST_SUMMARY_BUNDLE.title}</Text>
+              <Text variant="caption" color={muted} style={styles.optionText}>{ASTROLOGY_REQUEST_SUMMARY_BUNDLE.reviewPrompt}</Text>
+              {ASTROLOGY_REQUEST_SUMMARY_BUNDLE.orderedCategoryIds.map(category => {
+                const section = ASTROLOGY_REQUEST_SUMMARY_BUNDLE.sections[category];
+                return (
+                  <View key={category} accessibilityLabel={section.accessibilityLabel} style={styles.coordinateHelpSection}>
+                    <Text variant="subtitle2" color={textColor}>{section.title} · {section.badgeLabel}</Text>
+                    <Text variant="caption" color={muted} style={styles.optionText}>{section.summary}</Text>
+                    {section.items.map(item => (
+                      <Text key={item.id} variant="caption" color={muted} style={styles.note}>• {item.label}: {item.destination}</Text>
+                    ))}
+                  </View>
+                );
+              })}
+              <Text variant="caption" color={muted} style={styles.privacyNote}>{ASTROLOGY_REQUEST_SUMMARY_BUNDLE.privacyGuarantee}</Text>
+            </View>
+          )}
           <Button fullWidth isLoading={busy === 'chart'} isDisabled={busy !== null} onPress={() => void calculate()}>{ASTROLOGY_CONSENT_COPY.confirmButtonLabel}</Button>
         </Card>
 

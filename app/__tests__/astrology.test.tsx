@@ -36,7 +36,9 @@ describe('astrology form validation', () => {
     if (!button) throw new Error('Calculate Chart button not found');
     button.props.onPress();
   });
-  const visibleText = () => screen.root.findAllByType('Text' as never).map(node => node.props.children).filter(value => typeof value === 'string');
+  const visibleText = () => screen.root.findAllByType('Text' as never)
+    .map(node => Array.isArray(node.props.children) ? node.props.children.join('') : node.props.children)
+    .filter(value => typeof value === 'string');
 
   it('names the rejected timezone and gives an IANA example', () => {
     act(() => {
@@ -136,5 +138,17 @@ describe('astrology form validation', () => {
     expect(screen.root.findByProps({ accessibilityLabel: 'Location label help' }).props.accessibilityState).toEqual({ expanded: true });
     expect(visibleText()).toContain('Location Label Guidance');
     expect(visibleText()).toContain('Excluded From Network Requests');
+  });
+
+  it('reveals the sent-versus-local request summary before consent', () => {
+    const toggle = screen.root.findByProps({ accessibilityLabel: 'Astrology data sharing summary' });
+    expect(toggle.props.accessibilityState).toEqual({ expanded: false });
+
+    act(() => toggle.props.onPress());
+
+    expect(screen.root.findByProps({ accessibilityLabel: 'Astrology data sharing summary' }).props.accessibilityState).toEqual({ expanded: true });
+    expect(visibleText()).toContain('Astrology Data Sharing Summary');
+    expect(visibleText()).toContain('Sent for Chart Calculation · Sent to Server');
+    expect(visibleText()).toContain('Never Included in Astrology Requests · Strictly Isolated');
   });
 });
