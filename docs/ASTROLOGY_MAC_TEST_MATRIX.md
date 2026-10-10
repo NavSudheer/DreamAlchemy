@@ -178,7 +178,7 @@ A build candidate may only pass release verification when:
 - [ ] All 9 test groups in this matrix execute with 0 unhandled exceptions or crashes.
 - [ ] No coordinates or personal identifiers ever appear in local storage or remote reflection logs.
 - [ ] Personal dream journal entries remain 100% isolated and unaffected throughout all chart calculations, reflections, and deletion operations.
-- [ ] Full Jest automated test suite passes with 0 failures (`16 suites, 74+ tests passing`).
+- [x] Full Jest automated test suite passes with 0 failures (`22 suites, 135 tests passing`).
 - [ ] `npx tsc --noEmit` exits with code 0.
 - [x] Provider-neutral throttling boundary and controlled HTTP 429/`Retry-After` contract are covered locally.
 - [ ] A durable limiter endpoint is configured and its deployed HTTP 429 path is verified before production enablement.
@@ -190,11 +190,16 @@ A build candidate may only pass release verification when:
 | Check | Result | Evidence / Remaining Work |
 | :--- | :--- | :--- |
 | TypeScript | Pass | `npx tsc --noEmit` exited 0. |
-| Full automated regression | Pass | 17 suites and 95 tests passed after limiter-boundary coverage. |
+| Full automated regression | Pass | 22 suites and 135 tests passed on commit `180c672`. |
 | Local web route smoke | Pass | Fresh Expo web server returned HTTP 200 for `/astrology`; the rendered accessibility tree exposed the route title, disclosure, all six inputs, four help controls, consent switch, Calculate action, and Delete action. |
 | Field-specific validation | Pass (automated) | UI coverage verifies malformed date, invalid leap day, missing latitude, and the exact invalid-timezone message for `India`. |
-| Provider-connected calculation/reflection | Blocked | Requires server-only provider/OpenAI keys and an enabled Preview deployment; H-046 remains awaiting access. |
+| Private Preview deployment | Pass | Deployment `7UM3p5ZhDr5cxVnqhk2tTob2RbL2` was Ready and browser-verified at `dreamalchemy-preview-mq8l45ytd.vercel.app/astrology`; the existing `dream-analysis` project was not changed. |
+| Feature-disabled recovery | Pass (browser) | With the Preview feature flag disabled, the UI showed the Astrology unavailable state and preserved the entered synthetic form values (`TC-ERR-01`). |
+| Provider-connected date-only chart | Pass (browser) | The approved synthetic date-only pass returned `date-only` precision, 17 placements, 57 aspects, no houses or angles, and a missing-time uncertainty note (`TC-TIME-01`, `TC-CONSENT-02`). |
+| Provider-connected timed chart | Pass (browser) | The approved synthetic timed pass returned `date-time-timezone` precision, 19 placements, 57 aspects, house numbers, and visible Ascendant and Midheaven rows (`TC-TIME-02`, `TC-TIME-05`). |
+| Provider-connected AI reflection | Pass (browser) | The separate opt-in returned a concise non-predictive reflection and saved it locally with the chart bundle (`TC-REFL-01`, `TC-REFL-04`). |
+| Invalid timezone recovery | Pass (browser) | Entering `India` produced the exact field-specific guidance to use `Asia/Kolkata`, without submitting a calculation (`TC-TIME-06`). |
 | HTTP 429 / request throttling | Local contract pass; production blocked | Provider 429 propagation, client presentation, fail-closed production configuration, HMAC identifiers, bounded quota metadata, and controlled 429 behavior are tested. A durable deployed limiter endpoint is still required. |
-| iOS Simulator, VoiceOver, relaunch, and destructive deletion | Pending Mac operator | These require the user's Mac/Xcode or interactive browser/device pass; use the cases above and record build/environment evidence. |
+| macOS/iOS device-only checks | Pending Mac operator | VoiceOver, keyboard/focus, light/dark and zoom, offline recovery, relaunch persistence, destructive deletion, and the broader DST/timezone matrix still require Safari and/or iOS Simulator execution on the user's Mac. |
 
-**Readiness decision:** ready for local Mac UI testing with Astrology disabled or stubbed. Not ready for provider-connected production enablement until H-046 access, a configured durable limiter backend, and the pending Mac operator cases are completed. Record findings with [`ASTROLOGY_TESTER_FEEDBACK_TEMPLATE.md`](ASTROLOGY_TESTER_FEEDBACK_TEMPLATE.md).
+**Readiness decision:** the isolated provider-connected browser Preview is ready for private user testing. Production remains disabled and is not ready for enablement until a durable limiter backend, spend alerts/redacted observability, and the pending Mac/device cases are completed. Record findings with [`ASTROLOGY_TESTER_FEEDBACK_TEMPLATE.md`](ASTROLOGY_TESTER_FEEDBACK_TEMPLATE.md) using only synthetic inputs and sanitized observations.

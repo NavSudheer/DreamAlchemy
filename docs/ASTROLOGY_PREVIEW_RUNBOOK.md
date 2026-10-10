@@ -24,9 +24,9 @@ Do not paste secret values into this repository, build logs, screenshots, test r
 ## Staged Preview smoke sequence
 
 1. Deploy with the feature flag false. A synthetic consented request was verified to present the stable Astrology-not-enabled state while preserving form inputs.
-2. Confirm the deployed source and Vercel environment scope, then set the Preview flag to true and redeploy. The enabled smoke deployment was `4dreN2uHE753KHydDpiKqYTcdGmn` (`dreamalchemy-preview-kil8ttgte.vercel.app`).
+2. Confirm the deployed source and Vercel environment scope, then set the Preview flag to true and redeploy. The final verified browser deployment is `7UM3p5ZhDr5cxVnqhk2tTob2RbL2` (`dreamalchemy-preview-mq8l45ytd.vercel.app`).
 3. Submit a synthetic date-only chart. Verified: `precision: date-only`, 17 placements, omitted houses/angles, and explicit missing-time uncertainty.
-4. Submit a synthetic chart with time and `America/Toronto`. Verified: `precision: date-time-timezone`, 19 placements, planet house numbers, and two additional timed angle placements in the normalized response.
+4. Submit a synthetic chart with time and `America/Toronto`. Verified: `precision: date-time-timezone`, 19 placements, planet house numbers, and visible Ascendant and Midheaven rows in the concise chart view.
 5. Confirm the local location label and all dream/journal fields are absent from the browser request and Vercel/provider logs.
 6. Verify stable handling for provider unavailability, invalid provider data, timeout, and HTTP 429. When the provider supplies a numeric `Retry-After`, confirm the proxy preserves it.
 7. Request the optional capped AI reflection from the synthetic timed chart. Verified: the separate opt-in returned a concise reflection with the non-predictive disclosure and saved it locally.
