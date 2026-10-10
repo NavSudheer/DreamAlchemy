@@ -16,6 +16,7 @@ import {
   AstrologyReflection,
   BirthProfileDraft,
   BirthProfileValidationIssue,
+  ChartBodyPlacement,
   LocalAstrologyBundle,
 } from '@/types/astrology';
 import { getBodyGlossaryEntry, getSignGlossaryEntry } from '@/data/astrologyPlacementGlossary';
@@ -49,6 +50,25 @@ const parseTime = (value: string) => {
   if (!value.trim()) return undefined;
   const match = /^(\d{2}):(\d{2})$/.exec(value.trim());
   return match ? { hour: Number(match[1]), minute: Number(match[2]) } : undefined;
+};
+
+const PLACEMENT_PREVIEW_LIMIT = 8;
+const TIMED_ANGLE_ORDER = ['Ascendant', 'Midheaven'] as const;
+
+export const getVisibleChartPlacements = (
+  placements: readonly ChartBodyPlacement[],
+): ChartBodyPlacement[] => {
+  const timedAngles = TIMED_ANGLE_ORDER
+    .map(body => placements.find(placement => placement.body === body))
+    .filter((placement): placement is ChartBodyPlacement => placement != null);
+  if (!timedAngles.length) return placements.slice(0, PLACEMENT_PREVIEW_LIMIT);
+
+  const angleBodies = new Set<string>(TIMED_ANGLE_ORDER);
+  const planets = placements.filter(placement => !angleBodies.has(placement.body));
+  return [
+    ...planets.slice(0, PLACEMENT_PREVIEW_LIMIT - timedAngles.length),
+    ...timedAngles,
+  ];
 };
 
 export default function AstrologyScreen() {
@@ -458,7 +478,7 @@ export default function AstrologyScreen() {
                 )}
               </TouchableOpacity>
             )}
-            {chart.placements.slice(0, 8).map(item => {
+            {getVisibleChartPlacements(chart.placements).map(item => {
               const expanded = expandedPlacement === item.body;
               const bodyGlossary = getBodyGlossaryEntry(item.body);
               const minorBodyGlossary = getMinorBodyGlossaryEntry(item.body);

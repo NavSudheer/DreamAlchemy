@@ -1,7 +1,7 @@
 import React from 'react';
 import { Alert } from 'react-native';
 import { act, create, ReactTestRenderer } from 'react-test-renderer';
-import AstrologyScreen from '../astrology';
+import AstrologyScreen, { getVisibleChartPlacements } from '../astrology';
 
 jest.mock('expo-router', () => ({ useRouter: () => ({ back: jest.fn() }) }));
 jest.mock('@/components/ui/Header', () => 'Header');
@@ -41,6 +41,27 @@ describe('astrology form validation', () => {
   const visibleText = () => screen.root.findAllByType('Text' as never)
     .map(node => Array.isArray(node.props.children) ? node.props.children.join('') : node.props.children)
     .filter(value => typeof value === 'string');
+
+  it('keeps timed angles visible in the concise placement preview', () => {
+    const placements = [
+      'Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus',
+      'Neptune', 'Pluto', 'Ascendant', 'Midheaven',
+    ].map(body => ({ body, sign: 'Aries' }));
+
+    expect(getVisibleChartPlacements(placements).map(item => item.body)).toEqual([
+      'Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Ascendant', 'Midheaven',
+    ]);
+  });
+
+  it('preserves the first eight placements for a date-only chart', () => {
+    const placements = [
+      'Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune',
+    ].map(body => ({ body, sign: 'Aries' }));
+
+    expect(getVisibleChartPlacements(placements).map(item => item.body)).toEqual(
+      placements.slice(0, 8).map(item => item.body),
+    );
+  });
 
   it('names the rejected timezone and gives an IANA example', () => {
     act(() => {
