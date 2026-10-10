@@ -191,7 +191,8 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-144 | Codex -> Codex | `docs/ASTROLOGY_MAC_TEST_MATRIX.md`, final Mac handoff evidence only | Mark browser-verified Astrology cases, separate the remaining macOS/iOS device-only checks, and produce the concise user-testing handoff without broadening Production scope. | done (committing); verified Preview evidence and device-only remainder recorded |
 | H-145 | Codex -> Antigravity | new `src/data/astrologyPreviewDeviceCheckCopy.ts` only | Create typed, content-only guidance for remaining Mac/device-only checks: VoiceOver, keyboard/focus, light/dark and zoom, offline recovery, relaunch persistence, destructive local Astrology deletion, and DST/timezone spot checks. Use existing matrix IDs, approved synthetic inputs, and sanitized observations; exclude private links, credentials, personal data, dream content, Production changes, and pre-execution pass claims. Do not alter existing files, UI, routes, services, providers, storage, docs, or credentials. | reviewed; accepted (committing) |
 | H-146 | Codex -> Codex | Private Preview user-test triage and Production gate audit only | Keep the verified Preview stable while reviewing sanitized tester outcomes; classify product defects separately from provider/deployment blockers and maintain the explicit Production gate for durable limiting, spend alerts, redacted observability, and Mac/device sign-off. | in progress; gate audit begun, no Production changes authorized |
-| H-147 | Codex -> Antigravity | new `src/data/astrologyPreviewIssueTriageCopy.ts` only | Create typed, content-only issue-triage guidance that maps sanitized private-test observations to product defect, provider blocker, deployment blocker, needs-more-evidence, or no-issue. Require matrix case IDs and approved public error codes where available; prohibit private links, credentials, real birth data/coordinates, dream content, request bodies, logs, or attachments. Do not alter existing files, UI, routes, services, providers, storage, docs, or credentials. | assigned |
+| H-147 | Codex -> Antigravity | new `src/data/astrologyPreviewIssueTriageCopy.ts` only | Create typed, content-only issue-triage guidance that maps sanitized private-test observations to product defect, provider blocker, deployment blocker, needs-more-evidence, or no-issue. Require matrix case IDs and approved public error codes where available; prohibit private links, credentials, real birth data/coordinates, dream content, request bodies, logs, or attachments. Do not alter existing files, UI, routes, services, providers, storage, docs, or credentials. | reviewed; accepted (committing) |
+| H-148 | Codex -> Antigravity | new `src/data/dreamImageSandboxTestOutcomeCopy.ts` only | Create typed, content-only outcome and blocker guidance for the optional Dream Image sandbox preparation flow. Distinguish preparation-UI defects, feature-disabled expected behavior, provider/deployment blockers, skipped generation, and not-run states. Reference existing Dream Image Mac test IDs and blocker IDs only; prohibit dream text, images, private links, credentials, logs, payloads, or attachments. Do not enable generation or alter existing files, UI, routes, services, providers, storage, docs, or credentials. | assigned |
 
 ## Completion format
 
@@ -1487,3 +1488,23 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (22 suites, 135 tests passing).
 - **Codex review:** Accepted; case IDs, approved synthetic profile IDs, public-error-code typing, and device-execution guard align with the current matrix and reporting contracts.
 - **Follow-up:** Integrated as the remaining-device-check guidance; all cases still begin as `not-run` until executed on the assigned device.
+
+### H-147 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (uncommitted)
+- **Changed files:** `src/data/astrologyPreviewIssueTriageCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, content-only issue triage guidance module mapping sanitized private-test observations across all five core classifications:
+    1. **Product Defect (`product-defect`):** Available app behavior reproducibly differs from a specific Mac test matrix case (`suggestedOutcome: 'fail'`).
+    2. **Provider Blocker (`provider-blocker`):** External calculation or reflection provider outage/rate-limit/timeout prevented completion, where app recovery behavior worked correctly (`suggestedOutcome: 'blocked'`).
+    3. **Deployment Blocker (`deployment-blocker`):** Assigned private Preview build, route boundary, or environment flag prevented test behavior from being reached (`suggestedOutcome: 'blocked'`).
+    4. **Needs More Evidence (`needs-more-evidence`):** Observation is insufficient to distinguish defect from blocker or expected behavior; requires safe re-execution without sensitive data (`suggestedOutcome: 'not-run'`).
+    5. **No Issue Observed (`no-issue`):** Executed case with approved synthetic inputs matched documented expectation, including expected error/recovery flows (`suggestedOutcome: 'pass'`).
+  - Required fields: existing Mac test matrix case ID (`TC-DATE-*`, `TC-TIME-*`, `TC-COORD-*`, `TC-CONSENT-*`, `TC-ERR-*`, `TC-PERSIST-*`, `TC-REFL-*`, `TC-A11Y-*`, `TC-DEL-*`), triage classification, approved public error code where available, and concise sanitized text observation.
+  - Strictly prohibited: private Preview links/invitations, credentials/tokens/cookies, real birth data/coordinates/names, dream journal text/audio/tags, request/response bodies, diagnostic dumps, and attachments/screenshots.
+  - Defined clean interfaces, bundle metadata, validation guards, and lookup helpers (`getAstrologyPreviewIssueTriageBundle`, `getAstrologyPreviewIssueTriageCopy`, `getAllAstrologyPreviewIssueTriageEntries`, `getSuggestedAstrologyPreviewBlockerClassification`, `isCompleteAstrologyPreviewTriageReport`, `isRecognizedAstrologyPreviewMacMatrixCaseId`, `isRecognizedAstrologyPreviewIssueTriageClassification`).
+  - Completely content-only; zero alterations to UI, routes, services, providers, storage, docs, or credentials.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (22 suites, 135 tests passing).
+- **Codex review:** Accepted; matrix-case range validation, public-code allowlists, blocker suggestions, and sensitive-evidence exclusions align with the current Preview contracts.
+- **Follow-up:** Integrated for private-test triage without changing deployment or Production state.
