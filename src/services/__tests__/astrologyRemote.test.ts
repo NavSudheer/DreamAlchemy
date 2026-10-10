@@ -1,4 +1,9 @@
-import { AstrologyRemoteError, calculateAstrologyChart, generateAstrologyReflection } from '../astrologyRemote';
+import {
+  AstrologyRemoteError,
+  calculateAstrologyChart,
+  generateAstrologyReflection,
+  resolveAstrologyApiBaseUrl,
+} from '../astrologyRemote';
 import { AstrologyChart, AstrologyConsent, LocalBirthProfile } from '../../types/astrology';
 
 const consent: AstrologyConsent = {
@@ -31,6 +36,10 @@ const mockJsonResponse = (value: unknown) => ({ ok: true, json: jest.fn().mockRe
 
 describe('remote astrology privacy boundary', () => {
   afterEach(() => jest.restoreAllMocks());
+
+  it('keeps native builds on the existing service unless an API base is configured', () => {
+    expect(resolveAstrologyApiBaseUrl()).toBe('https://nextjs-boilerplate-eight-topaz-22.vercel.app');
+  });
 
   it('sends coordinates for calculation without the local location label', async () => {
     const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue(mockJsonResponse(chart) as never);

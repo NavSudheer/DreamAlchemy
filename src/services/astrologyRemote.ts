@@ -5,10 +5,16 @@ import {
   AstrologyReflection,
   LocalBirthProfile,
 } from '../types/astrology';
+import { Platform } from 'react-native';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL
-  || 'https://nextjs-boilerplate-eight-topaz-22.vercel.app';
+const DEFAULT_API_BASE_URL = 'https://nextjs-boilerplate-eight-topaz-22.vercel.app';
 const REQUEST_TIMEOUT_MS = 30_000;
+
+export const resolveAstrologyApiBaseUrl = (): string => {
+  if (process.env.EXPO_PUBLIC_API_BASE_URL) return process.env.EXPO_PUBLIC_API_BASE_URL;
+  if (Platform.OS === 'web' && typeof window !== 'undefined') return window.location.origin;
+  return DEFAULT_API_BASE_URL;
+};
 
 export type AstrologyRemoteErrorCode =
   | 'not_available'
@@ -34,7 +40,7 @@ const postJson = async <T>(path: string, body: unknown): Promise<T> => {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
-    const response = await fetch(`${API_BASE_URL}${path}`, {
+    const response = await fetch(`${resolveAstrologyApiBaseUrl()}${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
