@@ -219,7 +219,9 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-172 | Codex -> Codex | Trial and subscription state-integrity audit only | Verify trial initialization, successful-analysis consumption, failed-request preservation, purchase/restore refresh, persistence, and unavailable-store recovery; fix verified release defects and add focused regression coverage without changing products or pricing. | done (committing); production debug tools disabled, purchase/restore refresh locked, 24 suites/144 tests pass |
 | H-173 | Codex -> Antigravity | new `src/data/releaseCandidateKnownLimitationsCopy.ts` only | Create typed, privacy-safe owner-facing limitation entries for device testing still pending, Astrology Preview remaining private/Production-disabled, Dream Image live generation/provider flows blocked, subscription/store checks requiring sandbox, and release approval remaining separate. Distinguish expected scope boundaries from defects and external blockers; reuse exact existing types where applicable; define no test IDs or launch/provider promises. Do not alter existing files, UI, routes, services, providers, storage, docs, or credentials. | reviewed; accepted (committing) |
 | H-174 | Codex -> Codex | Subscription offering presentation and claim-accuracy audit only | Reconcile the paywall's displayed benefits, billing labels, and package selection with delivered release scope and runtime RevenueCat offerings. Remove unimplemented claims and fix verified mismatches without changing configured products, prices, or entitlements. | done (committing); localized offering prices drive display/selection and unsupported benefits removed |
-| H-175 | Codex -> Antigravity | new `src/data/releaseStoreListingClaimChecklist.ts` only | Create a typed, privacy-safe pre-submission checklist for validating store/marketing claims against delivered core scope, private Preview-only Astrology, provider-disabled Dream Images, and excluded Community/accounts/sync/health/Android claims. Require evidence before allowing a claim; distinguish implemented/private-preview/blocked/excluded states; invent no prices, product IDs, provider promises, medical/predictive claims, or launch approval. Do not alter existing files, UI, routes, services, providers, storage, docs, or credentials. | assigned |
+| H-175 | Codex -> Antigravity | new `src/data/releaseStoreListingClaimChecklist.ts` only | Create a typed, privacy-safe pre-submission checklist for validating store/marketing claims against delivered core scope, private Preview-only Astrology, provider-disabled Dream Images, and excluded Community/accounts/sync/health/Android claims. Require evidence before allowing a claim; distinguish implemented/private-preview/blocked/excluded states; invent no prices, product IDs, provider promises, medical/predictive claims, or launch approval. Do not alter existing files, UI, routes, services, providers, storage, docs, or credentials. | reviewed; accepted (committing) |
+| H-176 | Codex -> Antigravity | new `src/data/releasePrivacyDisclosureChecklist.ts` only | Create a typed pre-submission checklist mapping actual candidate data behavior across local dream storage, external dream analysis, optional voice, subscription SDK, private Preview-only Astrology, provider-disabled Dream Images, deletion, and excluded accounts/sync/health. Distinguish implemented, device-verification-pending, private-preview, blocked, and excluded states; require evidence before reviewed; make no legal-compliance or release approval claim. Do not alter existing files, UI, routes, services, providers, storage, docs, or credentials. | blocked; collaborator usage quota reached before work began |
+| H-177 | Codex -> Codex | App-wide excluded-feature claim and dead-entry audit only | Search release-visible UI, navigation, subscription copy, and metadata for excluded or unimplemented Community, accounts/sync, Android, health, Astrology Production, and Dream Image generation claims; remove verified misleading entries without changing feature state. | in progress; visible-claim inventory begun |
 
 ## Completion format
 
@@ -1796,3 +1798,28 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Safety and scope:** Each limitation is explicitly not a product defect and grants no approval; expected boundaries remain separate from reproducible defects and external blockers; exact existing types are reused without defining test IDs.
 - **Validation:** `npx tsc --noEmit` and `git diff --check` passed.
 - **Codex review:** Accepted; owner next actions preserve the current optional-feature and privacy boundaries.
+
+### H-175 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (uncommitted)
+- **Changed files:** `src/data/releaseStoreListingClaimChecklist.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, privacy-safe pre-submission store listing claim checklist:
+    1. **13 Structured Claim Areas (`ReleaseStoreClaimArea`):**
+       - Implemented core delivered scope (`core-journal-analysis-history`, `patterns`, `techniques-and-timer`, `saved-search-and-links`, `psychology`, `dictionary`) with status `implemented` and eligibility `evidence-required`.
+       - Isolated private Preview Astrology (`astrology`) with status `private-preview` and eligibility `not-eligible`.
+       - Blocked Dream Images (`dream-images`) with status `blocked` and eligibility `not-eligible`.
+       - Excluded out-of-scope capabilities (`community`, `accounts`, `sync`, `health`, `android`) with status `excluded` and eligibility `not-eligible`.
+    2. **Evidence Requirements & Invariant Enforcement:**
+       - All implemented entries require 5 distinct evidence kinds (`candidate-implementation`, `automated-regression`, `owner-device-observation`, `content-accuracy-review`, `policy-and-privacy-review`) verified on the exact candidate.
+       - Every entry strictly enforces `grantsLaunchApproval: false`.
+       - Explicit boundaries against prices, product IDs, provider promises, medical/predictive/diagnostic claims, dream/birth content, private links, credentials, logs, payloads, and attachments.
+    3. **Exported Types, Validators, and Helpers:**
+       - `getReleaseStoreListingClaimChecklist`, `getReleaseStoreListingClaimEntry`, `isReleaseStoreClaimAllowed`, and `getIneligibleReleaseStoreClaimAreas`.
+  - No runtime UI, route, service, provider, storage, or credential behavior changed.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (24 suites, 146 tests passing).
+  - `npm run lint` passed with 0 errors (53 non-blocking debt warnings preserved).
+  - `git diff --check` passed with 0 whitespace errors.
+- **Codex review:** Accepted; implemented claims require all five evidence classes, while private Preview, blocked, and excluded areas remain categorically ineligible.
+- **Follow-up:** Integrating for future store-listing review; current owner-device and policy/privacy evidence remains pending.
