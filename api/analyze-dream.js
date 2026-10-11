@@ -1,34 +1,81 @@
 import { OpenAI } from 'openai';
 
+export const ANALYZE_DREAM_MAX_REQUEST_BYTES = 16_000;
+export const ANALYZE_DREAM_MAX_TEXT_CHARACTERS = 12_000;
+
+class RequestValidationError extends Error {
+  constructor(message, code, status) {
+    super(message);
+    this.name = 'RequestValidationError';
+    this.code = code;
+    this.status = status;
+  }
+}
+
+const json = (body, status = 200) => new Response(status === 204 ? null : JSON.stringify(body), {
+  status,
+  headers: {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  },
+});
+
+const readBoundedJson = async (request) => {
+  const contentType = request.headers?.get?.('content-type');
+  if (contentType && !contentType.toLowerCase().includes('application/json')) {
+    throw new RequestValidationError('Content-Type must be application/json.', 'invalid_content_type', 415);
+  }
+
+  const declaredLength = Number(request.headers?.get?.('content-length'));
+  if (Number.isFinite(declaredLength) && declaredLength > ANALYZE_DREAM_MAX_REQUEST_BYTES) {
+    throw new RequestValidationError('Request body is too large.', 'payload_too_large', 413);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    throw new RequestValidationError('Request body must be valid JSON.', 'invalid_json', 400);
+  }
+
+  if (new TextEncoder().encode(JSON.stringify(body)).length > ANALYZE_DREAM_MAX_REQUEST_BYTES) {
+    throw new RequestValidationError('Request body is too large.', 'payload_too_large', 413);
+  }
+  return body;
+};
+
 // Edge runtime allows us to run at the edge
 export const config = {
   runtime: 'edge',
 };
 
 export default async function handler(request) {
+  if (request.method === 'OPTIONS') return json({}, 204);
+
   // Only allow POST requests
   if (request.method !== 'POST') {
-    return new Response(
-      JSON.stringify({ error: 'Method not allowed' }),
-      {
-        status: 405,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
+    return json({ error: 'Method not allowed', code: 'method_not_allowed' }, 405);
   }
 
   try {
     // Parse request body
-    const { dreamText } = await request.json();
+    const body = await readBoundedJson(request);
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      throw new RequestValidationError('Request body must be a JSON object.', 'invalid_request', 400);
+    }
+    const unexpectedField = Object.keys(body).find(field => field !== 'dreamText');
+    if (unexpectedField) {
+      throw new RequestValidationError('Request contains an unsupported field.', 'unexpected_field', 400);
+    }
+    const dreamText = typeof body.dreamText === 'string' ? body.dreamText.trim() : '';
     
     if (!dreamText) {
-      return new Response(
-        JSON.stringify({ error: 'Dream text is required' }),
-        {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
+      throw new RequestValidationError('Dream text is required.', 'dream_text_required', 400);
+    }
+    if (dreamText.length > ANALYZE_DREAM_MAX_TEXT_CHARACTERS) {
+      throw new RequestValidationError('Dream text is too long.', 'dream_text_too_long', 413);
     }
 
     // Initialize OpenAI client
@@ -111,39 +158,28 @@ export default async function handler(request) {
       analysis.timestamp = new Date().toISOString();
       
       // Return the analysis
-      return new Response(
-        JSON.stringify(analysis),
-        {
-          status: 200,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type'
-          }
-        }
-      );
+      return json(analysis);
       
     } catch (e) {
-      console.error("Error parsing JSON response:", e);
+      console.error('Dream analysis response could not be parsed.');
       throw new Error('Failed to parse OpenAI response');
     }
   } catch (error) {
-    console.error("Error in analyzeDream:", error);
+    if (error instanceof RequestValidationError) {
+      return json({ error: error.message, code: error.code }, error.status);
+    }
+
+    // Never log the provider error object: SDK errors may retain request details.
+    console.error('Dream analysis request failed.');
     
-    // Return error response
-    return new Response(
-      JSON.stringify({ 
-        error: error.message || 'An error occurred',
+    // Keep provider and implementation details out of the client response.
+    return json({
+        error: 'The dream analysis service is temporarily unavailable.',
+        code: 'analysis_unavailable',
         symbols: [],
         archetypes: [],
-        interpretation: `Sorry, we encountered an error analyzing your dream: ${error.message || 'Unknown error'}. Please try again later.`,
+        interpretation: 'Sorry, the dream analysis could not be completed. Please try again later.',
         timestamp: new Date().toISOString()
-      }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
+      }, 500);
   }
 }
