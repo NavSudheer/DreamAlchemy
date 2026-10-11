@@ -160,7 +160,7 @@ export default async function handler(request) {
       // Return the analysis
       return json(analysis);
       
-    } catch (e) {
+    } catch {
       console.error('Dream analysis response could not be parsed.');
       throw new Error('Failed to parse OpenAI response');
     }

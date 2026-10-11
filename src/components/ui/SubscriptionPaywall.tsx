@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  Dimensions,
   Alert,
   Linking,
 } from 'react-native';
@@ -15,17 +14,17 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { BlurView } from 'expo-blur';
 
-// Legal document URLs
-const PRIVACY_POLICY_URL = 'https://navsudheer.github.io/DreamAlchemy/privacy-policy.html';
-const TERMS_OF_SERVICE_URL = 'https://navsudheer.github.io/DreamAlchemy/terms-of-service.html';
-
 import { useTheme } from '../../providers/ThemeProvider';
-import { Colors, spacing, BorderRadius, Shadows, typography } from '../../utils/theme';
+import { Colors, spacing, BorderRadius, Shadows } from '../../utils/theme';
 import Text from './Text';
 import Button from './Button';
 import { subscriptionService } from '../../services/subscriptions';
 import { trialTrackingService, TrialStatus } from '../../services/trialTracking';
 import DebugPanel from '../debug/DebugPanel';
+
+// Legal document URLs
+const PRIVACY_POLICY_URL = 'https://navsudheer.github.io/DreamAlchemy/privacy-policy.html';
+const TERMS_OF_SERVICE_URL = 'https://navsudheer.github.io/DreamAlchemy/terms-of-service.html';
 
 interface SubscriptionPaywallProps {
   visible: boolean;
@@ -43,8 +42,6 @@ interface SubscriptionPlan {
   isPopular?: boolean;
   savings?: string;
 }
-
-const { width } = Dimensions.get('window');
 
 const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
   visible,
@@ -142,8 +139,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
           Alert.alert('Purchase Failed', result.error || 'An unexpected error occurred.');
         }
       }
-    } catch (error) {
-      console.error('Purchase error:', error);
+    } catch {
       Alert.alert('Error', 'Failed to process purchase. Please try again.');
     } finally {
       setIsLoading(false);
@@ -172,7 +168,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
       } else {
         Alert.alert('No Purchases Found', 'No active subscriptions found to restore.');
       }
-    } catch (error) {
+    } catch {
       Alert.alert('Restore Failed', 'Unable to restore purchases. Please try again.');
     } finally {
       setIsRestoring(false);
@@ -180,11 +176,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
   };
 
   const handleTitlePress = () => {
-    // TODO: REMOVE DEBUG FEATURES BEFORE APP STORE SUBMISSION
-    // Debug panel activation only available in development builds
-    // if (!__DEV__) {
-    //   return;
-    // }
+    if (!__DEV__) return;
     
     const newTaps = debugTaps + 1;
     setDebugTaps(newTaps);
@@ -363,14 +355,12 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
         </LinearGradient>
       </BlurView>
       
-      {/* TODO: REMOVE DEBUG FEATURES BEFORE APP STORE SUBMISSION */}
-      {/* Debug panel only available in development builds */}
-      {/* {__DEV__ && ( */}
+      {__DEV__ && (
         <DebugPanel 
           visible={showDebug} 
           onClose={() => setShowDebug(false)} 
         />
-      {/* )} */}
+      )}
     </Modal>
   );
 };
