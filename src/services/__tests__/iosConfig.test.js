@@ -1,3 +1,5 @@
+/* global describe, it, expect */
+
 const appConfig = require('../../../app.json');
 
 describe('iOS release privacy configuration', () => {
