@@ -6,10 +6,11 @@ Start here for the current update. These documents supersede conflicting timelin
 ## Active documents
 - [Roadmap](ROADMAP.md): implemented baseline, proposed additions, and scope decisions.
 - [Release checklist](RELEASE_CHECKLIST.md): feature completion, testing, and submission gates.
+- [Owner Mac/iOS test start](OWNER_MAC_IOS_TEST_START.md): exact candidate confirmation, hands-on sequence, and privacy-safe outcome recording.
 
 ## Working agreement
 1. Collect the owner's remaining ideas and select the update's feature scope.
-2. The selected release scope is implemented locally and awaiting final static validation.
+2. The selected release scope is implemented and passes the recorded automated validation.
 3. The owner performs Mac/iOS device testing using the release checklist.
 4. Fix device findings, prepare final assets, and submit the completed update.
 Do not split features into additional releases merely to meet the old launch deadlines. Proposed items are not commitments until selected.

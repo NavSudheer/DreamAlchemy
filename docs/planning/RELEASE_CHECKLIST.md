@@ -1,7 +1,7 @@
 # Update completion and release checklist
 Updated: 2026-10-11
 
-Use after selecting features in [the roadmap](ROADMAP.md). This replaces the old initial-launch checklists. No submission date is imposed.
+Use after selecting features in [the roadmap](ROADMAP.md). Start hands-on testing from the [owner Mac/iOS test entrypoint](OWNER_MAC_IOS_TEST_START.md). This replaces the old initial-launch checklists. No submission date is imposed.
 
 ## 1. Feature scope and local verification
 - [ ] Record all selected features and owner ideas in the roadmap.

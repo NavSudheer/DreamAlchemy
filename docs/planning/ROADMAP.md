@@ -38,10 +38,10 @@ Implementation is not a claim of production readiness or deployment.
 | --- | --- | --- |
 | Dream entry and analysis | Text input, mood selection, API integration, results | Needs final end-to-end and network-failure checks; deployed backend model not independently verified |
 | Journal history | Local saved dreams, search, theme filters, result reopening | Existing-data and storage-failure regression checks remain |
-| Dictionary | Symbol browsing, search, categories, detail screens; cultural-context supplement is available for future UI integration | Personal meanings and detail-screen integration remain |
-| Patterns | Basic frequency, symbol, and theme dashboard | Detailed drilldowns and advanced trends remain backlog |
-| Psychology | Scientific, theoretical, dream-type, and cultural reading sections | Interactive learning and saved reading progress remain backlog |
-| Techniques | Five shared guides: reality testing, WBTB, journaling, MILD, WILD; guided steps, previous/next, completion/restart, journal shortcut | Practice progress is session-only; no saved completions, favorites, timer, or reminders |
+| Dictionary | Symbol browsing, keyword/category search, cultural context, reflection prompts, related-symbol links, and detail screens | Personal symbol meanings remain backlog; native/device verification remains |
+| Patterns | Prioritized Explore entry, day/week/month activity, symbol/theme drilldowns, and malformed-data safeguards | Advanced relationship graphs and long-term personalized summaries remain backlog |
+| Psychology | Scientific, theoretical, dream-type, and cultural reading plus checkpoints, reflections, glossary, study notes, saved items, and related links | Quizzes and saved reading progress remain backlog; native/device verification remains |
+| Techniques | Expanded written guides, guided steps, practice cues, completion/restart, journal shortcuts, and a separate meditation/visualization timer with optional local ambience | Saved practice history, favorites, reminders, and richer media remain backlog |
 | Technique polish | Removed sample progress; theme-aware cards; list bottom spacing; explicit return to techniques | Browser checked; native/layout regression still needed |
 | Voice | Native integration; availability now uses the cross-platform API instead of Android service enumeration | Code corrected; actual recording needs device validation |
 | Subscriptions | RevenueCat, trial tracking, paywall and restore implementation | Purchase/restore/expiry/cancellation need device validation |
@@ -49,9 +49,9 @@ Implementation is not a claim of production readiness or deployment.
 | Dream Image preparation | Curated scene/style preparation, consent/privacy boundaries, disabled route contract, typed progress/error/result components | No provider, live generation, delivery, persistence, Photos save, sharing, or provider-side deletion |
 | Release materials | Policy files, test matrices, handoffs, and marketing drafts exist | Hosting, store configuration, owner-device execution, and final accuracy are not verified |
 
-Local technique work is uncommitted as of this review. TypeScript checks passed; browser checks covered guide completion/restart/close and return navigation. This is not a full-app QA sign-off.
+The approved implementation is committed and automated regression passes. This is not a native/device QA sign-off; use the [owner Mac/iOS test start](OWNER_MAC_IOS_TEST_START.md) and release checklist for the remaining hands-on gate.
 
-Configuration snapshot: app.json declares version 1.0.4 / iOS build 17. These values do not establish the latest uploaded build. The trial service specifies 3 analyses and 7 days; current store pricing must come from the configured offering, not old strategy documents.
+Configuration snapshot: `app.json` declares version 1.0.7 / iOS build 17. These configured values do not establish the latest uploaded or installed build. The trial service specifies 3 analyses and 7 days; current store pricing must come from the configured offering, not old strategy documents.
 
 ## Recommended next candidates
 Relative effort is a planning estimate, not a delivery promise. All rows are proposed and await scope selection alongside the owner's ideas.
