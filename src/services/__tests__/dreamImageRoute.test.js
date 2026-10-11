@@ -1,4 +1,4 @@
-/* global describe, beforeEach, afterAll, it, expect */
+/* global describe, beforeEach, afterAll, it, expect, jest */
 
 const {
   default: handler,

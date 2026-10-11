@@ -15,7 +15,7 @@ Use after selecting features in [the roadmap](ROADMAP.md). This replaces the old
 - [ ] Review remaining console errors; distinguish unsupported web integrations from native defects.
 - [ ] Review final content and remove unimplemented feature claims.
 
-Current evidence: approved release implementation is complete locally. The full automated regression passes at 22 suites / 135 tests; TypeScript and whitespace validation pass. The provider-connected Astrology browser Preview has passed synthetic date-only, timed-chart, field-validation, and capped-reflection checks. Dream Image preparation and its disabled provider-neutral route contract are automated, but live generation remains blocked. Device validation remains the native release gate.
+Current evidence: approved release implementation is complete locally. The frozen candidate passes TypeScript, whitespace validation, and the full automated regression at 22 suites / 135 tests. Lint has 0 errors and 65 non-blocking style/debt warnings; the final gate fixed the sole lint error and the History focus-hook dependency warning. The provider-connected Astrology browser Preview has passed synthetic date-only, timed-chart, field-validation, and capped-reflection checks. Dream Image preparation and its disabled provider-neutral route contract are automated, but live generation remains blocked. Device validation remains the native release gate.
 
 Optional-feature boundaries for this candidate:
 

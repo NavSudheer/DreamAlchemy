@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, SafeAreaView, StatusBar } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, StatusBar } from 'react-native';
 import { useRouter, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import DreamHistory from '@/components/DreamHistory';
 import DreamAnalysis from '@/components/DreamAnalysis';
 import { getDreams, deleteDream, clearDreams } from '@/utils/storage';
 import { Dream } from '@/types';
 import { useTheme } from '@/providers/ThemeProvider';
-import { Colors, spacing } from '@/utils/theme';
+import { Colors } from '@/utils/theme';
 import Text from '@/components/ui/Text';
-import Card from '@/components/ui/Card';
 import Header from '@/components/ui/Header';
 
 const HistoryScreen: React.FC = () => {
@@ -19,19 +18,7 @@ const HistoryScreen: React.FC = () => {
   const router = useRouter();
   const { dreamId } = useLocalSearchParams<{ dreamId?: string }>();
 
-  // Load saved dreams whenever the screen comes into focus,
-  // and reset to the list view when leaving so returning always shows the list
-  useFocusEffect(
-    React.useCallback(() => {
-      loadDreams();
-      return () => {
-        setSelectedDream(null);
-        setActiveView('history');
-      };
-    }, [dreamId])
-  );
-
-  const loadDreams = async () => {
+  const loadDreams = React.useCallback(async () => {
     const loadedDreams = await getDreams();
     setDreams(loadedDreams);
     if (dreamId) {
@@ -41,7 +28,19 @@ const HistoryScreen: React.FC = () => {
         setActiveView('analysis');
       }
     }
-  };
+  }, [dreamId]);
+
+  // Load saved dreams whenever the screen comes into focus,
+  // and reset to the list view when leaving so returning always shows the list
+  useFocusEffect(
+    React.useCallback(() => {
+      loadDreams();
+      return () => {
+        setSelectedDream(null);
+        setActiveView('history');
+      };
+    }, [loadDreams])
+  );
 
   const handleSelectDream = (dream: Dream) => {
     setSelectedDream(dream);
