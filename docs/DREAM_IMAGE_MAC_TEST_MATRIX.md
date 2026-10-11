@@ -175,12 +175,12 @@ npx tsc --noEmit
 
 The Dream Image Studio preparation experience passes its current provider-neutral verification when:
 - [ ] Groups 1–3 and 8 pass on the preparation screen with 0 unhandled exceptions or crashes.
-- [ ] Groups 4–7 pass their cited unit/component tests; any provider/result end-to-end cases remain explicitly marked blocked rather than reported as manually passed.
+- [x] Groups 4–7 pass their cited unit/component tests; any provider/result end-to-end cases remain explicitly marked blocked rather than reported as manually passed.
 - [ ] Personal dream journal narratives, reflections, and dates are never requested, collected, or attached to prompts or images.
 - [ ] Provider unavailable notice renders gracefully when `EXPO_PUBLIC_DREAM_IMAGE_API_URL` is unset.
-- [ ] Full Jest automated test suite passes with 0 failures (`16 suites, 75+ tests passing`).
-- [ ] `npx tsc --noEmit` exits with code 0.
-- [ ] All 5 provider-connected release blockers (`BLK-IMG-01` to `BLK-IMG-05`) remain acknowledged and documented as blockers to live production enablement.
+- [x] Full Jest automated test suite passes with 0 failures (`22 suites, 135 tests passing`).
+- [x] `npx tsc --noEmit` exits with code 0.
+- [x] All 5 provider-connected release blockers (`BLK-IMG-01` to `BLK-IMG-05`) remain acknowledged and documented as blockers to live production enablement.
 
 **Readiness boundary:** the curated preparation, consent, progress/error presentation, and in-memory result UI are eligible for local Mac testing. Real generation, asset delivery, persistence, Photos save, native sharing, and provider-side deletion are not user-test-ready until the provider activation gates are complete.
 
@@ -206,3 +206,11 @@ The Dream Image Studio preparation experience passes its current provider-neutra
 - Retryable failures announce recovery copy through a polite live region and expose Try Again.
 - Scene/style radios now expose both selected and checked state for cross-platform radio semantics.
 - Current regression baseline: 20 suites and 107 tests pass; deployed provider, persistence, Photos, sharing, and remote-deletion claims remain blocked.
+
+### Final provider-neutral regression update — 2026-10-11
+
+- Full regression passes: 22 suites and 135 tests, including the Dream Image preparation screen, saved-dream association, payload privacy boundary, disabled/provider-unavailable route contract, typed remote failures, generation state, progress, safety/alt-text checks, and result actions.
+- `npx tsc --noEmit` and `git diff --check` pass.
+- Controlled route coverage verifies `feature_disabled`, consent enforcement, exact curated prompt/style allowlists, unexpected-field rejection, body limits, and the terminal `provider_unavailable` boundary without calling a provider.
+- An unauthenticated synthetic request to the isolated Preview reached Vercel deployment protection and returned HTTP 401 before the application route. This is a deployment-access blocker, not a product result; `BLK-IMG-01` remains open pending an authenticated Preview route pass.
+- Live generation, moderation, durable throttling, transient delivery, persistence, Photos, native sharing, and provider-side deletion remain untested and blocked by `BLK-IMG-01` through `BLK-IMG-05`.
