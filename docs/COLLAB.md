@@ -213,8 +213,8 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-166 | Codex -> Antigravity | new `src/data/releaseDeviceDefectTriageCopy.ts` only | Create typed, content-only owner Mac/iOS defect-triage categories and prompts distinguishing reproducible product defects, device/environment blockers, optional-provider blockers, needs-more-sanitized-evidence, duplicate/known issue, and no issue. Reuse exact existing identifier/outcome/classification types where appropriate; do not invent test IDs or imply pass/release approval. Prohibit dream/birth content, media, private links, credentials, logs, payloads, screenshots/attachments, account/store details, and launch/Production claims. Do not alter existing files, UI, routes, services, providers, storage, docs, or credentials. | reviewed; accepted (committing) |
 | H-167 | Codex -> Antigravity | new `src/data/releaseDeviceRetestCopy.ts` only | Create typed, privacy-safe owner Mac/iOS retest guidance for a fixed reproducible defect: confirm the exact existing test identifier and candidate build, rerun the smallest affected path, repeat once where safe, check one adjacent regression path, preserve device/environment and optional-provider blocker distinctions, and record only sanitized text. Reuse exact existing identifier/outcome/classification types; define no test IDs and never imply release approval. Do not alter existing files, UI, routes, services, providers, storage, docs, or credentials. | reviewed; accepted (committing) |
 | H-168 | Codex -> Codex | Release-candidate privacy and storage boundary audit only | Inspect core journal, analysis, history, voice, Astrology Preview, and Dream Image preparation paths for accidental cross-feature persistence, sensitive logging, or unsafe payload expansion; fix only verified release defects and preserve all optional-feature boundaries. | done (committing); core analysis route bounded and provider details redacted, 23 suites/139 tests pass |
-| H-169 | Codex -> Antigravity | new `src/data/releaseDeviceSessionSummaryCopy.ts` only | Create a typed, privacy-safe owner Mac/iOS session-summary contract that counts pass/fail/blocked/not-run/not-applicable outcomes, separates reproducible defects from device/environment and optional-provider blockers, lists only exact existing test identifiers, and gives concise next-action copy. Reuse exact identifier/outcome/classification types; define no IDs and never convert aggregate counts into release approval. Do not alter existing files, UI, routes, services, providers, storage, docs, or credentials. | assigned |
-| H-170 | Codex -> Codex | Core analysis failure-recovery contract audit only | Verify that new request-boundary failures and provider failures preserve the entered dream, do not consume a trial, expose safe actionable copy, and remain retryable without persisting an error as analysis. Add focused regression coverage and fix only verified defects. | in progress; client and trial-flow audit begun |
+| H-169 | Codex -> Antigravity | new `src/data/releaseDeviceSessionSummaryCopy.ts` only | Create a typed, privacy-safe owner Mac/iOS session-summary contract that counts pass/fail/blocked/not-run/not-applicable outcomes, separates reproducible defects from device/environment and optional-provider blockers, lists only exact existing test identifiers, and gives concise next-action copy. Reuse exact identifier/outcome/classification types; define no IDs and never convert aggregate counts into release approval. Do not alter existing files, UI, routes, services, providers, storage, docs, or credentials. | done (uncommitted) |
+| H-170 | Codex -> Codex | Core analysis failure-recovery contract audit only | Verify that new request-boundary failures and provider failures preserve the entered dream, do not consume a trial, expose safe actionable copy, and remain retryable without persisting an error as analysis. Add focused regression coverage and fix only verified defects. | done (committing); retry/edit preserve input, failures skip trial usage, 24 suites/141 tests pass |
 
 ## Completion format
 
@@ -1736,3 +1736,27 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Safety and scope:** Every step starts `not-run`; exact existing identifier/outcome/classification types are reused; no test IDs are created; observations are capped at 280 characters; no retest outcome authorizes release, provider use, or Production activation.
 - **Validation:** `npx tsc --noEmit` and `git diff --check` passed.
 - **Codex review:** Accepted; compatibility helpers preserve reproducible-defect, device/environment-blocker, and optional-provider-blocker distinctions.
+
+### H-169 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/releaseDeviceSessionSummaryCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, privacy-safe session-summary contract and copy module for owner Mac/iOS testing:
+    1. **Outcome Counts (`ReleaseDeviceSessionOutcomeCounts`):** Accurately tracks pass, fail, blocked, not-run, and not-applicable counts; total assigned must equal the sum of all five counts.
+    2. **Classified Identifiers (`ReleaseDeviceSessionClassifiedIdentifiers`):** Separates exact test identifiers into reproducible product defects, device/environment blockers, optional-provider blockers, passed checks, not-run checks, and not-applicable checks.
+    3. **Next Actions (`ReleaseDeviceSessionNextAction`):** Dynamically populates ordered, actionable guidance based on findings:
+       - `investigate-reproducible-defects`: Address verified product mismatches and retest.
+       - `clear-device-environment-blockers`: Restore device or environment prerequisites.
+       - `preserve-optional-provider-blockers`: Keep optional provider blockers intact.
+       - `complete-not-run-checks`: Schedule remaining not-run checks.
+       - `review-not-applicable-scope`: Confirm out-of-scope determinations.
+       - `close-session-evidence`: Reconcile counts and exact identifiers.
+    4. **Invariant & Boundary Enforcement:** Enforces `approvalState: 'not-determined-by-summary'` via `isReleaseDeviceSessionSummaryBalanced(summary)`; aggregate counts never authorize release, launch, submission, provider, or Production approval.
+  - Reuses exact types from `releaseDeviceTestOutcomeCopy`: `ReleaseDeviceTestOutcome`, `ReleaseDeviceTestClassification`, `ReleaseDeviceTestIdentifier`, and `ReleaseDeviceTestOutcomeReport`.
+  - Prohibits dream content, birth data, voice recordings/transcripts, media, private links, credentials, logs, payloads, screenshots/attachments, and approval claims.
+  - Exported typed builder, getters, and validators: `buildReleaseDeviceSessionSummary`, `getReleaseDeviceSessionSummaryCopy`, `getReleaseDeviceSessionNextActionCopy`, and `isReleaseDeviceSessionSummaryBalanced`.
+  - Zero modifications to UI, routes, services, providers, storage, docs, or credentials.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (23 suites, 139 tests passing).
+- **Follow-up:** Ready for Codex review and integration.
