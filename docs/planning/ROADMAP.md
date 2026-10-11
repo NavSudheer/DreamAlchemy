@@ -63,8 +63,8 @@ Relative effort is a planning estimate, not a delivery promise. All rows are pro
 | T3 | Technique discovery and troubleshooting | Small | Makes five guides easier to choose and use | Deferred |
 | P1 | Pattern-to-journal drilldowns | Medium | Turns existing counts into something actionable | **Selected:** tap a symbol/theme to see matching saved dreams; open the original analysis; handle empty results |
 | K1 | Psychology bookmarks | Small-medium | Save useful reading without a new backend | Bookmark article/section; saved list; survive restart; handle missing content |
-| T4 | Additional text guides | Small-medium | Adds focused, written practices without requiring audio or video | Explore topics with owner |
-| T5 | Meditation/visualization timer | Medium | Supports a future guided breathing, incubation, relaxation, or visualization session | Later; timer is not for reality testing or journaling. WBTB needs a separate reminder/alarm design |
+| T4 | Additional text guides | Small-medium | Adds focused, written practices without requiring audio or video | **Selected and delivered:** expanded written guide library with cautious outcome framing |
+| T5 | Meditation/visualization timer | Medium | Supports guided relaxation, incubation, and visualization sessions | **Selected and delivered:** separate timer with optional local ambience; WBTB reminders remain a separate future design |
 
 P1 is selected. Existing history search and theme filters should not be rebuilt.
 
@@ -89,9 +89,9 @@ These work across two or more Explore areas rather than belonging to one feature
 | Feature | What the user sees | Why it is later |
 | --- | --- | --- |
 | Unified Explore search | One search field returning dictionary symbols, psychology articles, and techniques | **Implemented:** shared index and routing; saved-dream results and UI/device verification remain |
-| Related content | A symbol, technique, or article links to the most relevant next reading | Needs deliberate content relationships |
+| Related content | A symbol, technique, or article links to the most relevant next reading | **Implemented:** curated Psychology, dictionary, and technique connections; native verification remains |
 | Personal notes | Private notes attached to a symbol, article, technique, or pattern | Needs a shared local-data model and editing UX |
-| Shared bookmarks | One saved-items view across psychology, techniques, and dictionary | Needs common persistence and migration rules |
+| Shared bookmarks | One saved-items view across psychology, techniques, and dictionary | **Implemented:** shared local saved-items view; native persistence verification remains |
 | Export | User exports their journal, patterns, or selected insights | Needs format, privacy, and sharing decisions |
 
 ## Owner idea queue
@@ -123,6 +123,6 @@ For each idea capture:
 - [x] Reconcile current implementation with historical plans.
 - [x] Collect owner's initial ideas and priorities.
 - [x] Record A1 as private-Preview-only and A2 as provider-neutral preparation-only; neither is approved for Production enablement.
-- [x] Implement the approved boundaries and pass local checks (22 suites / 135 tests, TypeScript, and whitespace validation).
+- [x] Implement the approved boundaries and pass local checks (27 suites / 152 tests, TypeScript, lint with 0 errors, and whitespace validation).
 - [x] Freeze implementation scope for owner device testing; only verified defects may change the candidate.
 - [ ] Complete the [release checklist](RELEASE_CHECKLIST.md).
