@@ -99,10 +99,47 @@ describe('subscription paywall', () => {
     );
   });
 
+  it('starts only one purchase when the action is pressed repeatedly', async () => {
+    let finishPurchase: ((value: { success: boolean }) => void) | undefined;
+    mockPurchase.mockImplementation(() => new Promise(resolve => {
+      finishPurchase = resolve;
+    }));
+
+    let firstPurchase: Promise<void> | undefined;
+    await act(async () => {
+      const purchase = screen.root.findByType('Button' as never).props.onPress;
+      firstPurchase = purchase();
+      void purchase();
+      await Promise.resolve();
+    });
+
+    expect(mockPurchase).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      finishPurchase?.({ success: false });
+      await firstPurchase;
+    });
+  });
+
   it('uses the localized prices returned by the active offering', () => {
     expect(screen.root.findAllByType('Text' as never).map(node => node.props.children)).toEqual(
       expect.arrayContaining(['$7.99', '$59.99']),
     );
+  });
+
+  it('clears stale plans when a later offering refresh fails', async () => {
+    mockGetOfferings.mockRejectedValueOnce(new Error('Store unavailable'));
+
+    act(() => {
+      screen.update(<SubscriptionPaywall visible={false} onClose={jest.fn()} onSuccess={jest.fn()} />);
+    });
+    await act(async () => {
+      screen.update(<SubscriptionPaywall visible onClose={jest.fn()} onSuccess={jest.fn()} />);
+    });
+
+    const visibleCopy = JSON.stringify(screen.toJSON());
+    expect(visibleCopy).toContain('Subscription options are temporarily unavailable');
+    expect(visibleCopy).not.toContain('$7.99');
+    expect(screen.root.findByType('Button' as never).props.disabled).toBe(true);
   });
 
   it('does not advertise excluded or unimplemented subscription benefits', () => {
@@ -124,6 +161,25 @@ describe('subscription paywall', () => {
       'Your subscription has been restored successfully!',
       expect.any(Array),
     );
+  });
+
+  it('starts only one restore when the action is pressed repeatedly', async () => {
+    let finishRestore: ((value: { success: boolean; isActive: boolean }) => void) | undefined;
+    mockRestore.mockImplementation(() => new Promise(resolve => {
+      finishRestore = resolve;
+    }));
+
+    let firstRestore: Promise<void> | undefined;
+    act(() => {
+      firstRestore = pressLabel('Restore Purchases');
+      void pressLabel('Restore Purchases');
+    });
+
+    expect(mockRestore).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      finishRestore?.({ success: true, isActive: false });
+      await firstRestore;
+    });
   });
 
   it('does not render or unlock debug tools in a release build', async () => {

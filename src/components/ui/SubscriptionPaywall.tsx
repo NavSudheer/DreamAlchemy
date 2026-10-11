@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -65,11 +65,14 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
   const [isRestoring, setIsRestoring] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
   const [debugTaps, setDebugTaps] = useState(0);
+  const storeActionInFlight = useRef(false);
 
   useEffect(() => {
     let active = true;
     if (!visible) return () => { active = false; };
 
+    setSubscriptionPlans([]);
+    setSelectedPlan(null);
     setIsLoadingOfferings(true);
     void subscriptionService.getOfferings()
       .then((offering) => {
@@ -88,6 +91,11 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
         setSubscriptionPlans(plans);
         setSelectedPlan((current) => plans.some((plan) => plan.id === current) ? current : plans[0]?.id ?? null);
       })
+      .catch(() => {
+        if (!active) return;
+        setSubscriptionPlans([]);
+        setSelectedPlan(null);
+      })
       .finally(() => {
         if (active) setIsLoadingOfferings(false);
       });
@@ -96,11 +104,12 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
   }, [visible]);
 
   const handlePurchase = async () => {
-    if (isLoading || isRestoring) return;
+    if (storeActionInFlight.current || isLoading || isRestoring) return;
     if (!selectedPlan) {
       Alert.alert('Subscription Unavailable', 'No subscription option is currently available. Please try again later.');
       return;
     }
+    storeActionInFlight.current = true;
     setIsLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
@@ -151,12 +160,14 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
     } catch {
       Alert.alert('Error', 'Failed to process purchase. Please try again.');
     } finally {
+      storeActionInFlight.current = false;
       setIsLoading(false);
     }
   };
 
   const handleRestore = async () => {
-    if (isLoading || isRestoring) return;
+    if (storeActionInFlight.current || isLoading || isRestoring) return;
+    storeActionInFlight.current = true;
     setIsRestoring(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
@@ -180,6 +191,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
     } catch {
       Alert.alert('Restore Failed', 'Unable to restore purchases. Please try again.');
     } finally {
+      storeActionInFlight.current = false;
       setIsRestoring(false);
     }
   };

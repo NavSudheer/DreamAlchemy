@@ -240,10 +240,16 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-193 | Codex -> Codex | Local persistence and relaunch integrity audit only | Verify journal, saved-item, trial, theme, Astrology Preview, and other approved local storage paths tolerate missing/malformed data and preserve current records across relaunch. Fix only verified release defects without migrations that destroy user data. | done `b5192a8`; malformed journal/saved/Astrology records recover safely, 28 suites/155 tests pass |
 | H-194 | Codex -> Codex | Trial-state malformed persistence audit only | Verify malformed, partial, future-dated, or out-of-range locally persisted trial state cannot crash startup, produce negative days, or incorrectly consume/restore analyses. Fix only verified release defects without changing the approved 3-analysis/7-day policy. | done `a4c67ab`; persisted state normalized, future dates clamped, 29 suites/158 tests pass |
 | H-195 | Codex -> Antigravity | new `src/data/releaseSubmissionReviewCloseoutCopy.ts` only | Create typed, privacy-safe closeout guidance for a balanced submission-review summary. Preserve unresolved items and exact candidate/owner context, keep owner next-step pending, and permit only a later explicit owner submission decision—never submission or approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted `e1d723c` |
-| H-196 | Codex -> Codex | Subscription unavailable-store and stale-entitlement audit only | Verify unavailable StoreKit/RevenueCat states, stale cached entitlement, initialize failures, and repeated refreshes fail safely without granting access, losing valid local trial state, or advertising unavailable products. Fix only verified release defects without changing products, prices, or entitlements. | in progress; service and paywall failure-path inventory begun |
-| H-197 | Codex -> Antigravity | new `src/data/releaseOwnerSubmissionDecisionCopy.ts` only | Create typed, privacy-safe explicit owner decisions after valid submission-review closeout; preserve exact candidate context and ensure authorization enables only a separate confirmed submission action, never submission or inferred App Store/provider/signing/Production approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
-| H-198 | Codex -> Antigravity | new `src/data/releaseSubmissionActionConfirmationCopy.ts` only | Create typed, privacy-safe second-confirmation copy after an explicit owner submission-action authorization. Preserve exact candidate identity and action state not-performed; allow cancel or confirm-availability-only, never upload/submission or inferred acceptance/approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
-| H-199 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityCopy.ts` only | Create a typed, privacy-safe display model and validator for a valid H-198 confirm-availability-only result. Preserve exact candidate identity and upload/submission not-performed; allow only cancel or return-to-owner guidance, never invocation, simulation, authorization, upload/submission, or inferred acceptance/approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | assigned; collaborator working |
+| H-196 | Codex -> Codex | Subscription unavailable-store and stale-entitlement audit only | Verify unavailable StoreKit/RevenueCat states, stale cached entitlement, initialize failures, and repeated refreshes fail safely without granting access, losing valid local trial state, or advertising unavailable products. Fix only verified release defects without changing products, prices, or entitlements. | done (committing); initialization failures fail closed and stale offerings clear before refresh |
+| H-197 | Codex -> Antigravity | new `src/data/releaseOwnerSubmissionDecisionCopy.ts` only | Create typed, privacy-safe explicit owner decisions after valid submission-review closeout; preserve exact candidate context and ensure authorization enables only a separate confirmed submission action, never submission or inferred App Store/provider/signing/Production approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted `99d94ef` |
+| H-198 | Codex -> Antigravity | new `src/data/releaseSubmissionActionConfirmationCopy.ts` only | Create typed, privacy-safe second-confirmation copy after an explicit owner submission-action authorization. Preserve exact candidate identity and action state not-performed; allow cancel or confirm-availability-only, never upload/submission or inferred acceptance/approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted `99d94ef` |
+| H-199 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityCopy.ts` only | Create a typed, privacy-safe display model and validator for a valid H-198 confirm-availability-only result. Preserve exact candidate identity and upload/submission not-performed; allow only cancel or return-to-owner guidance, never invocation, simulation, authorization, upload/submission, or inferred acceptance/approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-200 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityReceiptCopy.ts` only | Create a typed, privacy-safe receipt/display validator for a valid H-199 availability record. Preserve exact candidate identity, presentation state, and not-performed upload/submission; record only no response or explicit cancel/return-to-owner without inferred acceptance/approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-201 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityCloseoutCopy.ts` only | Create a typed, privacy-safe closeout validator for a valid H-200 receipt. Preserve exact candidate identity, distinguish no response from explicit cancel/return-to-owner, keep upload/submission not-performed, and allow only owner-review or no next process without inferred approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-202 | Codex -> Codex | Subscription purchase and restore duplicate-action audit only | Verify rapid repeated purchase/restore actions cannot start overlapping store operations, duplicate success handling, or corrupt refreshed entitlement/trial state. Fix only verified release defects without changing products, prices, entitlements, or trial policy. | done (committing); synchronous action lock prevents overlapping store calls |
+| H-203 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityArchiveCopy.ts` only | Create a typed, privacy-safe archive display/validator for a valid H-201 closeout. Preserve exact candidate identity, response/next-process state, and not-performed upload/submission; expose only retain-record and conditional return-to-owner-review without deletion, action invocation, or inferred approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-204 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityArchiveReceiptCopy.ts` only | Create a typed, privacy-safe display receipt validator for a valid H-203 archive display. Preserve exact candidate identity/options/no-selection and not-performed upload/submission; record presentation and only an explicitly selected available retain/return option without deletion, action invocation, or inferred approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-205 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityArchiveCloseoutCopy.ts` only | Create a typed, privacy-safe closeout validator for a valid H-204 archive receipt. Preserve exact candidate/selection state and not-performed upload/submission; map only an explicit available return selection to owner-review, otherwise none, without deletion, action invocation, or inferred approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | assigned; collaborator working |
 
 ## Completion format
 
@@ -1965,6 +1971,48 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Changed file:** `src/data/releaseSubmissionActionConfirmationCopy.ts`
 - **Summary:** Added a second explicit owner checkpoint that accepts only cancel or confirm-availability-only after a valid authorization decision for the exact same candidate.
 - **Boundary:** Both choices preserve upload and submission as not performed and grant no acceptance, provider, signing, or Production approval.
+
+### H-196 Completion Notes (Codex)
+- **Status:** done (committing)
+- **Changed files:** `src/services/subscriptions.ts`, `src/components/ui/SubscriptionPaywall.tsx`, and `src/components/ui/__tests__/SubscriptionPaywall.test.tsx`.
+- **Summary:** Initialization failures now return safe unavailable/inactive states, and every paywall refresh clears prior plans before resolving the current offering.
+- **Verification:** Focused paywall tests, TypeScript, and whitespace validation pass; no product, price, entitlement, or trial policy changed.
+
+### H-199 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityCopy.ts`
+- **Summary:** Added a display-only model for valid confirm-availability-only records with exact candidate matching and no preselected next step.
+- **Boundary:** Only cancel and return-to-owner guidance is exposed; upload, submission, authorization, and approvals remain unavailable or not inferred.
+
+### H-200 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityReceiptCopy.ts`
+- **Summary:** Added a presentation receipt that records no response or an explicit cancel/return-to-owner response for the exact candidate.
+- **Boundary:** Presentation never invokes, simulates, authorizes, uploads, submits, or infers acceptance or approval.
+
+### H-201 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityCloseoutCopy.ts`
+- **Summary:** Added closeout validation that preserves the exact candidate and maps only an explicit return response to owner review.
+- **Boundary:** No response and cancel remain distinct, and every path keeps upload/submission not performed with approvals not inferred.
+
+### H-202 Completion Notes (Codex)
+- **Status:** done (committing)
+- **Changed files:** `src/components/ui/SubscriptionPaywall.tsx` and `src/components/ui/__tests__/SubscriptionPaywall.test.tsx`.
+- **Summary:** Added an immediate shared store-action lock so rapid repeated purchase or restore presses cannot begin overlapping operations before React state rerenders.
+- **Verification:** Focused paywall suite passes 11 tests, including repeated purchase and restore regression coverage.
+
+### H-203 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityArchiveCopy.ts`
+- **Summary:** Added a retained archive display that preserves the exact closeout response and route with no preselected option.
+- **Boundary:** Retain is always available and return-to-owner-review appears only for an existing owner-review route; deletion and store actions remain unavailable.
+
+### H-204 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityArchiveReceiptCopy.ts`
+- **Summary:** Added an archive-view presentation receipt preserving exact options, no preselection, and only explicit selections already available to the owner.
+- **Boundary:** The receipt cannot delete records or invoke, authorize, upload, submit, or infer approval.
 
 ### H-181 Completion Notes (Codex)
 - **Status:** done (committing)

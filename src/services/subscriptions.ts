@@ -82,9 +82,8 @@ class SubscriptionService {
    * Get available subscription offerings
    */
   async getOfferings(): Promise<PurchasesOffering | null> {
-    await this.initialize();
-    
     try {
+      await this.initialize();
       DebugLogger.log('info', 'Fetching RevenueCat offerings...');
       const offerings = await Purchases.getOfferings();
       
@@ -175,9 +174,8 @@ class SubscriptionService {
    * Check current subscription status
    */
   async getSubscriptionStatus(): Promise<SubscriptionStatus> {
-    await this.initialize();
-    
     try {
+      await this.initialize();
       const customerInfo = await Purchases.getCustomerInfo();
       const activeEntitlements = Object.keys(customerInfo.entitlements.active);
       
