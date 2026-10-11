@@ -238,8 +238,10 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-191 | Codex -> Antigravity | new `src/data/releaseSubmissionReviewOutcomeCopy.ts` only | Create typed, privacy-safe per-item submission review outcomes using existing types, explicit evidence state, and sanitized notes capped at 280 characters. Preserve pending/change/blocker distinctions and grant no legal, App Store, release, submission, provider, signing, or Production approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted `6bb57fe` |
 | H-192 | Codex -> Antigravity | new `src/data/releaseSubmissionReviewSummaryCopy.ts` only | Create a typed, privacy-safe balanced summary of existing submission-review item outcomes with counts, exact item IDs, unresolved changes/blockers, and a separate pending owner next-step. Grant no correctness, acceptance, release, submission, provider, signing, or Production approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
 | H-193 | Codex -> Codex | Local persistence and relaunch integrity audit only | Verify journal, saved-item, trial, theme, Astrology Preview, and other approved local storage paths tolerate missing/malformed data and preserve current records across relaunch. Fix only verified release defects without migrations that destroy user data. | done (committing); malformed journal/saved/Astrology records recover safely, 28 suites/155 tests pass |
-| H-194 | Codex -> Codex | Trial-state malformed persistence audit only | Verify malformed, partial, future-dated, or out-of-range locally persisted trial state cannot crash startup, produce negative days, or incorrectly consume/restore analyses. Fix only verified release defects without changing the approved 3-analysis/7-day policy. | in progress; trial parser and date arithmetic inventory begun |
-| H-195 | Codex -> Antigravity | new `src/data/releaseSubmissionReviewCloseoutCopy.ts` only | Create typed, privacy-safe closeout guidance for a balanced submission-review summary. Preserve unresolved items and exact candidate/owner context, keep owner next-step pending, and permit only a later explicit owner submission decision—never submission or approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | assigned; collaborator working |
+| H-194 | Codex -> Codex | Trial-state malformed persistence audit only | Verify malformed, partial, future-dated, or out-of-range locally persisted trial state cannot crash startup, produce negative days, or incorrectly consume/restore analyses. Fix only verified release defects without changing the approved 3-analysis/7-day policy. | done (committing); persisted state normalized, future dates clamped, 29 suites/158 tests pass |
+| H-195 | Codex -> Antigravity | new `src/data/releaseSubmissionReviewCloseoutCopy.ts` only | Create typed, privacy-safe closeout guidance for a balanced submission-review summary. Preserve unresolved items and exact candidate/owner context, keep owner next-step pending, and permit only a later explicit owner submission decision—never submission or approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | done (uncommitted) |
+| H-196 | Codex -> Codex | Subscription unavailable-store and stale-entitlement audit only | Verify unavailable StoreKit/RevenueCat states, stale cached entitlement, initialize failures, and repeated refreshes fail safely without granting access, losing valid local trial state, or advertising unavailable products. Fix only verified release defects without changing products, prices, or entitlements. | in progress; service and paywall failure-path inventory begun |
+| H-197 | Codex -> Antigravity | next isolated content/data handoff | Assign after H-195 integration when collaborator quota becomes available. | queued; collaborator usage quota currently exhausted |
 
 ## Completion format
 
@@ -1938,6 +1940,12 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Summary:** Added balanced counts and exact item-ID groups across all seven review items, with exact unresolved-change/blocker mirrors and validated candidate/owner-decision context.
 - **Boundary:** The aggregate leaves the owner next step pending and never infers legal correctness, App Store acceptance, or any approval.
 
+### H-194 Completion Notes (Codex)
+- **Status:** done (committing)
+- **Changed files:** `src/services/trialTracking.ts` and `src/services/__tests__/trialTrackingData.test.ts`.
+- **Summary:** Persisted trial state now normalizes malformed/partial values, preserves valid consumed-analysis counts, rejects fractional/negative counts, and prevents future timestamps from producing negative elapsed days or more than the approved seven-day window.
+- **Validation:** TypeScript and whitespace pass; all 29 suites/158 tests pass; lint has 0 errors and 53 non-blocking warnings.
+
 ### H-181 Completion Notes (Codex)
 - **Status:** done (committing)
 - **Changed files:** `docs/planning/OWNER_MAC_IOS_TEST_START.md`, `docs/planning/README.md`, `docs/planning/ROADMAP.md`, and `docs/planning/RELEASE_CHECKLIST.md`.
@@ -2018,4 +2026,27 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (28 suites, 155 tests passing).
   - `npm run lint` passed with 0 errors (53 non-blocking debt warnings preserved).
   - `git diff --check` passed with 0 whitespace errors.
+- **Follow-up:** Ready for Codex review and commit.
+
+### H-195 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/releaseSubmissionReviewCloseoutCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, privacy-safe closeout guidance module for a balanced submission-review summary:
+    1. **Closeout State & Next Available Process:**
+       - `unresolved-items-remain` maps strictly to `resolve-unresolved-review-items` when any pending, change-required, or external-blocker items remain.
+       - `fully-reviewed-pending-owner-submission-decision` maps strictly to `explicit-owner-submission-decision` only when zero unresolved items remain.
+    2. **Candidate & Context Integrity:**
+       - Reconciles exact candidate build identity matching the validated summary.
+       - Reconciles explicit owner-decision context from review start.
+       - Sets `ownerNextStepState: 'pending'` and fixes `legalCorrectnessState: 'not-inferred'`, `appStoreAcceptanceState: 'not-inferred'`, and `approvalState: 'not-inferred'`.
+    3. **Closeout Steps & Boundaries:**
+       - Defines 7 structured closeout steps (`RELEASE_SUBMISSION_REVIEW_CLOSEOUT_STEPS`) covering accounting confirmation, candidate identity, decision context, item preservation, and owner next-step routing.
+       - Explicitly prohibits credentials, accounts, storeKit receipts, device UDIDs, links, logs, screenshots, media, and approval claims.
+    4. **Exported Types, Validators, and Helpers:**
+       - `getReleaseSubmissionReviewCloseoutCopy` and `isReleaseSubmissionReviewCloseoutRecordValid`.
+  - Zero modifications to existing UI, routes, services, providers, storage, docs, credentials, or configuration.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - `npx eslint src/data/releaseSubmissionReviewCloseoutCopy.ts` passed with 0 errors.
 - **Follow-up:** Ready for Codex review and commit.

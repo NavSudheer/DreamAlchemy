@@ -21,6 +21,44 @@ export interface TrialStatus {
   trialType: 'analyses' | 'time' | 'none';
 }
 
+export const normalizeTrialData = (value: unknown, now = new Date()): TrialData => {
+  const record = value && typeof value === 'object'
+    ? value as Partial<Record<keyof TrialData, unknown>>
+    : {};
+  const parsedInstallDate = typeof record.installDate === 'string'
+    ? new Date(record.installDate)
+    : null;
+  const installDate = parsedInstallDate &&
+    Number.isFinite(parsedInstallDate.getTime()) &&
+    parsedInstallDate.getTime() <= now.getTime()
+    ? parsedInstallDate.toISOString()
+    : now.toISOString();
+  const analysisCount = typeof record.analysisCount === 'number' &&
+    Number.isInteger(record.analysisCount) &&
+    record.analysisCount >= 0
+    ? record.analysisCount
+    : 0;
+  const parsedLastAnalysisDate = typeof record.lastAnalysisDate === 'string'
+    ? new Date(record.lastAnalysisDate)
+    : null;
+
+  return {
+    installDate,
+    analysisCount,
+    ...(parsedLastAnalysisDate && Number.isFinite(parsedLastAnalysisDate.getTime())
+      ? { lastAnalysisDate: parsedLastAnalysisDate.toISOString() }
+      : {}),
+  };
+};
+
+export const getElapsedTrialDays = (installDate: string, now = new Date()): number => {
+  const parsedInstallDate = new Date(installDate);
+  if (!Number.isFinite(parsedInstallDate.getTime())) return 0;
+
+  const diffInMs = Math.max(0, now.getTime() - parsedInstallDate.getTime());
+  return Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+};
+
 class TrialTrackingService {
   private subscriptionStatus: SubscriptionStatus | null = null;
   private trialData: TrialData | null = null;
@@ -135,13 +173,8 @@ class TrialTrackingService {
    */
   private getDaysSinceInstall(): number {
     if (!this.trialData?.installDate) return 0;
-    
-    const installDate = new Date(this.trialData.installDate);
-    const now = new Date();
-    const diffInMs = now.getTime() - installDate.getTime();
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-    
-    return diffInDays;
+
+    return getElapsedTrialDays(this.trialData.installDate);
   }
 
   /**
@@ -152,7 +185,7 @@ class TrialTrackingService {
       const data = await AsyncStorage.getItem(TRIAL_STORAGE_KEY);
       
       if (data) {
-        this.trialData = JSON.parse(data);
+        this.trialData = normalizeTrialData(JSON.parse(data));
       } else {
         // First time user - initialize trial
         this.trialData = {
@@ -214,4 +247,4 @@ class TrialTrackingService {
 }
 
 // Export singleton instance
-export const trialTrackingService = new TrialTrackingService(); 
+export const trialTrackingService = new TrialTrackingService();
