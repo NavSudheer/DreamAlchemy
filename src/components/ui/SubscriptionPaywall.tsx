@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -43,6 +43,14 @@ interface SubscriptionPlan {
   savings?: string;
 }
 
+const PREMIUM_FEATURES = ['Unlimited dream analyses during an active subscription'];
+
+const formatSubscriptionPeriod = (period: string | null): { title: string; period: string } => {
+  if (period === 'P1M') return { title: 'Monthly', period: 'per month' };
+  if (period === 'P1Y') return { title: 'Annual', period: 'per year' };
+  return { title: 'Subscription', period: 'for the displayed billing period' };
+};
+
 const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
   visible,
   onClose,
@@ -51,47 +59,48 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
 }) => {
   const { isDark } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<string>('dreamAlchemy_monthly');
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlan[]>([]);
+  const [isLoadingOfferings, setIsLoadingOfferings] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
   const [debugTaps, setDebugTaps] = useState(0);
 
-  // Sample subscription plans - replace with actual RevenueCat offerings
-  const subscriptionPlans: SubscriptionPlan[] = [
-    {
-      id: 'dreamAlchemy_monthly',
-      title: 'Monthly',
-      price: '$7.99',
-      period: 'per month',
-      features: [
-        'Unlimited dream analyses',
-        'Advanced psychological insights',
-        'Dream pattern tracking',
-        'Symbol dictionary access',
-        'Voice recording support',
-        'Export dream journal',
-      ],
-    },
-    {
-      id: 'dreamAlchemy_annual',
-      title: 'Annual',
-      price: '$59.99',
-      period: 'per year',
-      savings: 'Save 37%',
-      isPopular: true,
-      features: [
-        'Everything in Monthly',
-        'Priority customer support',
-        'Exclusive dream techniques',
-        'Advanced analytics',
-        'Meditation guides',
-        'Community access',
-      ],
-    },
-  ];
+  useEffect(() => {
+    let active = true;
+    if (!visible) return () => { active = false; };
+
+    setIsLoadingOfferings(true);
+    void subscriptionService.getOfferings()
+      .then((offering) => {
+        if (!active) return;
+        const plans = (offering?.availablePackages ?? []).map((pkg) => {
+          const period = formatSubscriptionPeriod(pkg.product.subscriptionPeriod);
+          return {
+            id: pkg.product.identifier,
+            title: period.title,
+            price: pkg.product.priceString,
+            period: period.period,
+            features: PREMIUM_FEATURES,
+            isPopular: pkg.product.subscriptionPeriod === 'P1Y',
+          };
+        });
+        setSubscriptionPlans(plans);
+        setSelectedPlan((current) => plans.some((plan) => plan.id === current) ? current : plans[0]?.id ?? null);
+      })
+      .finally(() => {
+        if (active) setIsLoadingOfferings(false);
+      });
+
+    return () => { active = false; };
+  }, [visible]);
 
   const handlePurchase = async () => {
     if (isLoading || isRestoring) return;
+    if (!selectedPlan) {
+      Alert.alert('Subscription Unavailable', 'No subscription option is currently available. Please try again later.');
+      return;
+    }
     setIsLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
@@ -303,7 +312,15 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
 
           <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
             <View style={styles.plansContainer}>
-              {subscriptionPlans.map(renderPlan)}
+            {isLoadingOfferings ? (
+              <ActivityIndicator size="small" color={Colors.primary[500]} />
+            ) : subscriptionPlans.length > 0 ? (
+              subscriptionPlans.map(renderPlan)
+            ) : (
+              <Text variant="body2" style={{ color: isDark ? Colors.neutral[300] : Colors.neutral[700] }}>
+                Subscription options are temporarily unavailable. You can still restore an existing purchase.
+              </Text>
+            )}
             </View>
 
             <Button
@@ -312,10 +329,14 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
               fullWidth
               onPress={handlePurchase}
               isLoading={isLoading}
-              disabled={isLoading || isRestoring}
+              disabled={isLoading || isRestoring || isLoadingOfferings || !selectedPlan}
               style={styles.subscribeButton}
             >
-              {isLoading ? 'Processing...' : `Subscribe ${subscriptionPlans.find(p => p.id === selectedPlan)?.price} ${subscriptionPlans.find(p => p.id === selectedPlan)?.period}`}
+              {isLoading
+                ? 'Processing...'
+                : selectedPlan
+                  ? `Subscribe ${subscriptionPlans.find(p => p.id === selectedPlan)?.price} ${subscriptionPlans.find(p => p.id === selectedPlan)?.period}`
+                  : 'Subscription Unavailable'}
             </Button>
 
             <TouchableOpacity

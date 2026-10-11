@@ -7,6 +7,20 @@ const mockRestore = jest.fn();
 const mockGetOfferings = jest.fn();
 const mockPurchase = jest.fn();
 const mockRefreshSubscriptionStatus = jest.fn();
+const monthlyPackage = {
+  product: {
+    identifier: 'dreamAlchemy_monthly',
+    priceString: '$7.99',
+    subscriptionPeriod: 'P1M',
+  },
+};
+const annualPackage = {
+  product: {
+    identifier: 'dreamAlchemy_annual',
+    priceString: '$59.99',
+    subscriptionPeriod: 'P1Y',
+  },
+};
 jest.mock('@/services/subscriptions', () => ({
   subscriptionService: {
     restorePurchases: () => mockRestore(),
@@ -32,13 +46,15 @@ jest.mock('expo-haptics', () => ({
 
 describe('subscription paywall', () => {
   let screen: ReactTestRenderer;
-  beforeEach(() => {
+  beforeEach(async () => {
     mockRestore.mockReset();
-    mockGetOfferings.mockReset();
+    mockGetOfferings.mockReset().mockResolvedValue({
+      availablePackages: [monthlyPackage, annualPackage],
+    });
     mockPurchase.mockReset();
     mockRefreshSubscriptionStatus.mockReset().mockResolvedValue(undefined);
     jest.spyOn(Alert, 'alert').mockImplementation(() => {});
-    act(() => { screen = create(<SubscriptionPaywall visible onClose={jest.fn()} onSuccess={jest.fn()} />); });
+    await act(async () => { screen = create(<SubscriptionPaywall visible onClose={jest.fn()} onSuccess={jest.fn()} />); });
   });
   afterEach(() => {
     act(() => screen.unmount());
@@ -70,8 +86,6 @@ describe('subscription paywall', () => {
   });
 
   it('refreshes entitlement state after a successful purchase', async () => {
-    const monthlyPackage = { product: { identifier: 'dreamAlchemy_monthly' } };
-    mockGetOfferings.mockResolvedValue({ availablePackages: [monthlyPackage] });
     mockPurchase.mockResolvedValue({ success: true });
 
     await act(async () => { await screen.root.findByType('Button' as never).props.onPress(); });
@@ -83,6 +97,20 @@ describe('subscription paywall', () => {
       'Your subscription is now active. Enjoy unlimited dream analyses!',
       expect.any(Array),
     );
+  });
+
+  it('uses the localized prices returned by the active offering', () => {
+    expect(screen.root.findAllByType('Text' as never).map(node => node.props.children)).toEqual(
+      expect.arrayContaining(['$7.99', '$59.99']),
+    );
+  });
+
+  it('does not advertise excluded or unimplemented subscription benefits', () => {
+    const visibleCopy = JSON.stringify(screen.toJSON());
+    expect(visibleCopy).toContain('Unlimited dream analyses during an active subscription');
+    expect(visibleCopy).not.toContain('Community access');
+    expect(visibleCopy).not.toContain('Priority customer support');
+    expect(visibleCopy).not.toContain('Export dream journal');
   });
 
   it('refreshes entitlement state only for an active restore', async () => {
@@ -98,13 +126,13 @@ describe('subscription paywall', () => {
     );
   });
 
-  it('does not render or unlock debug tools in a release build', () => {
+  it('does not render or unlock debug tools in a release build', async () => {
     const devGlobal = global as unknown as { __DEV__: boolean };
     const originalDev = devGlobal.__DEV__;
     Object.defineProperty(global, '__DEV__', { value: false, writable: true, configurable: true });
     try {
       act(() => screen.unmount());
-      act(() => { screen = create(<SubscriptionPaywall visible onClose={jest.fn()} onSuccess={jest.fn()} />); });
+      await act(async () => { screen = create(<SubscriptionPaywall visible onClose={jest.fn()} onSuccess={jest.fn()} />); });
       act(() => {
         for (let tap = 0; tap < 7; tap += 1) pressLabel('Unlock Premium');
       });
