@@ -56,15 +56,21 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading, initialTex
 
   // Check if voice recognition is available on component mount
   useEffect(() => {
+    let isMounted = true;
+
     const checkVoiceAvailability = async () => {
       try {
         const available = await VoiceRecognitionService.isAvailable();
-        setVoiceAvailable(available);
-        setShowVoiceFeature(available);
+        if (isMounted) {
+          setVoiceAvailable(available);
+          setShowVoiceFeature(available);
+        }
       } catch (error) {
         console.error('Error checking voice availability:', error);
-        setVoiceAvailable(false);
-        setShowVoiceFeature(false);
+        if (isMounted) {
+          setVoiceAvailable(false);
+          setShowVoiceFeature(false);
+        }
       }
     };
 
@@ -132,7 +138,10 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading, initialTex
 
     // Clean up voice recognition on component unmount
     return () => {
-      VoiceRecognitionService.destroyRecognizer();
+      isMounted = false;
+      VoiceRecognitionService.setupEventHandlers({});
+      void VoiceRecognitionService.cancelRecognizing();
+      void VoiceRecognitionService.destroyRecognizer();
     };
   }, []);
 
