@@ -32,8 +32,11 @@ export const getDreams = async (): Promise<Dream[]> => {
       return [];
     }
     
-    // Timestamps are stored as epoch milliseconds, matching the Dream type
-    return JSON.parse(dreamsJson) as Dream[];
+    // Timestamps are stored as epoch milliseconds, matching the Dream type.
+    // Treat malformed or legacy non-array values as unavailable instead of
+    // letting callers crash while rendering or updating history.
+    const parsed: unknown = JSON.parse(dreamsJson);
+    return Array.isArray(parsed) ? parsed as Dream[] : [];
   } catch (error) {
     console.error('Error getting dreams:', error);
     return [];
@@ -62,4 +65,4 @@ export const clearDreams = async (): Promise<void> => {
   } catch (error) {
     console.error('Error clearing dreams:', error);
   }
-}; 
+};

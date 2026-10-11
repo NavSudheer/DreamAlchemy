@@ -6,8 +6,13 @@ const BUNDLE_KEY = 'dreamalchemy.astrology.bundle.v1';
 
 export const localBirthProfileStore: LocalBirthProfileStore = {
   async read() {
-    const stored = await AsyncStorage.getItem(PROFILE_KEY);
-    return stored ? JSON.parse(stored) : null;
+    try {
+      const stored = await AsyncStorage.getItem(PROFILE_KEY);
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      console.error('Unable to read the local Astrology profile.');
+      return null;
+    }
   },
   async write(profile) {
     await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
@@ -18,8 +23,13 @@ export const localBirthProfileStore: LocalBirthProfileStore = {
 };
 
 export const readLocalAstrologyBundle = async (): Promise<LocalAstrologyBundle | null> => {
-  const stored = await AsyncStorage.getItem(BUNDLE_KEY);
-  return stored ? JSON.parse(stored) : null;
+  try {
+    const stored = await AsyncStorage.getItem(BUNDLE_KEY);
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    console.error('Unable to read the local Astrology chart.');
+    return null;
+  }
 };
 
 export const writeLocalAstrologyBundle = async (bundle: LocalAstrologyBundle): Promise<void> => {

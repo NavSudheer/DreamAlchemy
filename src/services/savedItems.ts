@@ -16,7 +16,10 @@ const createSavedItemId = (type: SavedItemType, itemId: string) => `${type}:${it
 export const getSavedItems = async (): Promise<SavedItem[]> => {
   try {
     const savedItemsJson = await AsyncStorage.getItem(SAVED_ITEMS_STORAGE_KEY);
-    return savedItemsJson ? JSON.parse(savedItemsJson) as SavedItem[] : [];
+    if (!savedItemsJson) return [];
+
+    const parsed: unknown = JSON.parse(savedItemsJson);
+    return Array.isArray(parsed) ? parsed as SavedItem[] : [];
   } catch (error) {
     console.error('Error getting saved items:', error);
     return [];

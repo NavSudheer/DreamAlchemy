@@ -237,6 +237,8 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-190 | Codex -> Antigravity | new `src/data/releaseSubmissionReviewStartCopy.ts` only | Create typed, privacy-safe pending submission-review start checks after an explicit ready-for-separate-submission-review owner decision. Cover current requirements, listing claims, privacy, assets, support/policy links, offerings, and selected build identity; grant no approvals. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted `786400b` |
 | H-191 | Codex -> Antigravity | new `src/data/releaseSubmissionReviewOutcomeCopy.ts` only | Create typed, privacy-safe per-item submission review outcomes using existing types, explicit evidence state, and sanitized notes capped at 280 characters. Preserve pending/change/blocker distinctions and grant no legal, App Store, release, submission, provider, signing, or Production approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
 | H-192 | Codex -> Antigravity | new `src/data/releaseSubmissionReviewSummaryCopy.ts` only | Create a typed, privacy-safe balanced summary of existing submission-review item outcomes with counts, exact item IDs, unresolved changes/blockers, and a separate pending owner next-step. Grant no correctness, acceptance, release, submission, provider, signing, or Production approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | assigned; collaborator working |
+| H-193 | Codex -> Codex | Local persistence and relaunch integrity audit only | Verify journal, saved-item, trial, theme, Astrology Preview, and other approved local storage paths tolerate missing/malformed data and preserve current records across relaunch. Fix only verified release defects without migrations that destroy user data. | done (committing); malformed journal/saved/Astrology records recover safely, 28 suites/155 tests pass |
+| H-194 | Codex -> Codex | Trial-state malformed persistence audit only | Verify malformed, partial, future-dated, or out-of-range locally persisted trial state cannot crash startup, produce negative days, or incorrectly consume/restore analyses. Fix only verified release defects without changing the approved 3-analysis/7-day policy. | in progress; trial parser and date arithmetic inventory begun |
 
 ## Completion format
 
@@ -1922,6 +1924,12 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Changed file:** `src/data/releaseSubmissionReviewOutcomeCopy.ts`
 - **Summary:** Added five typed item outcomes with explicit evidence-status compatibility and required sanitized notes capped at 280 characters.
 - **Boundary:** A no-issue observation is limited to the assigned item and never establishes legal correctness, App Store acceptance, or any approval.
+
+### H-193 Completion Notes (Codex)
+- **Status:** done (committing)
+- **Changed files:** `src/utils/storage.ts`, `src/services/savedItems.ts`, `src/services/astrologyStorage.ts`, and `src/services/__tests__/localPersistence.test.ts`.
+- **Summary:** Journal and saved-item readers now reject legacy/non-array JSON instead of passing invalid shapes to UI callers; malformed private Astrology profile/chart records return a safe empty state without crashing the screen or deleting unrelated storage.
+- **Validation:** TypeScript and whitespace pass; all 28 suites/155 tests pass; lint has 0 errors and 53 non-blocking warnings.
 
 ### H-181 Completion Notes (Codex)
 - **Status:** done (committing)
