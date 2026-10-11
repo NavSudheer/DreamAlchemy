@@ -120,6 +120,38 @@ describe('subscription paywall', () => {
     });
   });
 
+  it('does not show stale purchase success UI after the paywall is hidden', async () => {
+    let finishPurchase: ((value: { success: boolean }) => void) | undefined;
+    mockPurchase.mockImplementation(() => new Promise(resolve => {
+      finishPurchase = resolve;
+    }));
+    const onSuccess = jest.fn();
+    act(() => {
+      screen.update(<SubscriptionPaywall visible onClose={jest.fn()} onSuccess={onSuccess} />);
+    });
+
+    let purchase: Promise<void> | undefined;
+    await act(async () => {
+      purchase = screen.root.findByType('Button' as never).props.onPress();
+      await Promise.resolve();
+    });
+    act(() => {
+      screen.update(<SubscriptionPaywall visible={false} onClose={jest.fn()} onSuccess={onSuccess} />);
+    });
+    await act(async () => {
+      finishPurchase?.({ success: true });
+      await purchase;
+    });
+
+    expect(mockRefreshSubscriptionStatus).toHaveBeenCalledTimes(1);
+    expect(Alert.alert).not.toHaveBeenCalledWith(
+      '🎉 Welcome to Premium!',
+      expect.any(String),
+      expect.any(Array),
+    );
+    expect(onSuccess).not.toHaveBeenCalled();
+  });
+
   it('uses the localized prices returned by the active offering', () => {
     expect(screen.root.findAllByType('Text' as never).map(node => node.props.children)).toEqual(
       expect.arrayContaining(['$7.99', '$59.99']),
@@ -180,6 +212,37 @@ describe('subscription paywall', () => {
       finishRestore?.({ success: true, isActive: false });
       await firstRestore;
     });
+  });
+
+  it('does not show stale restore success UI after the paywall is hidden', async () => {
+    let finishRestore: ((value: { success: boolean; isActive: boolean }) => void) | undefined;
+    mockRestore.mockImplementation(() => new Promise(resolve => {
+      finishRestore = resolve;
+    }));
+    const onSuccess = jest.fn();
+    act(() => {
+      screen.update(<SubscriptionPaywall visible onClose={jest.fn()} onSuccess={onSuccess} />);
+    });
+
+    let restore: Promise<void> | undefined;
+    act(() => {
+      restore = pressLabel('Restore Purchases');
+    });
+    act(() => {
+      screen.update(<SubscriptionPaywall visible={false} onClose={jest.fn()} onSuccess={onSuccess} />);
+    });
+    await act(async () => {
+      finishRestore?.({ success: true, isActive: true });
+      await restore;
+    });
+
+    expect(mockRefreshSubscriptionStatus).toHaveBeenCalledTimes(1);
+    expect(Alert.alert).not.toHaveBeenCalledWith(
+      '✅ Purchases Restored',
+      expect.any(String),
+      expect.any(Array),
+    );
+    expect(onSuccess).not.toHaveBeenCalled();
   });
 
   it('does not render or unlock debug tools in a release build', async () => {

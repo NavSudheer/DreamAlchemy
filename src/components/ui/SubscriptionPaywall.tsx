@@ -66,6 +66,14 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
   const [showDebug, setShowDebug] = useState(false);
   const [debugTaps, setDebugTaps] = useState(0);
   const storeActionInFlight = useRef(false);
+  const isMounted = useRef(true);
+  const isVisible = useRef(visible);
+
+  isVisible.current = visible;
+
+  useEffect(() => () => {
+    isMounted.current = false;
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -145,6 +153,8 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
       if (result.success) {
         // Refresh trial status
         await trialTrackingService.refreshSubscriptionStatus();
+
+        if (!isMounted.current || !isVisible.current) return;
         
         // Show success message
         Alert.alert(
@@ -153,15 +163,21 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
           [{ text: 'Get Started', onPress: onSuccess }]
         );
       } else {
-        if (result.error !== 'Purchase cancelled by user') {
+        if (
+          isMounted.current &&
+          isVisible.current &&
+          result.error !== 'Purchase cancelled by user'
+        ) {
           Alert.alert('Purchase Failed', result.error || 'An unexpected error occurred.');
         }
       }
     } catch {
-      Alert.alert('Error', 'Failed to process purchase. Please try again.');
+      if (isMounted.current && isVisible.current) {
+        Alert.alert('Error', 'Failed to process purchase. Please try again.');
+      }
     } finally {
       storeActionInFlight.current = false;
-      setIsLoading(false);
+      if (isMounted.current) setIsLoading(false);
     }
   };
 
@@ -177,22 +193,28 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
       if (result.success && result.isActive) {
         // Refresh trial status
         await trialTrackingService.refreshSubscriptionStatus();
+
+        if (!isMounted.current || !isVisible.current) return;
         
         Alert.alert(
           '✅ Purchases Restored',
           'Your subscription has been restored successfully!',
           [{ text: 'Continue', onPress: onSuccess }]
         );
+      } else if (!isMounted.current || !isVisible.current) {
+        return;
       } else if (!result.success) {
         Alert.alert('Restore Failed', result.error || 'Unable to restore purchases. Please try again.');
       } else {
         Alert.alert('No Purchases Found', 'No active subscriptions found to restore.');
       }
     } catch {
-      Alert.alert('Restore Failed', 'Unable to restore purchases. Please try again.');
+      if (isMounted.current && isVisible.current) {
+        Alert.alert('Restore Failed', 'Unable to restore purchases. Please try again.');
+      }
     } finally {
       storeActionInFlight.current = false;
-      setIsRestoring(false);
+      if (isMounted.current) setIsRestoring(false);
     }
   };
 
