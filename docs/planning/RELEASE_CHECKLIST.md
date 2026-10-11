@@ -1,5 +1,5 @@
 # Update completion and release checklist
-Updated: 2026-10-01
+Updated: 2026-10-11
 
 Use after selecting features in [the roadmap](ROADMAP.md). This replaces the old initial-launch checklists. No submission date is imposed.
 
@@ -15,7 +15,13 @@ Use after selecting features in [the roadmap](ROADMAP.md). This replaces the old
 - [ ] Review remaining console errors; distinguish unsupported web integrations from native defects.
 - [ ] Review final content and remove unimplemented feature claims.
 
-Current evidence: approved release implementation is complete locally. TypeScript, whitespace, and lint have passed during the sprint; lint has zero errors (warnings remain for follow-up). Expo public config resolves locally. Device validation remains the release gate.
+Current evidence: approved release implementation is complete locally. The full automated regression passes at 22 suites / 135 tests; TypeScript and whitespace validation pass. The provider-connected Astrology browser Preview has passed synthetic date-only, timed-chart, field-validation, and capped-reflection checks. Dream Image preparation and its disabled provider-neutral route contract are automated, but live generation remains blocked. Device validation remains the native release gate.
+
+Optional-feature boundaries for this candidate:
+
+- Astrology: private Preview testing only; Production disabled pending durable limiting, spend alerts, redacted observability, and Mac/device sign-off.
+- Dream Images: preparation and provider-neutral contract testing only; no provider, live generation, delivery, persistence, Photos save, sharing, or provider-side deletion.
+- Neither optional feature replaces or modifies the existing `dream-analysis` native service.
 
 ## 2. Owner device testing — after feature completion
 - [ ] Prepare one feature-complete candidate build; confirm unused version/build values.

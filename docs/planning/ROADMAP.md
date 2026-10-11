@@ -1,6 +1,6 @@
 # Current update roadmap
-Updated: 2026-10-01
-Status: approved release scope is implemented locally; preparing the owner Mac/iOS smoke-test candidate.
+Updated: 2026-10-11
+Status: core approved release scope is implemented and automated regression passes; owner Mac/iOS device testing remains the release gate. Optional Astrology is isolated in a private browser Preview, while Dream Image work remains provider-neutral preparation only.
 
 ## Release sprint completion
 
@@ -12,7 +12,7 @@ Status: approved release scope is implemented locally; preparing the owner Mac/i
 - [x] Dictionary: cultural context, reflection prompts, keyword search, and related-symbol search links.
 - [x] Launch hardening: static lint setup, voice-unavailable handling, local Expo config verification.
 
-Remaining before user testing: final static validation, clean working tree, then the device checklist. Excluded scope remains excluded.
+Browser/private-Preview user testing may proceed with synthetic inputs. Remaining before native release sign-off: the owner Mac/iOS device checklist, voice and purchase flows, persistence/relaunch checks, accessibility/layout passes, and any fixes found there.
 
 ## Decisions
 - Complete the desired feature set before the owner's device-testing pass and App Store submission.
@@ -27,7 +27,9 @@ Remaining before user testing: final static validation, clean working tree, then
 - Prioritize larger backlog areas in this order: Techniques, Patterns, Community without expert Q&A, Psychology, Dictionary, Cross-section, Platform.
 - Promote Dream Patterns to the third bottom-navigation tab and the first Explore card; Dictionary remains available from Explore.
 - Make Dream Activity selectable by day, week, or month rather than static monthly totals.
-- Defer Community, astrology, dream image generation, Accounts/sync, Android completion, health integrations, and T1/T3 to a future update. Treat T2 as conditional polish after core scope is stable.
+- Defer Community, live Dream Image generation, Accounts/sync, Android completion, health integrations, and T1/T3 to a future update. Treat T2 as conditional polish after core scope is stable.
+- Allow optional Astrology only in the isolated private Preview for synthetic testing. It is separate from the base Jungian analysis and remains blocked from Production by durable limiting, spending safeguards, redacted observability, and Mac/device sign-off.
+- Allow Dream Image catalog preparation and provider-neutral contract testing only. Live generation remains disabled until all five documented provider gates are approved.
 
 ## Implemented baseline
 Implementation is not a claim of production readiness or deployment.
@@ -43,7 +45,9 @@ Implementation is not a claim of production readiness or deployment.
 | Technique polish | Removed sample progress; theme-aware cards; list bottom spacing; explicit return to techniques | Browser checked; native/layout regression still needed |
 | Voice | Native integration; availability now uses the cross-platform API instead of Android service enumeration | Code corrected; actual recording needs device validation |
 | Subscriptions | RevenueCat, trial tracking, paywall and restore implementation | Purchase/restore/expiry/cancellation need device validation |
-| Release materials | Policy files and marketing drafts exist | Hosting, store configuration, and final accuracy are not verified |
+| Optional Astrology | Private provider-connected browser Preview with local profile/chart storage and capped, separate AI reflection | Production disabled; durable limiting, spend alerts, redacted observability, and Mac/device checks remain |
+| Dream Image preparation | Curated scene/style preparation, consent/privacy boundaries, disabled route contract, typed progress/error/result components | No provider, live generation, delivery, persistence, Photos save, sharing, or provider-side deletion |
+| Release materials | Policy files, test matrices, handoffs, and marketing drafts exist | Hosting, store configuration, owner-device execution, and final accuracy are not verified |
 
 Local technique work is uncommitted as of this review. TypeScript checks passed; browser checks covered guide completion/restart/close and return navigation. This is not a full-app QA sign-off.
 
@@ -92,19 +96,19 @@ These work across two or more Explore areas rather than belonging to one feature
 
 ## Owner idea queue
 
-### A1 — Astrology profile and dream context
+### A1 — Astrology profile and dream context — selected for private Preview only
 Concept: collect the user's birth date, birth time, and birthplace to calculate a natal chart; show the chart and an AI-generated reflection that may reference saved dream themes. A full name is not necessary for chart calculation and should not be collected for this feature unless a separate user-facing purpose exists.
 
-Smallest useful version: an optional, private astrology profile; a server-side chart calculation request using a selected provider; a readable chart summary and clearly labeled reflective interpretation; an optional action that connects to a narrow, user-approved summary of recent dream themes.
+Delivered private-Preview boundary: optional local birth profile, server-side chart calculation through the isolated Preview, readable chart summary, and a separately requested capped archetypal reflection based only on the calculated chart. Dream journals are not read or sent, and the feature makes no predictive, medical, or diagnostic claim.
 
-Decisions before implementation: Western or Vedic astrology; provider terms/reliability; birth-time fallback; whether profile data is local-only or stored on a backend; chart visual style; copy that frames astrology as reflective/entertainment content rather than fact or care.
+Remaining decision: whether Production rollout is ever approved after durable limiting, spend protection, redacted observability, provider review, and Mac/device verification. The existing private Preview does not replace `dream-analysis`.
 
 Research note: public providers currently advertise natal-chart APIs, including [CosmyDay](https://cosmyday.com/api-docs) and [Navamsha](https://www.navamsha.in/birth-chart-api). A production integration still needs a direct review of limits, terms, reliability, and privacy before selection.
 
-### A2 — Dream image generation
+### A2 — Dream image generation — preparation foundation only
 Concept: generate an original visual interpretation of a user's saved dream. Proposed allowance: up to five completed generations per calendar month for every subscriber, with no automatic regeneration on refresh.
 
-Smallest useful version: generate from the dream text plus a short, user-editable artistic prompt; produce one output at a fixed size and quality; save the image to the dream and show remaining allowance; enforce the monthly allowance on the server before calling the image provider.
+Current delivered boundary: provider-neutral preparation using application-owned curated scenes and styles, explicit consent/privacy copy, strict exclusion of raw dream text and the local dream id from the proxy payload, stable disabled/unconfigured errors, and reusable progress/error/result components. No provider is selected or called.
 
 Cost note: image pricing is based on generated image tokens, so there is no dependable flat per-image cost without fixing model, size, quality, and sampling real requests. OpenAI currently lists image-output rates of $15/1M tokens for GPT Image 2 and $30/1M tokens for GPT Image 2.5 variants. Five images means five times the measured per-image cost, plus a small text-prompt cost. We should choose the visual target, make a controlled test generation, record the API-reported usage, then set allowance and subscription economics from observed cost rather than a guessed rate. [OpenAI pricing](https://platform.openai.com/pricing)
 
@@ -118,7 +122,7 @@ For each idea capture:
 ## Scope gate
 - [x] Reconcile current implementation with historical plans.
 - [x] Collect owner's initial ideas and priorities.
-- [ ] Decide whether A1 and/or A2 enters this update; select final scope and record the chosen IDs.
-- [ ] Implement selected features and pass local checks.
-- [ ] Freeze scope for device testing.
+- [x] Record A1 as private-Preview-only and A2 as provider-neutral preparation-only; neither is approved for Production enablement.
+- [x] Implement the approved boundaries and pass local checks (22 suites / 135 tests, TypeScript, and whitespace validation).
+- [x] Freeze implementation scope for owner device testing; only verified defects may change the candidate.
 - [ ] Complete the [release checklist](RELEASE_CHECKLIST.md).
