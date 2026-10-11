@@ -17,6 +17,8 @@ Use after selecting features in [the roadmap](ROADMAP.md). This replaces the old
 
 Current evidence: approved release implementation is complete locally. The frozen candidate passes TypeScript, whitespace validation, and the full automated regression at 22 suites / 135 tests. Lint has 0 errors and 65 non-blocking style/debt warnings; the final gate fixed the sole lint error and the History focus-hook dependency warning. The provider-connected Astrology browser Preview has passed synthetic date-only, timed-chart, field-validation, and capped-reflection checks. Dream Image preparation and its disabled provider-neutral route contract are automated, but live generation remains blocked. Device validation remains the native release gate.
 
+Owner handoff boundary: the committed branch is ready to sync for Mac/iOS testing. Every unchecked item in section 2 still requires hands-on execution and must remain pending until recorded on the assigned device. Astrology Production activation and Dream Image live generation are not part of this candidate.
+
 Optional-feature boundaries for this candidate:
 
 - Astrology: private Preview testing only; Production disabled pending durable limiting, spend alerts, redacted observability, and Mac/device sign-off.

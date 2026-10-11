@@ -205,7 +205,7 @@ The Dream Image Studio preparation experience passes its current provider-neutra
 - Provider-neutral success state renders descriptive alt text plus regenerate and in-memory delete only; save/share remain hidden.
 - Retryable failures announce recovery copy through a polite live region and expose Try Again.
 - Scene/style radios now expose both selected and checked state for cross-platform radio semantics.
-- Current regression baseline: 20 suites and 107 tests pass; deployed provider, persistence, Photos, sharing, and remote-deletion claims remain blocked.
+- Current regression baseline: 22 suites and 135 tests pass; deployed provider, persistence, Photos, sharing, and remote-deletion claims remain blocked.
 
 ### Final provider-neutral regression update — 2026-10-11
 

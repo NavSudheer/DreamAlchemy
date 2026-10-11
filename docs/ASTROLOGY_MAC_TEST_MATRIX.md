@@ -179,7 +179,7 @@ A build candidate may only pass release verification when:
 - [ ] No coordinates or personal identifiers ever appear in local storage or remote reflection logs.
 - [ ] Personal dream journal entries remain 100% isolated and unaffected throughout all chart calculations, reflections, and deletion operations.
 - [x] Full Jest automated test suite passes with 0 failures (`22 suites, 135 tests passing`).
-- [ ] `npx tsc --noEmit` exits with code 0.
+- [x] `npx tsc --noEmit` exits with code 0.
 - [x] Provider-neutral throttling boundary and controlled HTTP 429/`Retry-After` contract are covered locally.
 - [ ] A durable limiter endpoint is configured and its deployed HTTP 429 path is verified before production enablement.
 
