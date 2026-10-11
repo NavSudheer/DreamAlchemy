@@ -9,11 +9,8 @@ import { Platform } from 'react-native';
 import { DebugLogger } from '../components/debug/DebugPanel';
 
 
-// RevenueCat API Keys
-const REVENUECAT_KEYS = {
-  ios: 'appl_paiNLobQQfBhyxvwASGMzDAkoFL',
-  android: 'goog_YOUR_ANDROID_KEY_HERE', // Add when supporting Android
-};
+// Public RevenueCat SDK key for the supported iOS release target.
+const REVENUECAT_IOS_KEY = 'appl_paiNLobQQfBhyxvwASGMzDAkoFL';
 
 export interface SubscriptionStatus {
   isActive: boolean;
@@ -42,7 +39,11 @@ class SubscriptionService {
     }
 
     try {
-      const apiKey = Platform.OS === 'ios' ? REVENUECAT_KEYS.ios : REVENUECAT_KEYS.android;
+      if (Platform.OS !== 'ios') {
+        throw new Error('Subscriptions are available only in supported iOS builds.');
+      }
+
+      const apiKey = REVENUECAT_IOS_KEY;
       
       DebugLogger.log('info', 'Initializing RevenueCat', {
         platform: Platform.OS,
@@ -242,4 +243,4 @@ class SubscriptionService {
 }
 
 // Export singleton instance
-export const subscriptionService = new SubscriptionService(); 
+export const subscriptionService = new SubscriptionService();

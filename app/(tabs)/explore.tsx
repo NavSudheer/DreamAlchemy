@@ -12,6 +12,7 @@ import PatternsScreen from '@/components/DreamPatterns';
 import { DreamTechniques } from '@/components/dream-techniques/DreamTechniques';
 import { MeditationTimer } from '@/components/dream-techniques/MeditationTimer';
 import { searchExploreContent } from '@/data/exploreSearch';
+import { OPTIONAL_FEATURE_RELEASE_COPY } from '@/data/optionalFeatureReleaseCopy';
 
 export default function ExploreScreen() {
   const { isDark } = useTheme();
@@ -237,7 +238,7 @@ export default function ExploreScreen() {
             <Ionicons name="planet-outline" size={28} color={isDark ? Colors.neutral[100] : Colors.primary[700]} />
             <Text variant="h4" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.cardTitle}>Optional Astrology</Text>
           </View>
-          <Text variant="body1" style={styles.cardDescription}>Create a private, non-predictive chart reflection kept separate from dream analysis</Text>
+          <Text variant="body1" style={styles.cardDescription}>{OPTIONAL_FEATURE_RELEASE_COPY.astrology}</Text>
         </Card>
 
         <Card
@@ -250,7 +251,7 @@ export default function ExploreScreen() {
             <Ionicons name="images-outline" size={28} color={isDark ? Colors.neutral[100] : Colors.primary[700]} />
             <Text variant="h4" color={isDark ? Colors.neutral[100] : Colors.neutral[800]} style={styles.cardTitle}>Dream Image Studio</Text>
           </View>
-          <Text variant="body1" style={styles.cardDescription}>Preview curated visual scenes and styles without sharing your journal text</Text>
+          <Text variant="body1" style={styles.cardDescription}>{OPTIONAL_FEATURE_RELEASE_COPY.dreamImages}</Text>
         </Card>
       </ScrollView>
     </View>

@@ -22,7 +22,9 @@ Dream Alchemy is a mobile application that helps you analyze and interpret your 
 - Node.js (v14 or later)
 - npm or yarn
 - Expo CLI
-- iOS or Android device/emulator
+- iOS device or simulator for the current release candidate
+
+Android project scaffolding is retained for future development, but Android completion and release validation are outside the current release scope.
 
 ### Installation
 
@@ -52,7 +54,7 @@ Dream Alchemy is a mobile application that helps you analyze and interpret your 
 npx expo start
 ```
 
-Then, scan the QR code with the Expo Go app on your mobile device or press 'a' to open in an Android emulator or 'i' for iOS simulator.
+Then, scan the QR code with the Expo Go app on your mobile device or press `i` for the iOS simulator. Android commands may still be present for future development, but Android is not a supported target for this release candidate.
 
 ## Important Notes
 
@@ -77,11 +79,7 @@ To use the voice recognition feature, you need to create a development build of 
    eas build:configure
    ```
 
-4. Create a development build:
-   ```
-   eas build --profile development --platform android
-   ```
-   or
+4. Create an iOS development build:
    ```
    eas build --profile development --platform ios
    ```
@@ -100,7 +98,7 @@ To use the voice recognition feature, you need to create a development build of 
 
 The voice-to-text feature requires microphone permissions:
 - On iOS, you'll be prompted to allow microphone access when you first use the feature.
-- On Android, the app will request microphone permission when needed.
+- Android voice behavior has not been validated for this release and is not part of the supported release scope.
 
 Voice recognition works best in a quiet environment with clear speech. The transcribed text will appear in the input field and can be edited before analysis.
 
