@@ -230,10 +230,12 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-183 | Codex -> Antigravity | new `src/data/releaseCandidateBuildIdentityCopy.ts` only | Create typed, privacy-safe owner copy and validators for recording public version, iOS build number, short Git commit, branch, and observed timestamp before Mac/iOS testing. Keep configured values separate from an installed build observation; prohibit signing/account/device secrets, private links, diagnostics, and approval claims. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted `8cd7815` |
 | H-184 | Codex -> Antigravity | new `src/data/releaseOwnerTestPreflightCopy.ts` only | Create typed, privacy-safe owner Mac/iOS testing preflight for build identity, clean candidate source, synthetic inputs, device/network prerequisites, subscription sandbox, optional boundaries, and sanitized outcome recording. Reuse existing types, define no IDs, start every item pending, and grant no approvals. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted `2c8c12f` |
 | H-185 | Codex -> Codex | Final owner-test documentation consistency audit only | Verify active planning links, configured version/build values, automated evidence counts, optional-feature boundaries, and device-only gates agree across the planning index, roadmap, release checklist, and owner test entrypoint. Fix only verified contradictions. | done `e1300f6`; counts, delivered roadmap rows, links, and configured identity reconciled |
-| H-187 | Codex -> Codex | Final candidate branch and automated evidence refresh only | On the fully integrated branch, rerun TypeScript, whitespace, full regression, and lint; reconcile the exact head, test totals, warning count, and clean-tree status before owner Mac/iOS testing. | done (committing); 27 suites/152 tests, TypeScript/whitespace pass, lint 0 errors/53 warnings |
+| H-187 | Codex -> Codex | Final candidate branch and automated evidence refresh only | On the fully integrated branch, rerun TypeScript, whitespace, full regression, and lint; reconcile the exact head, test totals, warning count, and clean-tree status before owner Mac/iOS testing. | done `dc7c8bd`; 27 suites/152 tests, TypeScript/whitespace pass, lint 0 errors/53 warnings |
 | H-186 | Codex -> Antigravity | new `src/data/releaseOwnerTestResumeCopy.ts` only | Create typed, privacy-safe guidance for resuming the same owner session after device/environment or optional-provider blockers. Reuse exact types, reconfirm candidate identity, rerun the smallest blocked path plus one adjacent regression, preserve blocker classifications, and never convert a cleared prerequisite into pass. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted `6fee441` with distinct adjacent-path validation |
-| H-188 | Codex -> Antigravity | new `src/data/releaseOwnerTestCloseoutCopy.ts` only | Create typed, privacy-safe owner session closeout guidance using existing build identity, session status, counts, exact identifiers, outcomes, and classifications. Require reconciled accounting and separated remaining findings while leaving the owner decision pending; grant no release, submission, provider, App Store, or Production approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
-| H-189 | Codex -> Antigravity | new `src/data/releaseOwnerReviewDecisionCopy.ts` only | Create typed, privacy-safe explicit owner decision prompts after reconciled closeout. Support more-testing-required/fixes-required/external-blocker-remains/ready-for-separate-submission-review/declined; never auto-select or convert readiness into approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | assigned; collaborator working |
+| H-188 | Codex -> Antigravity | new `src/data/releaseOwnerTestCloseoutCopy.ts` only | Create typed, privacy-safe owner session closeout guidance using existing build identity, session status, counts, exact identifiers, outcomes, and classifications. Require reconciled accounting and separated remaining findings while leaving the owner decision pending; grant no release, submission, provider, App Store, or Production approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted `a43766f` |
+| H-189 | Codex -> Antigravity | new `src/data/releaseOwnerReviewDecisionCopy.ts` only | Create typed, privacy-safe explicit owner decision prompts after reconciled closeout. Support more-testing-required/fixes-required/external-blocker-remains/ready-for-separate-submission-review/declined; never auto-select or convert readiness into approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted with explicit-selection and approval-boundary corrections (committing) |
+| H-190 | Codex -> Antigravity | new `src/data/releaseSubmissionReviewStartCopy.ts` only | Create typed, privacy-safe pending submission-review start checks after an explicit ready-for-separate-submission-review owner decision. Cover current requirements, listing claims, privacy, assets, support/policy links, offerings, and selected build identity; grant no approvals. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (queued for integration) |
+| H-191 | Codex -> Antigravity | new `src/data/releaseSubmissionReviewOutcomeCopy.ts` only | Create typed, privacy-safe per-item submission review outcomes using existing types, explicit evidence state, and sanitized notes capped at 280 characters. Preserve pending/change/blocker distinctions and grant no legal, App Store, release, submission, provider, signing, or Production approval. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | assigned; collaborator working |
 
 ## Completion format
 
@@ -1902,6 +1904,12 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Summary:** The final refresh found and fixed missing Jest globals in the iOS configuration test's lint context. TypeScript and whitespace checks pass, all 27 suites/152 tests pass, and lint returns 0 errors with 53 pre-existing non-blocking warnings.
 - **Boundary:** Automated evidence is complete; owner Mac/iOS hands-on execution remains the release gate.
 
+### H-189 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted with corrections (committing)
+- **Changed file:** `src/data/releaseOwnerReviewDecisionCopy.ts`
+- **Summary:** Added five explicit owner decisions after reconciled closeout, with state-aware validation and no automatic/default selection.
+- **Codex review:** Corrected exact closeout field names and added explicit owner-selection plus provider/App Store non-approval markers.
+
 ### H-181 Completion Notes (Codex)
 - **Status:** done (committing)
 - **Changed files:** `docs/planning/OWNER_MAC_IOS_TEST_START.md`, `docs/planning/README.md`, `docs/planning/ROADMAP.md`, and `docs/planning/RELEASE_CHECKLIST.md`.
@@ -1934,3 +1942,29 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
   - `git diff --check` passed with 0 whitespace errors.
 - **Codex review:** Corrected unsupported assertions: model-provider handling must follow verified provider evidence; iOS speech may use Apple services; private Astrology Preview transmits consented chart inputs through its backend/provider while remaining isolated from core dream analysis.
 - **Follow-up:** Owner-device and policy evidence remain pending; this checklist grants no legal or release approval.
+
+### H-189 Completion Notes (Antigravity)
+- **Status:** done (uncommitted; awaiting Codex integration)
+- **Changed files:** `src/data/releaseOwnerReviewDecisionCopy.ts`
+- **Summary of Implementation:**
+  - Created a fully typed, privacy-safe module providing explicit owner decision prompts following reconciled test-session closeout:
+    1. **5 Typed Owner Decisions (`ReleaseOwnerReviewDecision`):**
+       - `more-testing-required`: Testing must continue because assigned checks remain not-run or additional devices/surfaces require evaluation.
+       - `fixes-required`: Candidate contains reproducible product defects that require engineering remediation and retesting on a new candidate.
+       - `external-blocker-remains`: Device, environment, or optional-provider blockers prevent completing the session.
+       - `ready-for-separate-submission-review`: All assigned owner checks were executed without open reproducible defects, and accounting is balanced; packages evidence for separate owner submission review.
+       - `declined`: Candidate build is rejected by owner prerogative for strategic, qualitative, or scope reasons.
+    2. **Strict Invariant & Non-Approval Boundaries:**
+       - Every decision entry strictly enforces `isAutoSelected: false` (must be manually chosen by the human owner).
+       - Enforces `grantsReleaseApproval: false`, `grantsSubmissionApproval: false`, and `grantsProductionApproval: false`.
+       - Ready-for-submission-review specifically verifies zero product defects (`fail === 0`) and zero pending checks (`not-run === 0`) on a balanced closeout, while explicitly stating it does NOT grant release, submission, or Production approval.
+       - Prohibits dream narratives, birth data, voice recordings, credentials, receipts, device IDs, and automated approval claims.
+    3. **Exported Types, Validators, and Helpers:**
+       - `getReleaseOwnerReviewDecisionCopy`, `getReleaseOwnerReviewDecisionEntry`, `isReleaseOwnerDecisionReadyForSubmissionReviewAllowed`, `isReleaseOwnerReviewDecisionConsistent`, and `isReleaseOwnerReviewDecisionRecordValid`.
+  - Zero modifications to existing UI, routes, services, providers, storage, docs, credentials, or configuration.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors (clean exit).
+  - Full Jest test suite `npx jest --runInBand --watchAll=false` passed cleanly (27 suites, 152 tests passing).
+  - `npm run lint` passed with 0 errors (53 non-blocking debt warnings preserved).
+  - `git diff --check` passed with 0 whitespace errors.
+- **Follow-up:** Ready for Codex review and commit.
