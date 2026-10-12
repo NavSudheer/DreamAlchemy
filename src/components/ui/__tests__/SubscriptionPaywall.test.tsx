@@ -90,6 +90,13 @@ describe('subscription paywall', () => {
     expect(hasRadioState('Annual, $59.99 per year', true)).toBe(true);
   });
 
+  it('groups the plan choices under a named radio group', () => {
+    expect(screen.root.find(node =>
+      node.props.accessibilityRole === 'radiogroup' &&
+      node.props.accessibilityLabel === 'Subscription plans',
+    )).toBeTruthy();
+  });
+
   it('distinguishes a restore failure from an empty purchase history', async () => {
     mockRestore.mockResolvedValue({ success: false, isActive: false, error: 'Network unavailable' });
     await act(async () => { await pressLabel('Restore Purchases'); });

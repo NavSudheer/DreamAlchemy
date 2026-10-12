@@ -390,7 +390,11 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
           </Text>
 
           <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-            <View style={styles.plansContainer}>
+            <View
+              style={styles.plansContainer}
+              accessibilityRole="radiogroup"
+              accessibilityLabel="Subscription plans"
+            >
             {isLoadingOfferings ? (
               <ActivityIndicator
                 size="small"
