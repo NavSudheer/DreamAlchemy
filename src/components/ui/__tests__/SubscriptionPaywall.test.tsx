@@ -236,6 +236,14 @@ describe('subscription paywall', () => {
     expect(visibleCopy).not.toContain('Export dream journal');
   });
 
+  it('gives the icon-only close control an accessible dismiss name', () => {
+    expect(screen.root.find(node =>
+      node.props.accessibilityRole === 'button' &&
+      node.props.accessibilityLabel === 'Close subscription options' &&
+      node.props.accessibilityHint === 'Dismisses the subscription options',
+    )).toBeTruthy();
+  });
+
   it('exposes the legal controls as clearly labelled links', () => {
     expect(screen.root.find(node =>
       node.props.accessibilityRole === 'link' &&

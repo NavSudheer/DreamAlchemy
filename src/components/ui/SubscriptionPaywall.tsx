@@ -351,6 +351,9 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
               onPress={onClose}
               style={styles.closeButton}
               hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+              accessibilityRole="button"
+              accessibilityLabel="Close subscription options"
+              accessibilityHint="Dismisses the subscription options"
             >
               <Ionicons
                 name="close"
