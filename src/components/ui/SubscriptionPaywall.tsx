@@ -412,7 +412,12 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
             </Text>
 
             <View style={styles.legalLinksContainer}>
-              <TouchableOpacity onPress={() => void handleLegalLink(TERMS_OF_SERVICE_URL, 'Terms of Use')}>
+              <TouchableOpacity
+                accessibilityRole="link"
+                accessibilityLabel="Terms of Use"
+                accessibilityHint="Opens the DreamAlchemy Terms of Use"
+                onPress={() => void handleLegalLink(TERMS_OF_SERVICE_URL, 'Terms of Use')}
+              >
                 <Text variant="caption" style={styles.legalLink}>
                   Terms of Use
                 </Text>
@@ -420,7 +425,12 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
               <Text variant="caption" style={[styles.legalSeparator, { color: isDark ? Colors.neutral[500] : Colors.neutral[500] }]}>
                 {' | '}
               </Text>
-              <TouchableOpacity onPress={() => void handleLegalLink(PRIVACY_POLICY_URL, 'Privacy Policy')}>
+              <TouchableOpacity
+                accessibilityRole="link"
+                accessibilityLabel="Privacy Policy"
+                accessibilityHint="Opens the DreamAlchemy Privacy Policy"
+                onPress={() => void handleLegalLink(PRIVACY_POLICY_URL, 'Privacy Policy')}
+              >
                 <Text variant="caption" style={styles.legalLink}>
                   Privacy Policy
                 </Text>

@@ -182,6 +182,19 @@ describe('subscription paywall', () => {
     expect(visibleCopy).not.toContain('Export dream journal');
   });
 
+  it('exposes the legal controls as clearly labelled links', () => {
+    expect(screen.root.find(node =>
+      node.props.accessibilityRole === 'link' &&
+      node.props.accessibilityLabel === 'Terms of Use' &&
+      node.props.accessibilityHint === 'Opens the DreamAlchemy Terms of Use',
+    )).toBeTruthy();
+    expect(screen.root.find(node =>
+      node.props.accessibilityRole === 'link' &&
+      node.props.accessibilityLabel === 'Privacy Policy' &&
+      node.props.accessibilityHint === 'Opens the DreamAlchemy Privacy Policy',
+    )).toBeTruthy();
+  });
+
   it('shows clear feedback when a legal link cannot be opened', async () => {
     jest.spyOn(Linking, 'canOpenURL').mockResolvedValue(false);
     const openUrl = jest.spyOn(Linking, 'openURL');

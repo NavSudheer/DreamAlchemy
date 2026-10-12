@@ -280,8 +280,10 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-233 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalCopy.ts` only | Create a typed, privacy-safe immutable terminal record validator for a valid H-232 closeout. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, and not-performed upload/submission; expose static final copy only. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
 | H-234 | Codex -> Codex | Paywall legal-link async lifecycle audit only | Verify legal-link resolution after the paywall is hidden or unmounted cannot show stale alerts or mutate subscription UI, while still releasing the duplicate-navigation lock. Fix only verified UI defects without changing URLs or legal content. | done (committing); hidden late failures are silent and focused suite passes 16 tests |
 | H-235 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalReceiptCopy.ts` only | Create a typed, privacy-safe presentation receipt validator for a valid H-233 immutable terminal record. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, and not-performed upload/submission; record only presentation timestamp and expose no controls. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
-| H-236 | Codex -> Codex | Paywall legal-link accessibility audit only | Verify Terms and Privacy controls expose accurate link semantics and labels to assistive technology after the navigation hardening. Fix only verified accessibility defects without changing URLs, legal content, subscription state, or navigation behavior. | in progress; current controls lack explicit link semantics |
-| H-237 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalCloseoutCopy.ts` only | Create a typed, privacy-safe closeout validator for a valid H-235 presentation receipt. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, not-performed upload/submission, and not-inferred approvals; expose no controls or continuation. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | assigned; collaborator working |
+| H-236 | Codex -> Codex | Paywall legal-link accessibility audit only | Verify Terms and Privacy controls expose accurate link semantics and labels to assistive technology after the navigation hardening. Fix only verified accessibility defects without changing URLs, legal content, subscription state, or navigation behavior. | done (committing); explicit link roles, labels, and destination hints covered by focused tests |
+| H-237 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalCloseoutCopy.ts` only | Create a typed, privacy-safe closeout validator for a valid H-235 presentation receipt. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, not-performed upload/submission, and not-inferred approvals; expose no controls or continuation. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-239 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalTerminalCopy.ts` only | Create a typed, privacy-safe immutable terminal validator for a valid H-237 closeout. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, not-performed upload/submission, and not-inferred approvals; expose static terminal copy only. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-241 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalTerminalReceiptCopy.ts` only | Create a typed, privacy-safe presentation receipt validator for a valid H-239 immutable terminal. Preserve exact candidate/terminal states, record only a non-empty presentation timestamp, require no next process/continuation, empty action/control lists, not-presented decisions/store actions, not-performed upload/submission, and not-inferred approvals. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | assigned; collaborator working |
 
 ## Completion format
 
@@ -2233,6 +2235,24 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Status:** reviewed; accepted (committing)
 - **Changed file:** `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalReceiptCopy.ts`
 - **Summary:** Added a presentation receipt validator that preserves the complete immutable terminal-record chain and records only a non-empty presentation timestamp.
+- **Boundary:** No controls, decisions, continuation, store action, upload, submission, deletion, authorization, or approval inference is exposed.
+
+### H-236 Completion Notes (Codex)
+- **Status:** done (committing)
+- **Changed files:** `src/components/ui/SubscriptionPaywall.tsx` and `src/components/ui/__tests__/SubscriptionPaywall.test.tsx`.
+- **Summary:** Terms and Privacy controls now expose explicit link roles, accurate labels, and concise destination hints to assistive technology.
+- **Verification:** Focused paywall suite passes 17 tests; TypeScript and whitespace validation pass.
+
+### H-237 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalCloseoutCopy.ts`
+- **Summary:** Added a closeout validator that preserves the complete immutable terminal-record presentation chain with no continuation.
+- **Boundary:** No controls, decisions, continuation, store action, upload, submission, deletion, authorization, or approval inference is exposed.
+
+### H-239 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalTerminalCopy.ts`
+- **Summary:** Added an immutable terminal validator that preserves the complete validated closeout chain with no next process or continuation.
 - **Boundary:** No controls, decisions, continuation, store action, upload, submission, deletion, authorization, or approval inference is exposed.
 
 ### H-181 Completion Notes (Codex)
