@@ -138,7 +138,7 @@ The following items are explicit architecture and infrastructure blockers that *
 
 | Blocker ID | Category | Current State | Required Release Gate |
 | :--- | :--- | :--- | :--- |
-| **BLK-IMG-01** | Preview Deployment | A disabled-by-default `/api/dream-image` validation route exists locally but is not deployed and connected to the client. | Deploy the application-owned route to Preview, set the client endpoint, and verify disabled/validation responses before provider work. |
+| **BLK-IMG-01** | Preview Deployment | Partially resolved: deployment `24vF2MshKVFP384xFYXKq7CWA1yL` at commit `26c2b13` is Ready and lists `/api/dream-image` as a 20.9 kB Edge Function. `EXPO_PUBLIC_DREAM_IMAGE_API_URL` is now configured as Preview-only; a new deployment and authenticated disabled/validation response check remain. | Redeploy with the Preview-only endpoint and verify disabled/validation responses before provider work. |
 | **BLK-IMG-02** | Provider Approval & Secret Storage | No image generation provider has passed the reviewed evaluation or been connected. | Approve one provider, keep its credential server-only, and configure provider-console spending controls. |
 | **BLK-IMG-03** | Upstream Content Moderation | Client enforces catalog curation; proxy moderation contract unconfigured. | Implement server-side prompt moderation checks before calling the image generation provider. |
 | **BLK-IMG-04** | Durable Request Throttling | No rate limiter exists for image requests. | Implement an anonymous, server-side rate limiter / cooldown window to prevent quota exhaustion and cost spikes. |
@@ -177,7 +177,7 @@ The Dream Image Studio preparation experience passes its current provider-neutra
 - [ ] Groups 1–3 and 8 pass on the preparation screen with 0 unhandled exceptions or crashes.
 - [x] Groups 4–7 pass their cited unit/component tests; any provider/result end-to-end cases remain explicitly marked blocked rather than reported as manually passed.
 - [ ] Personal dream journal narratives, reflections, and dates are never requested, collected, or attached to prompts or images.
-- [ ] Provider unavailable notice renders gracefully when `EXPO_PUBLIC_DREAM_IMAGE_API_URL` is unset.
+- [x] Provider unavailable notice renders gracefully when `EXPO_PUBLIC_DREAM_IMAGE_API_URL` is unset (authenticated browser check on the isolated Preview).
 - [x] Full Jest automated test suite passes with 0 failures (`22 suites, 135 tests passing`).
 - [x] `npx tsc --noEmit` exits with code 0.
 - [x] All 5 provider-connected release blockers (`BLK-IMG-01` to `BLK-IMG-05`) remain acknowledged and documented as blockers to live production enablement.
@@ -212,5 +212,5 @@ The Dream Image Studio preparation experience passes its current provider-neutra
 - Full regression passes: 22 suites and 135 tests, including the Dream Image preparation screen, saved-dream association, payload privacy boundary, disabled/provider-unavailable route contract, typed remote failures, generation state, progress, safety/alt-text checks, and result actions.
 - `npx tsc --noEmit` and `git diff --check` pass.
 - Controlled route coverage verifies `feature_disabled`, consent enforcement, exact curated prompt/style allowlists, unexpected-field rejection, body limits, and the terminal `provider_unavailable` boundary without calling a provider.
-- An unauthenticated synthetic request to the isolated Preview reached Vercel deployment protection and returned HTTP 401 before the application route. This is a deployment-access blocker, not a product result; `BLK-IMG-01` remains open pending an authenticated Preview route pass.
+- Deployment `24vF2MshKVFP384xFYXKq7CWA1yL` at commit `26c2b13` was Ready and its Vercel resource inventory confirmed `/api/dream-image` as a deployed Edge Function. The authenticated Preview page rendered the provider-unavailable preparation state correctly. The client endpoint was then added as a Preview-only environment variable; `BLK-IMG-01` remains open only until the resulting deployment and disabled/validation response path are verified.
 - Live generation, moderation, durable throttling, transient delivery, persistence, Photos, native sharing, and provider-side deletion remain untested and blocked by `BLK-IMG-01` through `BLK-IMG-05`.
