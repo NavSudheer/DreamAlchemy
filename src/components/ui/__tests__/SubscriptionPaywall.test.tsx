@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import { act, create, ReactTestRenderer, ReactTestInstance } from 'react-test-renderer';
 import SubscriptionPaywall from '../SubscriptionPaywall';
 
@@ -180,6 +180,66 @@ describe('subscription paywall', () => {
     expect(visibleCopy).not.toContain('Community access');
     expect(visibleCopy).not.toContain('Priority customer support');
     expect(visibleCopy).not.toContain('Export dream journal');
+  });
+
+  it('shows clear feedback when a legal link cannot be opened', async () => {
+    jest.spyOn(Linking, 'canOpenURL').mockResolvedValue(false);
+    const openUrl = jest.spyOn(Linking, 'openURL');
+
+    await act(async () => { await pressLabel('Privacy Policy'); });
+
+    expect(openUrl).not.toHaveBeenCalled();
+    expect(Alert.alert).toHaveBeenCalledWith(
+      'Unable to Open Link',
+      'The Privacy Policy could not be opened. Please check your connection and try again.',
+    );
+    expect(mockPurchase).not.toHaveBeenCalled();
+    expect(mockRestore).not.toHaveBeenCalled();
+  });
+
+  it('starts only one legal navigation for repeated presses', async () => {
+    let finishCheck: ((supported: boolean) => void) | undefined;
+    const canOpenUrl = jest.spyOn(Linking, 'canOpenURL').mockImplementation(
+      () => new Promise(resolve => { finishCheck = resolve; }),
+    );
+    const openUrl = jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
+    canOpenUrl.mockClear();
+    openUrl.mockClear();
+
+    let firstPress: Promise<void> | undefined;
+    act(() => {
+      firstPress = pressLabel('Terms of Use');
+      void pressLabel('Terms of Use');
+    });
+    expect(canOpenUrl).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      finishCheck?.(true);
+      await firstPress;
+    });
+    expect(openUrl).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not show stale legal-link failure UI after the paywall is hidden', async () => {
+    let finishCheck: ((supported: boolean) => void) | undefined;
+    const canOpenUrl = jest.spyOn(Linking, 'canOpenURL').mockImplementation(
+      () => new Promise(resolve => { finishCheck = resolve; }),
+    );
+    canOpenUrl.mockClear();
+
+    act(() => { void pressLabel('Terms of Use'); });
+    act(() => {
+      screen.update(<SubscriptionPaywall visible={false} onClose={jest.fn()} onSuccess={jest.fn()} />);
+    });
+    await act(async () => {
+      finishCheck?.(false);
+      await Promise.resolve();
+    });
+
+    expect(Alert.alert).not.toHaveBeenCalledWith(
+      'Unable to Open Link',
+      expect.any(String),
+    );
   });
 
   it('refreshes entitlement state only for an active restore', async () => {

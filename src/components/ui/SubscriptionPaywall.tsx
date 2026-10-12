@@ -66,6 +66,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
   const [showDebug, setShowDebug] = useState(false);
   const [debugTaps, setDebugTaps] = useState(0);
   const storeActionInFlight = useRef(false);
+  const legalLinkInFlight = useRef(false);
   const isMounted = useRef(true);
   const isVisible = useRef(visible);
 
@@ -233,6 +234,25 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
     }
   };
 
+  const handleLegalLink = async (url: string, documentName: string) => {
+    if (legalLinkInFlight.current) return;
+    legalLinkInFlight.current = true;
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+      if (!canOpen) throw new Error('Unsupported URL');
+      await Linking.openURL(url);
+    } catch {
+      if (isMounted.current && isVisible.current) {
+        Alert.alert(
+          'Unable to Open Link',
+          `The ${documentName} could not be opened. Please check your connection and try again.`,
+        );
+      }
+    } finally {
+      legalLinkInFlight.current = false;
+    }
+  };
+
   const getTrialMessage = () => {
     if (!trialStatus) return null;
     
@@ -392,7 +412,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
             </Text>
 
             <View style={styles.legalLinksContainer}>
-              <TouchableOpacity onPress={() => Linking.openURL(TERMS_OF_SERVICE_URL)}>
+              <TouchableOpacity onPress={() => void handleLegalLink(TERMS_OF_SERVICE_URL, 'Terms of Use')}>
                 <Text variant="caption" style={styles.legalLink}>
                   Terms of Use
                 </Text>
@@ -400,7 +420,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
               <Text variant="caption" style={[styles.legalSeparator, { color: isDark ? Colors.neutral[500] : Colors.neutral[500] }]}>
                 {' | '}
               </Text>
-              <TouchableOpacity onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
+              <TouchableOpacity onPress={() => void handleLegalLink(PRIVACY_POLICY_URL, 'Privacy Policy')}>
                 <Text variant="caption" style={styles.legalLink}>
                   Privacy Policy
                 </Text>
