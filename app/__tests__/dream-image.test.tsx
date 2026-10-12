@@ -49,6 +49,10 @@ describe('Dream Image preparation screen', () => {
     const radios = screen.root.findAll(node => typeof node.type === 'string' && node.props.accessibilityRole === 'radio');
 
     expect(groups).toHaveLength(2);
+    expect(groups.map(node => node.props.accessibilityLabel)).toEqual([
+      'Curated dream image scenes',
+      'Dream image art styles',
+    ]);
     expect(radios).toHaveLength(11);
     expect(radios.find(node => node.props.accessibilityLabel === 'Luminous Threshold')?.props.accessibilityState)
       .toEqual({ selected: true, checked: true });

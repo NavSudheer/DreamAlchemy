@@ -141,7 +141,7 @@ export default function DreamImageScreen() {
         </Card>
 
         <Text variant="h4" color={textColor} style={styles.heading}>Choose a curated scene</Text>
-        <View accessibilityRole="radiogroup">
+        <View accessibilityRole="radiogroup" accessibilityLabel="Curated dream image scenes">
           {DREAM_IMAGE_PROMPT_TEMPLATES.map(item => {
             const selected = item.id === template.id;
             return (
@@ -164,7 +164,11 @@ export default function DreamImageScreen() {
         </View>
 
         <Text variant="h4" color={textColor} style={styles.heading}>Choose an art style</Text>
-        <View accessibilityRole="radiogroup" style={styles.styleGrid}>
+        <View
+          accessibilityRole="radiogroup"
+          accessibilityLabel="Dream image art styles"
+          style={styles.styleGrid}
+        >
           {DREAM_IMAGE_STYLE_LIST.map(item => {
             const selected = item.style === style;
             return (
