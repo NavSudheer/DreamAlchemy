@@ -374,11 +374,20 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
           <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
             <View style={styles.plansContainer}>
             {isLoadingOfferings ? (
-              <ActivityIndicator size="small" color={Colors.primary[500]} />
+              <ActivityIndicator
+                size="small"
+                color={Colors.primary[500]}
+                accessibilityRole="progressbar"
+                accessibilityLabel="Loading subscription options"
+              />
             ) : subscriptionPlans.length > 0 ? (
               subscriptionPlans.map(renderPlan)
             ) : (
-              <Text variant="body2" style={{ color: isDark ? Colors.neutral[300] : Colors.neutral[700] }}>
+              <Text
+                variant="body2"
+                accessibilityLiveRegion="polite"
+                style={{ color: isDark ? Colors.neutral[300] : Colors.neutral[700] }}
+              >
                 Subscription options are temporarily unavailable. You can still restore an existing purchase.
               </Text>
             )}

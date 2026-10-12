@@ -229,6 +229,31 @@ describe('subscription paywall', () => {
     );
   });
 
+  it('names the offering progress indicator for assistive technology', async () => {
+    let finishOffering: ((value: { availablePackages: (typeof monthlyPackage)[] }) => void) | undefined;
+    mockGetOfferings.mockImplementationOnce(() => new Promise(resolve => {
+      finishOffering = resolve;
+    }));
+
+    act(() => {
+      screen.update(<SubscriptionPaywall visible={false} onClose={jest.fn()} onSuccess={jest.fn()} />);
+    });
+    await act(async () => {
+      screen.update(<SubscriptionPaywall visible onClose={jest.fn()} onSuccess={jest.fn()} />);
+      await Promise.resolve();
+    });
+
+    expect(screen.root.find(node =>
+      node.props.accessibilityRole === 'progressbar' &&
+      node.props.accessibilityLabel === 'Loading subscription options',
+    )).toBeTruthy();
+
+    await act(async () => {
+      finishOffering?.({ availablePackages: [monthlyPackage] });
+      await Promise.resolve();
+    });
+  });
+
   it('clears stale plans when a later offering refresh fails', async () => {
     mockGetOfferings.mockRejectedValueOnce(new Error('Store unavailable'));
 
@@ -243,6 +268,10 @@ describe('subscription paywall', () => {
     expect(visibleCopy).toContain('Subscription options are temporarily unavailable');
     expect(visibleCopy).not.toContain('$7.99');
     expect(screen.root.findByType('Button' as never).props.isDisabled).toBe(true);
+    expect(screen.root.find(node =>
+      node.props.children === 'Subscription options are temporarily unavailable. You can still restore an existing purchase.' &&
+      node.props.accessibilityLiveRegion === 'polite',
+    )).toBeTruthy();
   });
 
   it('does not advertise excluded or unimplemented subscription benefits', () => {
