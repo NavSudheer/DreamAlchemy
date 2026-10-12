@@ -157,6 +157,12 @@ describe('subscription paywall', () => {
       node.props.accessibilityLabel === 'Restore Purchases' &&
       node.props.accessibilityState?.disabled === true,
     )).toBeTruthy();
+    expect(screen.root.find(node =>
+      node.props.accessibilityRole === 'radio' &&
+      node.props.accessibilityLabel === 'Annual, $59.99 per year' &&
+      node.props.disabled === true &&
+      node.props.accessibilityState?.disabled === true,
+    )).toBeTruthy();
 
     await act(async () => {
       finishPurchase?.({ success: false });
@@ -182,6 +188,12 @@ describe('subscription paywall', () => {
     expect(screen.root.find(node =>
       node.props.accessibilityLabel === 'Restoring purchases' &&
       node.props.accessibilityState?.busy === true &&
+      node.props.accessibilityState?.disabled === true,
+    )).toBeTruthy();
+    expect(screen.root.find(node =>
+      node.props.accessibilityRole === 'radio' &&
+      node.props.accessibilityLabel === 'Annual, $59.99 per year' &&
+      node.props.disabled === true &&
       node.props.accessibilityState?.disabled === true,
     )).toBeTruthy();
 

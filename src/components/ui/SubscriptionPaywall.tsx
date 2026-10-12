@@ -278,10 +278,14 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
         },
       ]}
       onPress={() => setSelectedPlan(plan.id)}
+      disabled={isLoading || isRestoring || isLoadingOfferings}
       activeOpacity={0.8}
       accessibilityRole="radio"
       accessibilityLabel={`${plan.title}, ${plan.price} ${plan.period}`}
-      accessibilityState={{ selected: selectedPlan === plan.id }}
+      accessibilityState={{
+        selected: selectedPlan === plan.id,
+        disabled: isLoading || isRestoring || isLoadingOfferings,
+      }}
       accessibilityHint="Selects this subscription plan"
     >
       {plan.isPopular && (
