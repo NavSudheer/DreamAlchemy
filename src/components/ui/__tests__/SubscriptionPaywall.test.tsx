@@ -282,6 +282,15 @@ describe('subscription paywall', () => {
     expect(visibleCopy).not.toContain('Export dream journal');
   });
 
+  it('renders the release title as a non-interactive heading', () => {
+    const title = screen.root.findAllByType('Text' as never).find(node =>
+      node.props.children === 'Unlock Premium',
+    );
+
+    expect(title?.props.accessibilityRole).toBe('header');
+    expect(typeof title?.parent?.props.onPress).not.toBe('function');
+  });
+
   it('gives the icon-only close control an accessible dismiss name', () => {
     expect(screen.root.find(node =>
       node.props.accessibilityRole === 'button' &&
@@ -446,9 +455,10 @@ describe('subscription paywall', () => {
     try {
       act(() => screen.unmount());
       await act(async () => { screen = create(<SubscriptionPaywall visible onClose={jest.fn()} onSuccess={jest.fn()} />); });
-      act(() => {
-        for (let tap = 0; tap < 7; tap += 1) pressLabel('Unlock Premium');
-      });
+      const title = screen.root.findAllByType('Text' as never).find(node =>
+        node.props.children === 'Unlock Premium',
+      );
+      expect(typeof title?.parent?.props.onPress).not.toBe('function');
       expect(screen.root.findAllByType('DebugPanel' as never)).toHaveLength(0);
     } finally {
       Object.defineProperty(global, '__DEV__', { value: originalDev, writable: true, configurable: true });

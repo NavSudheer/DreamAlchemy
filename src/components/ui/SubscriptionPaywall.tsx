@@ -345,11 +345,25 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
           style={styles.gradient}
         >
           <View style={styles.header}>
-            <TouchableOpacity onPress={handleTitlePress} activeOpacity={1}>
-              <Text variant="h3" style={[styles.title, { color: isDark ? Colors.neutral[100] : Colors.neutral[800] }]}>
+            {__DEV__ ? (
+              <TouchableOpacity onPress={handleTitlePress} activeOpacity={1}>
+                <Text
+                  variant="h3"
+                  accessibilityRole="header"
+                  style={[styles.title, { color: isDark ? Colors.neutral[100] : Colors.neutral[800] }]}
+                >
+                  Unlock Premium
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <Text
+                variant="h3"
+                accessibilityRole="header"
+                style={[styles.title, { color: isDark ? Colors.neutral[100] : Colors.neutral[800] }]}
+              >
                 Unlock Premium
               </Text>
-            </TouchableOpacity>
+            )}
             
             <TouchableOpacity
               onPress={onClose}
