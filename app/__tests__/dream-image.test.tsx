@@ -77,6 +77,7 @@ describe('Dream Image preparation screen', () => {
     expect(button.props.isDisabled).toBe(true);
     expect(button.props.children).toBe('Image Service Unavailable');
     expect(button.props.accessibilityLabel).toBe('Image service unavailable');
+    expect(button.props.accessibilityHint).toBe('The image service is not configured.');
 
     act(() => button.props.onPress());
 
@@ -118,11 +119,19 @@ describe('Dream Image preparation screen', () => {
     act(() => mirror.props.onClick({}));
     act(() => surreal.props.onClick({}));
     const consent = screen.root.findByProps({ accessibilityLabel: 'Consent to process curated Dream Image scene' });
-    act(() => consent.props.onValueChange(true));
     const generate = screen.root.findAllByType('Button' as never)
       .find(node => node.props.children === 'Generate Visual Reflection');
     if (!generate) throw new Error('Generate Visual Reflection button not found');
-    await act(async () => { await generate.props.onPress(); });
+    expect(generate.props.accessibilityHint).toBe(
+      'Turn on consent before sending the selected curated scene and art style.',
+    );
+    act(() => consent.props.onValueChange(true));
+    const readyGenerate = screen.root.findAllByType('Button' as never)
+      .find(node => node.props.children === 'Generate Visual Reflection');
+    expect(readyGenerate?.props.accessibilityHint).toBe(
+      'Sends only the selected curated scene and art style.',
+    );
+    await act(async () => { await readyGenerate?.props.onPress(); });
 
     const actions = screen.root.findByType(DreamImageResultActions);
     expect(Object.keys(actions.props.handlers).sort()).toEqual(['delete', 'regenerate']);
@@ -200,6 +209,9 @@ describe('Dream Image preparation screen', () => {
     const generate = screen.root.findAllByType('Button' as never)
       .find(node => node.props.children === 'Generate Visual Reflection');
     expect(generate?.props.isDisabled).toBe(true);
+    expect(generate?.props.accessibilityHint).toBe(
+      'Open Dream Image Studio from an existing saved dream analysis to enable generation.',
+    );
     act(() => generate?.props.onPress());
     expect(mockGenerateDreamImage).not.toHaveBeenCalled();
   });

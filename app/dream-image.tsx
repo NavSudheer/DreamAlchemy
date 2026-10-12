@@ -91,6 +91,15 @@ export default function DreamImageScreen() {
   };
 
   const activeProgress = ['queued', 'moderating', 'rendering', 'finalizing'].includes(generation.phase);
+  const generationAccessibilityHint = !availability.available
+    ? 'The image service is not configured.'
+    : associationChecking
+    ? 'Wait while the saved-dream association is checked on this device.'
+    : !validatedDreamId
+    ? 'Open Dream Image Studio from an existing saved dream analysis to enable generation.'
+    : !generation.consented
+    ? 'Turn on consent before sending the selected curated scene and art style.'
+    : 'Sends only the selected curated scene and art style.';
 
   const createImage = async () => {
     if (!availability.available || !generation.request || !canStartDreamImageGeneration(generation)) return;
@@ -230,7 +239,7 @@ export default function DreamImageScreen() {
             isLoading={activeProgress}
             isDisabled={!availability.available || !canStartDreamImageGeneration(generation)}
             accessibilityLabel={availability.available ? DREAM_IMAGE_CONSENT_COPY.confirmButtonLabel : 'Image service unavailable'}
-            accessibilityHint="Sends only the selected curated scene and art style when the image service is configured"
+            accessibilityHint={generationAccessibilityHint}
             onPress={() => { void createImage(); }}
             style={styles.generateButton}
           >
