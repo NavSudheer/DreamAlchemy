@@ -282,8 +282,11 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-235 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalReceiptCopy.ts` only | Create a typed, privacy-safe presentation receipt validator for a valid H-233 immutable terminal record. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, and not-performed upload/submission; record only presentation timestamp and expose no controls. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
 | H-236 | Codex -> Codex | Paywall legal-link accessibility audit only | Verify Terms and Privacy controls expose accurate link semantics and labels to assistive technology after the navigation hardening. Fix only verified accessibility defects without changing URLs, legal content, subscription state, or navigation behavior. | done (committing); explicit link roles, labels, and destination hints covered by focused tests |
 | H-237 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalCloseoutCopy.ts` only | Create a typed, privacy-safe closeout validator for a valid H-235 presentation receipt. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, not-performed upload/submission, and not-inferred approvals; expose no controls or continuation. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-238 | Codex -> Codex | Paywall legal-link touch-target audit only | Verify the compact Terms and Privacy controls remain reliably operable on touch devices after accessibility hardening. Fix only verified touch-target defects without changing layout copy, URLs, subscription state, or navigation behavior. | done (committing); both compact legal links have expanded touch targets covered by focused tests |
 | H-239 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalTerminalCopy.ts` only | Create a typed, privacy-safe immutable terminal validator for a valid H-237 closeout. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, not-performed upload/submission, and not-inferred approvals; expose static terminal copy only. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
-| H-241 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalTerminalReceiptCopy.ts` only | Create a typed, privacy-safe presentation receipt validator for a valid H-239 immutable terminal. Preserve exact candidate/terminal states, record only a non-empty presentation timestamp, require no next process/continuation, empty action/control lists, not-presented decisions/store actions, not-performed upload/submission, and not-inferred approvals. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | assigned; collaborator working |
+| H-241 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalTerminalReceiptCopy.ts` only | Create a typed, privacy-safe presentation receipt validator for a valid H-239 immutable terminal. Preserve exact candidate/terminal states, record only a non-empty presentation timestamp, require no next process/continuation, empty action/control lists, not-presented decisions/store actions, not-performed upload/submission, and not-inferred approvals. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-243 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalTerminalCloseoutCopy.ts` only | Create a typed, privacy-safe closeout validator for a valid H-241 presentation receipt. Preserve exact candidate/terminal states, require no next process/continuation, empty action/control lists, not-presented decisions/store actions, not-performed upload/submission, and not-inferred approvals; expose no controls or continuation. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-245 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalTerminalFinalCopy.ts` only | Create a typed, privacy-safe immutable final validator for a valid H-243 closeout. Preserve exact candidate/terminal states, require no next process/continuation, empty action/control lists, not-presented decisions/store actions, not-performed upload/submission, and not-inferred approvals; expose static final copy only. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | assigned; collaborator working |
 
 ## Completion format
 
@@ -2254,6 +2257,31 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Changed file:** `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalTerminalCopy.ts`
 - **Summary:** Added an immutable terminal validator that preserves the complete validated closeout chain with no next process or continuation.
 - **Boundary:** No controls, decisions, continuation, store action, upload, submission, deletion, authorization, or approval inference is exposed.
+
+### H-238 Completion Notes (Codex)
+- **Status:** done (committing)
+- **Changed files:** `src/components/ui/SubscriptionPaywall.tsx` and `src/components/ui/__tests__/SubscriptionPaywall.test.tsx`.
+- **Summary:** Expanded the touch target around both compact legal links without changing their visible layout, copy, URL, or navigation behavior.
+- **Verification:** Focused paywall suite passes 18 tests; TypeScript and whitespace validation pass.
+
+### H-241 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalTerminalReceiptCopy.ts`
+- **Summary:** Added a presentation receipt validator preserving the immutable closed-terminal chain while recording only a non-empty presentation timestamp.
+- **Boundary:** No controls, decisions, continuation, store action, upload, submission, deletion, authorization, or approval inference is exposed.
+
+### H-243 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalTerminalCloseoutCopy.ts`
+- **Summary:** Added a typed, privacy-safe closeout validator for a valid H-241 presentation receipt that preserves exact candidate/terminal states, requires no next process or continuation, empty action/control lists, not-presented decisions/store actions, and not-performed upload/submission.
+- **Boundary:** Exposes no controls or continuation; all approval states (`appStoreAcceptanceState`, `providerApprovalState`, `signingApprovalState`, `productionApprovalState`) remain strictly `'not-inferred'`. Prohibits credentials, accounts, storeKit receipts, device UDIDs, links, logs, screenshots, media, and approval claims.
+- **Validation:**
+  - `npx tsc --noEmit` passed with 0 errors.
+  - `npx eslint src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryFinalTerminalCloseoutCopy.ts` passed with 0 errors.
+  - `npx jest --runInBand --watchAll=false` passed cleanly (29 suites, 167 tests).
+  - `npm run lint` passed with 0 errors (53 baseline warnings preserved).
+  - `git diff --check` passed with 0 whitespace errors.
+- **Follow-up:** Ready for Codex review and integration.
 
 ### H-181 Completion Notes (Codex)
 - **Status:** done (committing)

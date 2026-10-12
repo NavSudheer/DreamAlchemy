@@ -416,6 +416,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
                 accessibilityRole="link"
                 accessibilityLabel="Terms of Use"
                 accessibilityHint="Opens the DreamAlchemy Terms of Use"
+                hitSlop={{ top: 12, right: 8, bottom: 12, left: 8 }}
                 onPress={() => void handleLegalLink(TERMS_OF_SERVICE_URL, 'Terms of Use')}
               >
                 <Text variant="caption" style={styles.legalLink}>
@@ -429,6 +430,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
                 accessibilityRole="link"
                 accessibilityLabel="Privacy Policy"
                 accessibilityHint="Opens the DreamAlchemy Privacy Policy"
+                hitSlop={{ top: 12, right: 8, bottom: 12, left: 8 }}
                 onPress={() => void handleLegalLink(PRIVACY_POLICY_URL, 'Privacy Policy')}
               >
                 <Text variant="caption" style={styles.legalLink}>

@@ -195,6 +195,19 @@ describe('subscription paywall', () => {
     )).toBeTruthy();
   });
 
+  it('expands the touch target around each compact legal link', () => {
+    const expectedHitSlop = { top: 12, right: 8, bottom: 12, left: 8 };
+
+    expect(screen.root.find(node =>
+      node.props.accessibilityLabel === 'Terms of Use' &&
+      node.props.hitSlop?.top === expectedHitSlop.top,
+    ).props.hitSlop).toEqual(expectedHitSlop);
+    expect(screen.root.find(node =>
+      node.props.accessibilityLabel === 'Privacy Policy' &&
+      node.props.hitSlop?.top === expectedHitSlop.top,
+    ).props.hitSlop).toEqual(expectedHitSlop);
+  });
+
   it('shows clear feedback when a legal link cannot be opened', async () => {
     jest.spyOn(Linking, 'canOpenURL').mockResolvedValue(false);
     const openUrl = jest.spyOn(Linking, 'openURL');
