@@ -1,5 +1,6 @@
 import React from 'react';
 import { Alert, Linking } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { act, create, ReactTestRenderer, ReactTestInstance } from 'react-test-renderer';
 import SubscriptionPaywall from '../SubscriptionPaywall';
 
@@ -53,6 +54,7 @@ describe('subscription paywall', () => {
     });
     mockPurchase.mockReset();
     mockRefreshSubscriptionStatus.mockReset().mockResolvedValue(undefined);
+    (Haptics.impactAsync as jest.Mock).mockReset().mockResolvedValue(undefined);
     jest.spyOn(Alert, 'alert').mockImplementation(() => {});
     await act(async () => { screen = create(<SubscriptionPaywall visible onClose={jest.fn()} onSuccess={jest.fn()} />); });
   });
@@ -122,6 +124,30 @@ describe('subscription paywall', () => {
   it('reports no purchases only after a successful empty restore', async () => {
     mockRestore.mockResolvedValue({ success: true, isActive: false });
     await act(async () => { await pressLabel('Restore Purchases'); });
+    expect(Alert.alert).toHaveBeenCalledWith('No Purchases Found', 'No active subscriptions found to restore.');
+  });
+
+  it('continues purchase handling when native haptic feedback rejects', async () => {
+    (Haptics.impactAsync as jest.Mock).mockRejectedValueOnce(new Error('Haptics unavailable'));
+    mockPurchase.mockResolvedValue({ success: false, error: 'Payment declined' });
+
+    await act(async () => {
+      await screen.root.findByType('Button' as never).props.onPress();
+    });
+
+    expect(mockPurchase).toHaveBeenCalledTimes(1);
+    expect(Alert.alert).toHaveBeenCalledWith('Purchase Failed', 'Payment declined');
+  });
+
+  it('continues restore handling when native haptic feedback throws', async () => {
+    (Haptics.impactAsync as jest.Mock).mockImplementationOnce(() => {
+      throw new Error('Haptics unavailable');
+    });
+    mockRestore.mockResolvedValue({ success: true, isActive: false });
+
+    await act(async () => { await pressLabel('Restore Purchases'); });
+
+    expect(mockRestore).toHaveBeenCalledTimes(1);
     expect(Alert.alert).toHaveBeenCalledWith('No Purchases Found', 'No active subscriptions found to restore.');
   });
 

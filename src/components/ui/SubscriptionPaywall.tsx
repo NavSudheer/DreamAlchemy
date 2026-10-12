@@ -45,6 +45,14 @@ interface SubscriptionPlan {
 
 const PREMIUM_FEATURES = ['Unlimited dream analyses during an active subscription'];
 
+const triggerHaptic = (style: Haptics.ImpactFeedbackStyle) => {
+  try {
+    void Promise.resolve(Haptics.impactAsync(style)).catch(() => {});
+  } catch {
+    // Haptics are optional feedback and must never block the underlying action.
+  }
+};
+
 const formatSubscriptionPeriod = (period: string | null): { title: string; period: string } => {
   if (period === 'P1M') return { title: 'Monthly', period: 'per month' };
   if (period === 'P1Y') return { title: 'Annual', period: 'per year' };
@@ -120,7 +128,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
     }
     storeActionInFlight.current = true;
     setIsLoading(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    triggerHaptic(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
       // Get current offerings from RevenueCat
@@ -186,7 +194,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
     if (storeActionInFlight.current || isLoading || isRestoring) return;
     storeActionInFlight.current = true;
     setIsRestoring(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    triggerHaptic(Haptics.ImpactFeedbackStyle.Light);
 
     try {
       const result = await subscriptionService.restorePurchases();
@@ -230,7 +238,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
       setDebugTaps(0);
     } else if (newTaps >= 3) {
       // Give haptic feedback when close to activating debug mode
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      triggerHaptic(Haptics.ImpactFeedbackStyle.Light);
     }
   };
 
