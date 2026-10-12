@@ -1,3 +1,5 @@
+import { checkDreamImageRateLimit } from './dream-image-rate-limit';
+
 export const config = { runtime: 'edge' };
 
 const MAX_REQUEST_BYTES = 16_000;
@@ -15,13 +17,14 @@ export const DREAM_IMAGE_ALLOWED_PROMPTS = [
 const ALLOWED_STYLES = new Set(DREAM_IMAGE_ALLOWED_STYLES);
 const ALLOWED_PROMPTS = new Set(DREAM_IMAGE_ALLOWED_PROMPTS);
 
-const json = (body, status = 200) => new Response(JSON.stringify(body), {
+const json = (body, status = 200, extraHeaders = {}) => new Response(JSON.stringify(body), {
   status,
   headers: {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    ...extraHeaders,
   },
 });
 
@@ -93,6 +96,20 @@ export default async function handler(request) {
     }
     if (typeof body.style !== 'string' || !ALLOWED_STYLES.has(body.style)) {
       return errorJson('Choose an approved Dream Image style.', 'style_not_allowed', 400);
+    }
+
+    const rateLimit = await checkDreamImageRateLimit(request);
+    if (!rateLimit.allowed) {
+      return json(
+        {
+          error: rateLimit.status === 429
+            ? 'The Dream Image request limit has been reached.'
+            : 'Dream Image request controls are temporarily unavailable.',
+          code: rateLimit.code,
+        },
+        rateLimit.status,
+        rateLimit.retryAfterSeconds ? { 'Retry-After': String(rateLimit.retryAfterSeconds) } : {},
+      );
     }
 
     // Provider selection and invocation are intentionally outside this contract-only route.
