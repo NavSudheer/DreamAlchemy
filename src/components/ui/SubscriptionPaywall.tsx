@@ -279,6 +279,10 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
       ]}
       onPress={() => setSelectedPlan(plan.id)}
       activeOpacity={0.8}
+      accessibilityRole="radio"
+      accessibilityLabel={`${plan.title}, ${plan.price} ${plan.period}`}
+      accessibilityState={{ selected: selectedPlan === plan.id }}
+      accessibilityHint="Selects this subscription plan"
     >
       {plan.isPopular && (
         <View style={[styles.popularBadge, { backgroundColor: Colors.primary[500] }]}>

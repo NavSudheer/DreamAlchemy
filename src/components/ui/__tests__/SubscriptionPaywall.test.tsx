@@ -73,6 +73,23 @@ describe('subscription paywall', () => {
     expect(screen.root.findByType('Button' as never).props.children).toBe('Subscribe $59.99 per year');
   });
 
+  it('announces complete plan labels and the current radio selection', () => {
+    const hasRadioState = (label: string, selected: boolean) => screen.root.findAll(node =>
+      node.props.accessibilityRole === 'radio' &&
+      node.props.accessibilityLabel === label &&
+      node.props.accessibilityState?.selected === selected &&
+      node.props.accessibilityHint === 'Selects this subscription plan',
+    ).length > 0;
+
+    expect(hasRadioState('Monthly, $7.99 per month', true)).toBe(true);
+    expect(hasRadioState('Annual, $59.99 per year', false)).toBe(true);
+
+    act(() => pressLabel('Annual'));
+
+    expect(hasRadioState('Monthly, $7.99 per month', false)).toBe(true);
+    expect(hasRadioState('Annual, $59.99 per year', true)).toBe(true);
+  });
+
   it('distinguishes a restore failure from an empty purchase history', async () => {
     mockRestore.mockResolvedValue({ success: false, isActive: false, error: 'Network unavailable' });
     await act(async () => { await pressLabel('Restore Purchases'); });
