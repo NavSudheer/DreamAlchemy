@@ -383,7 +383,13 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
               fullWidth
               onPress={handlePurchase}
               isLoading={isLoading}
-              disabled={isLoading || isRestoring || isLoadingOfferings || !selectedPlan}
+              isDisabled={isLoading || isRestoring || isLoadingOfferings || !selectedPlan}
+              accessibilityRole="button"
+              accessibilityLabel={isLoading ? 'Processing subscription purchase' : 'Subscribe'}
+              accessibilityState={{
+                busy: isLoading,
+                disabled: isLoading || isRestoring || isLoadingOfferings || !selectedPlan,
+              }}
               style={styles.subscribeButton}
             >
               {isLoading
@@ -397,6 +403,12 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
               onPress={handleRestore}
               style={styles.restoreButton}
               disabled={isRestoring || isLoading}
+              accessibilityRole="button"
+              accessibilityLabel={isRestoring ? 'Restoring purchases' : 'Restore Purchases'}
+              accessibilityState={{
+                busy: isRestoring,
+                disabled: isRestoring || isLoading,
+              }}
             >
               {isRestoring ? (
                 <ActivityIndicator size="small" color={Colors.primary[500]} />

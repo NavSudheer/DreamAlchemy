@@ -120,6 +120,60 @@ describe('subscription paywall', () => {
     });
   });
 
+  it('announces purchase progress and disables both store actions while purchasing', async () => {
+    let finishPurchase: ((value: { success: boolean }) => void) | undefined;
+    mockPurchase.mockImplementation(() => new Promise(resolve => {
+      finishPurchase = resolve;
+    }));
+
+    let purchase: Promise<void> | undefined;
+    await act(async () => {
+      purchase = screen.root.findByType('Button' as never).props.onPress();
+      await Promise.resolve();
+    });
+
+    const subscribeButton = screen.root.findByType('Button' as never);
+    expect(subscribeButton.props.isDisabled).toBe(true);
+    expect(subscribeButton.props.accessibilityLabel).toBe('Processing subscription purchase');
+    expect(subscribeButton.props.accessibilityState).toEqual({ busy: true, disabled: true });
+    expect(screen.root.find(node =>
+      node.props.accessibilityLabel === 'Restore Purchases' &&
+      node.props.accessibilityState?.disabled === true,
+    )).toBeTruthy();
+
+    await act(async () => {
+      finishPurchase?.({ success: false });
+      await purchase;
+    });
+  });
+
+  it('announces restore progress and disables both store actions while restoring', async () => {
+    let finishRestore: ((value: { success: boolean; isActive: boolean }) => void) | undefined;
+    mockRestore.mockImplementation(() => new Promise(resolve => {
+      finishRestore = resolve;
+    }));
+
+    let restore: Promise<void> | undefined;
+    await act(async () => {
+      restore = pressLabel('Restore Purchases');
+      await Promise.resolve();
+    });
+
+    const subscribeButton = screen.root.findByType('Button' as never);
+    expect(subscribeButton.props.isDisabled).toBe(true);
+    expect(subscribeButton.props.accessibilityState.disabled).toBe(true);
+    expect(screen.root.find(node =>
+      node.props.accessibilityLabel === 'Restoring purchases' &&
+      node.props.accessibilityState?.busy === true &&
+      node.props.accessibilityState?.disabled === true,
+    )).toBeTruthy();
+
+    await act(async () => {
+      finishRestore?.({ success: false, isActive: false });
+      await restore;
+    });
+  });
+
   it('does not show stale purchase success UI after the paywall is hidden', async () => {
     let finishPurchase: ((value: { success: boolean }) => void) | undefined;
     mockPurchase.mockImplementation(() => new Promise(resolve => {
@@ -171,7 +225,7 @@ describe('subscription paywall', () => {
     const visibleCopy = JSON.stringify(screen.toJSON());
     expect(visibleCopy).toContain('Subscription options are temporarily unavailable');
     expect(visibleCopy).not.toContain('$7.99');
-    expect(screen.root.findByType('Button' as never).props.disabled).toBe(true);
+    expect(screen.root.findByType('Button' as never).props.isDisabled).toBe(true);
   });
 
   it('does not advertise excluded or unimplemented subscription benefits', () => {
