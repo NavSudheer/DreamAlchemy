@@ -355,6 +355,18 @@ describe('subscription paywall', () => {
     expect(typeof title?.parent?.props.onPress).not.toBe('function');
   });
 
+  it('exposes a modal accessibility boundary and escape dismissal', () => {
+    const onClose = jest.fn();
+    act(() => {
+      screen.update(<SubscriptionPaywall visible onClose={onClose} onSuccess={jest.fn()} />);
+    });
+
+    const modalBoundary = screen.root.findByType('Blur' as never);
+    expect(modalBoundary.props.accessibilityViewIsModal).toBe(true);
+    act(() => modalBoundary.props.onAccessibilityEscape());
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it('gives the icon-only close control an accessible dismiss name', () => {
     expect(screen.root.find(node =>
       node.props.accessibilityRole === 'button' &&

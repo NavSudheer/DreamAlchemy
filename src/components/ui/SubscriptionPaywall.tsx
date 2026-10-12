@@ -353,7 +353,12 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <BlurView intensity={100} style={styles.container}>
+      <BlurView
+        intensity={100}
+        style={styles.container}
+        accessibilityViewIsModal
+        onAccessibilityEscape={onClose}
+      >
         <LinearGradient
           colors={isDark ? ['#1a1a2e', '#16213e'] : ['#f7fafc', '#edf2f7']}
           style={styles.gradient}
