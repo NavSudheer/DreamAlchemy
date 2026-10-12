@@ -336,6 +336,8 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
 
   if (!visible) return null;
 
+  const selectedPlanDetails = subscriptionPlans.find(plan => plan.id === selectedPlan);
+
   return (
     <Modal
       visible={visible}
@@ -423,7 +425,13 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
               isLoading={isLoading}
               isDisabled={isLoading || isRestoring || isLoadingOfferings || !selectedPlan}
               accessibilityRole="button"
-              accessibilityLabel={isLoading ? 'Processing subscription purchase' : 'Subscribe'}
+              accessibilityLabel={
+                isLoading
+                  ? 'Processing subscription purchase'
+                  : selectedPlanDetails
+                    ? `Subscribe ${selectedPlanDetails.price} ${selectedPlanDetails.period}`
+                    : 'Subscription unavailable'
+              }
               accessibilityState={{
                 busy: isLoading,
                 disabled: isLoading || isRestoring || isLoadingOfferings || !selectedPlan,
@@ -432,8 +440,8 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
             >
               {isLoading
                 ? 'Processing...'
-                : selectedPlan
-                  ? `Subscribe ${subscriptionPlans.find(p => p.id === selectedPlan)?.price} ${subscriptionPlans.find(p => p.id === selectedPlan)?.period}`
+                : selectedPlanDetails
+                  ? `Subscribe ${selectedPlanDetails.price} ${selectedPlanDetails.period}`
                   : 'Subscription Unavailable'}
             </Button>
 

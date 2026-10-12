@@ -69,8 +69,14 @@ describe('subscription paywall', () => {
   };
 
   it('labels annual subscriptions with the annual billing period', () => {
+    expect(screen.root.findByType('Button' as never).props.accessibilityLabel).toBe(
+      'Subscribe $7.99 per month',
+    );
     act(() => pressLabel('Annual'));
     expect(screen.root.findByType('Button' as never).props.children).toBe('Subscribe $59.99 per year');
+    expect(screen.root.findByType('Button' as never).props.accessibilityLabel).toBe(
+      'Subscribe $59.99 per year',
+    );
   });
 
   it('announces complete plan labels and the current radio selection', () => {
@@ -287,6 +293,9 @@ describe('subscription paywall', () => {
     expect(visibleCopy).toContain('Subscription options are temporarily unavailable');
     expect(visibleCopy).not.toContain('$7.99');
     expect(screen.root.findByType('Button' as never).props.isDisabled).toBe(true);
+    expect(screen.root.findByType('Button' as never).props.accessibilityLabel).toBe(
+      'Subscription unavailable',
+    );
     expect(screen.root.find(node =>
       node.props.children === 'Subscription options are temporarily unavailable. You can still restore an existing purchase.' &&
       node.props.accessibilityLiveRegion === 'polite',
