@@ -103,6 +103,16 @@ describe('subscription paywall', () => {
     )).toBeTruthy();
   });
 
+  it('explains the distinct purchase and restore actions', () => {
+    expect(screen.root.findByType('Button' as never).props.accessibilityHint).toBe(
+      'Begins the App Store purchase flow for the selected plan',
+    );
+    expect(screen.root.find(node =>
+      node.props.accessibilityLabel === 'Restore Purchases' &&
+      node.props.accessibilityHint === 'Checks your Apple ID for an active subscription',
+    )).toBeTruthy();
+  });
+
   it('distinguishes a restore failure from an empty purchase history', async () => {
     mockRestore.mockResolvedValue({ success: false, isActive: false, error: 'Network unavailable' });
     await act(async () => { await pressLabel('Restore Purchases'); });

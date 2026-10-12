@@ -432,6 +432,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
                     ? `Subscribe ${selectedPlanDetails.price} ${selectedPlanDetails.period}`
                     : 'Subscription unavailable'
               }
+              accessibilityHint="Begins the App Store purchase flow for the selected plan"
               accessibilityState={{
                 busy: isLoading,
                 disabled: isLoading || isRestoring || isLoadingOfferings || !selectedPlan,
@@ -451,6 +452,7 @@ const SubscriptionPaywall: React.FC<SubscriptionPaywallProps> = ({
               disabled={isRestoring || isLoading}
               accessibilityRole="button"
               accessibilityLabel={isRestoring ? 'Restoring purchases' : 'Restore Purchases'}
+              accessibilityHint="Checks your Apple ID for an active subscription"
               accessibilityState={{
                 busy: isRestoring,
                 disabled: isRestoring || isLoading,
