@@ -36,7 +36,7 @@
     
     <div class="header">
         <h1>🔮 Dream Alchemy - Privacy Policy</h1>
-        <p><strong>Last Updated: December 2024</strong></p>
+        <p><strong>Last Updated: October 12, 2026</strong></p>
     </div>
 
     <div class="section">
@@ -49,15 +49,14 @@
         <h3>Information You Provide:</h3>
         <ul>
             <li><strong>Dream Descriptions:</strong> Text you enter for analysis</li>
-            <li><strong>Account Information:</strong> Email address (if provided)</li>
-            <li><strong>Subscription Data:</strong> Purchase information through App Store</li>
+            <li><strong>Support Information:</strong> Contact details and message content you choose to provide when requesting support</li>
+            <li><strong>No App Account:</strong> This release does not create a Dream Alchemy account</li>
         </ul>
         
         <h3>Automatically Collected:</h3>
         <ul>
-            <li><strong>Usage Analytics:</strong> App features used, session duration</li>
-            <li><strong>Device Information:</strong> Device type, OS version, app version</li>
             <li><strong>Trial Tracking:</strong> Analysis count, trial start date (stored locally)</li>
+            <li><strong>Subscription Processing:</strong> Apple and RevenueCat process purchase and entitlement metadata needed to provide subscriptions</li>
         </ul>
     </div>
 
@@ -67,16 +66,15 @@
         <ul>
             <li><strong>Dream Analysis:</strong> Process your dream text through AI services</li>
             <li><strong>Subscription Management:</strong> Track trial usage and subscription status</li>
-            <li><strong>App Improvement:</strong> Analytics to enhance user experience</li>
             <li><strong>Customer Support:</strong> Respond to inquiries and technical issues</li>
         </ul>
         
         <div class="highlight">
             <h3>AI Processing:</h3>
             <ul>
-                <li>Dream text is sent to secure AI services for analysis</li>
+                <li>Dream text is sent over HTTPS to the configured AI service for analysis</li>
                 <li>Analysis results are returned and stored locally on your device</li>
-                <li>We do not train AI models on your personal dream content</li>
+                <li>We do not use dream content to train our own models; the configured provider's processing and retention terms apply</li>
             </ul>
         </div>
     </div>
@@ -95,7 +93,7 @@
             <li><strong>Apple App Store:</strong> All subscription billing handled by Apple</li>
             <li><strong>RevenueCat:</strong> We use RevenueCat for subscription management</li>
             <li><strong>No Card Storage:</strong> We never store payment card information</li>
-            <li><strong>Subscription Data:</strong> Purchase status and subscription tier only</li>
+            <li><strong>Subscription Data:</strong> RevenueCat and Apple process purchase, receipt, product, and entitlement metadata needed to provide and restore subscriptions</li>
         </ul>
     </div>
 
@@ -103,15 +101,15 @@
         <h2>🔒 Data Security</h2>
         <h3>Encryption:</h3>
         <ul>
-            <li>All data transmission uses industry-standard SSL encryption</li>
-            <li>Local data stored securely on your device</li>
-            <li>No dream content stored on our servers permanently</li>
+            <li>App requests to our configured services use encrypted HTTPS connections</li>
+            <li>Journal, analysis, trial, and saved-item data is stored in the app's local device storage</li>
+            <li>Our application backend does not intentionally create a permanent dream-content database; service-provider processing and retention are governed by their applicable policies</li>
         </ul>
         
         <h3>Third-Party Services:</h3>
         <ul>
-            <li><strong>AI Analysis:</strong> Secure, encrypted transmission for dream analysis</li>
-            <li><strong>RevenueCat:</strong> GDPR and CCPA compliant subscription management</li>
+            <li><strong>AI Analysis:</strong> Encrypted transmission to the configured AI service for dream analysis</li>
+            <li><strong>RevenueCat:</strong> Subscription and entitlement processing under RevenueCat's applicable privacy terms</li>
             <li><strong>Apple Services:</strong> App Store policies apply for payment processing</li>
         </ul>
     </div>
@@ -128,8 +126,7 @@
         
         <h3>Limited Sharing:</h3>
         <ul>
-            <li><strong>AI Services:</strong> Dream text sent for analysis only (not stored)</li>
-            <li><strong>Analytics:</strong> Anonymized usage data for app improvement</li>
+            <li><strong>AI Services:</strong> Dream text is sent to the configured AI service to produce the requested analysis; provider processing and retention terms apply</li>
             <li><strong>Legal Requirements:</strong> Only when required by law</li>
         </ul>
     </div>
@@ -138,17 +135,17 @@
         <h2>👤 Your Rights</h2>
         <h3>Access & Control:</h3>
         <ul>
-            <li><strong>View Data:</strong> See what data we have about you</li>
-            <li><strong>Delete Account:</strong> Request deletion of your account data</li>
-            <li><strong>Correct Information:</strong> Update or correct your information</li>
-            <li><strong>Export Data:</strong> Request a copy of your data</li>
+            <li><strong>Local Data:</strong> View and manage supported journal, analysis, and saved-item data in the app</li>
+            <li><strong>Delete Local Data:</strong> Delete supported records in the app or remove app data through device controls</li>
+            <li><strong>No App Account:</strong> This release does not create a Dream Alchemy account or synced account profile</li>
+            <li><strong>Provider Requests:</strong> Contact us for help identifying the relevant provider process for an applicable privacy request</li>
         </ul>
         
         <h3>Subscription Rights:</h3>
         <ul>
             <li><strong>Cancel Anytime:</strong> Manage subscriptions through App Store</li>
             <li><strong>Refund Policy:</strong> Apple's refund policy applies</li>
-            <li><strong>Restore Purchases:</strong> Re-download subscription on new devices</li>
+            <li><strong>Restore Purchases:</strong> Request restoration through Apple and RevenueCat where supported for the Apple ID used for purchase</li>
         </ul>
     </div>
 
@@ -163,7 +160,7 @@
             <h3>How Dream Analysis Works:</h3>
             <ol>
                 <li>You enter dream text in the app</li>
-                <li>Text is sent securely to AI analysis service</li>
+                <li>Text is sent over HTTPS to the configured AI analysis service</li>
                 <li>Analysis results returned and displayed</li>
                 <li><strong>No permanent storage</strong> of dream content on our servers</li>
                 <li>Results stored locally on your device only</li>
@@ -172,9 +169,9 @@
         
         <h3>Your Dream Privacy:</h3>
         <ul>
-            <li><strong>Temporary Processing:</strong> Dreams processed but not permanently stored</li>
+            <li><strong>Processing:</strong> Our application backend does not intentionally persist dream text; provider processing and retention terms apply</li>
             <li><strong>Local Storage:</strong> Full analysis stored only on your device</li>
-            <li><strong>No Human Review:</strong> Dreams are processed by AI only, not read by humans</li>
+            <li><strong>Automated Processing:</strong> Dream analyses are generated automatically; service-provider safety, support, and legal processes may still apply under their policies</li>
             <li><strong>No Profiling:</strong> We don't create personality profiles from your dreams</li>
         </ul>
     </div>
@@ -185,18 +182,18 @@
         <ul>
             <li><strong>Email:</strong> support@dreamalchemy.app</li>
             <li><strong>Subject Line:</strong> "Privacy Policy Inquiry"</li>
-            <li><strong>Response Time:</strong> Within 48 hours</li>
+            <li><strong>Response:</strong> We will review privacy requests and respond as required by applicable law</li>
         </ul>
     </div>
 
     <div class="section">
-        <h2>⚖️ Legal Compliance</h2>
-        <p>This Privacy Policy complies with:</p>
+        <h2>⚖️ Applicable Privacy Rights</h2>
+        <p>Depending on your location, privacy laws may provide rights concerning access, deletion, correction, or restriction. Contact us to submit a request. Relevant frameworks may include:</p>
         <ul>
             <li><strong>GDPR</strong> (General Data Protection Regulation)</li>
             <li><strong>CCPA</strong> (California Consumer Privacy Act)</li>
-            <li><strong>Apple App Store</strong> privacy requirements</li>
             <li><strong>COPPA</strong> (Children's Online Privacy Protection Act)</li>
+            <li><strong>Apple App Store</strong> privacy disclosures and platform requirements</li>
         </ul>
     </div>
 
@@ -204,4 +201,4 @@
         <p><strong>By using Dream Alchemy, you acknowledge that you have read and understand this Privacy Policy and agree to its terms.</strong></p>
     </div>
 </body>
-</html> 
+</html>

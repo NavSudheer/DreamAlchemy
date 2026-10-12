@@ -264,9 +264,18 @@ Read it before starting work and update the assigned handoff before and after ch
 | H-217 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalReceiptCopy.ts` only | Create a typed, privacy-safe presentation receipt validator for a valid H-216 final record. Preserve exact candidate/terminal states, empty action/control lists, no next process, not-presented decisions/store actions, and not-performed upload/submission; record only presentation timestamp and expose no controls. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted `0c52991` |
 | H-218 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalCloseoutCopy.ts` only | Create a typed, privacy-safe final-presentation closeout validator for a valid H-217 receipt. Preserve exact candidate/terminal states, empty action/control lists, no next process, not-presented decisions/store actions, and not-performed upload/submission; expose no controls or continuation. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted `0c52991` |
 | H-219 | Codex -> Codex | Release evidence baseline refresh only | Reconcile release checklist and owner-facing testing docs with the latest 29-suite/163-test baseline, subscription lifecycle guards, and public-claim corrections without changing release scope or marking native gates complete. | done `0c52991`; release checklist now reflects the current automated and subscription evidence |
-| H-220 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusCopy.ts` only | Create a typed, privacy-safe static status validator for a valid H-218 closeout. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, and not-performed upload/submission; expose static closed status only. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
-| H-221 | Codex -> Codex | Public privacy vendor-claim accuracy audit only | Reconcile public privacy-policy vendor and compliance claims with implemented integrations and evidence. Remove unsupported guarantees while preserving accurate local-data, OpenAI, RevenueCat, deletion, and contact disclosures. | in progress; vendor/compliance claim inventory begun |
-| H-222 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusReceiptCopy.ts` only | Create a typed, privacy-safe presentation receipt validator for a valid H-220 status. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, and not-performed upload/submission; record only presentation timestamp and expose no controls. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | assigned; collaborator working |
+| H-220 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusCopy.ts` only | Create a typed, privacy-safe static status validator for a valid H-218 closeout. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, and not-performed upload/submission; expose static closed status only. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted `11eb1dd` |
+| H-221 | Codex -> Codex | Public privacy vendor-claim accuracy audit only | Reconcile public privacy-policy vendor and compliance claims with implemented integrations and evidence. Remove unsupported guarantees while preserving accurate local-data, OpenAI, RevenueCat, deletion, and contact disclosures. | done (committing); unsupported account, analytics, retention, human-review, compliance, and response-time guarantees removed |
+| H-222 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusReceiptCopy.ts` only | Create a typed, privacy-safe presentation receipt validator for a valid H-220 status. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, and not-performed upload/submission; record only presentation timestamp and expose no controls. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-223 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusCloseoutCopy.ts` only | Create a typed, privacy-safe closeout validator for a valid H-222 status receipt. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, and not-performed upload/submission; expose no controls or continuation. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-224 | Codex -> Codex | Public legal-document cross-consistency audit only | Reconcile Terms and Privacy statements about accounts, local data, subscription access, support, and provider processing without changing product, price, entitlement, cancellation, or privacy behavior. | done (committing); account, restore, and technology-rights language reconciled |
+| H-225 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalCopy.ts` only | Create a typed, privacy-safe immutable final-status validator for a valid H-223 closeout. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, and not-performed upload/submission; expose static final-status copy only. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-226 | Codex -> Codex | Public legal-link and contact readiness audit only | Verify in-app Terms/Privacy targets match published-document paths and that owner-facing contact disclosures are internally consistent. Fix only verified link or copy defects without changing legal scope, providers, product behavior, or contact identity. | done (committing); local paths/contact match and both published paywall URLs return HTTP 200 |
+| H-227 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalReceiptCopy.ts` only | Create a typed, privacy-safe presentation receipt validator for a valid H-225 immutable final status. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, and not-performed upload/submission; record only presentation timestamp and expose no controls. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-228 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalCloseoutCopy.ts` only | Create a typed, privacy-safe terminal closeout validator for a valid H-227 receipt. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, and not-performed upload/submission; expose no controls or continuation. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-229 | Codex -> Codex | Paywall legal-link failure handling audit only | Verify failed or unsupported Terms/Privacy navigation produces clear user feedback without unhandled promise rejection, duplicate alerts, or subscription-state changes. Fix only verified UI defects without changing URLs or legal content. | in progress; current unhandled Linking promise path identified |
+| H-230 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryCopy.ts` only | Create a typed, privacy-safe terminal summary validator for a valid H-228 closeout. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, and not-performed upload/submission; expose static completed copy only. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | reviewed; accepted (committing) |
+| H-231 | Codex -> Antigravity | new `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryReceiptCopy.ts` only | Create a typed, privacy-safe presentation receipt validator for a valid H-230 terminal summary. Preserve exact candidate/terminal states, no next process/continuation, empty action/control lists, not-presented decisions/store actions, and not-performed upload/submission; record only presentation timestamp and expose no controls. Do not alter existing files, UI, routes, services, providers, storage, docs, credentials, or configuration. | assigned; collaborator working |
 
 ## Completion format
 
@@ -2126,6 +2135,62 @@ Set your handoff to `done <commit>` and append a short note with changed files, 
 - **Status:** reviewed; accepted (committing)
 - **Changed file:** `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusCopy.ts`
 - **Summary:** Added a static closed status preserving every terminal state with no process, continuation, action, or control.
+- **Boundary:** No controls, decisions, continuation, store action, upload, submission, deletion, authorization, or approval inference is exposed.
+
+### H-222 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusReceiptCopy.ts`
+- **Summary:** Added presentation receipt validation for a valid H-220 static status, preserving exact candidate identity and all terminal states while recording only the presentation timestamp and exposing no controls or next process.
+- **Boundary:** Decisions and store actions remain not presented; upload, submission, deletion, authorization, continuation, and approval inference remain unavailable.
+- **Validation:** `npx tsc --noEmit` and `npx eslint` pass cleanly with 0 errors.
+
+### H-221 Completion Notes (Codex)
+- **Status:** done (committing)
+- **Changed file:** `docs/privacy-policy.html`
+- **Summary:** Replaced unsupported account, analytics, retention, human-review, compliance, and response-time guarantees with accurate local-storage and provider-processing disclosures.
+- **Boundary:** No runtime collection, provider, subscription, trial, storage, or deletion behavior changed.
+
+### H-223 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusCloseoutCopy.ts`
+- **Summary:** Added a status-presentation closeout preserving every terminal state with no process, continuation, action, or control.
+- **Boundary:** No controls, decisions, continuation, store action, upload, submission, deletion, authorization, or approval inference is exposed.
+
+### H-225 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalCopy.ts`
+- **Summary:** Added immutable final status validation for a valid H-223 closeout, preserving exact candidate identity and all terminal states while exposing static final-status copy with no next process, continuation, controls, or actions.
+- **Boundary:** Decisions and store actions remain not presented; upload, submission, deletion, authorization, and approval inference remain unavailable.
+- **Validation:** `npx tsc --noEmit` and `npx eslint` pass cleanly with 0 errors.
+
+### H-224 Completion Notes (Codex)
+- **Status:** done (committing)
+- **Changed files:** `docs/terms-of-service.html` and `docs/privacy-policy.html`.
+- **Summary:** Reconciled no-account subscription usage, provider-owned AI rights, local data, and Apple/RevenueCat restore language across both public documents.
+- **Boundary:** No product, price, entitlement, renewal, cancellation, provider, storage, or privacy behavior changed.
+
+### H-226 Completion Notes (Codex)
+- **Status:** done (committing)
+- **Changed files:** none beyond the H-221/H-224 public-document corrections already under review.
+- **Summary:** Confirmed the in-app paywall URLs match the local published filenames, both public endpoints return HTTP 200, and the support contact is consistent across the legal index, Terms, and Privacy Policy.
+- **Boundary:** No URL, contact identity, legal scope, provider, or runtime behavior changed.
+
+### H-227 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalReceiptCopy.ts`
+- **Summary:** Added a presentation receipt preserving exact immutable-final-status state and recording only a non-empty timestamp.
+- **Boundary:** No controls, decisions, continuation, store action, upload, submission, deletion, authorization, or approval inference is exposed.
+
+### H-228 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalCloseoutCopy.ts`
+- **Summary:** Added a terminal immutable-final-status presentation closeout preserving the full state chain with no continuation.
+- **Boundary:** No controls, decisions, continuation, store action, upload, submission, deletion, authorization, or approval inference is exposed.
+
+### H-230 Completion Notes (Antigravity)
+- **Status:** reviewed; accepted (committing)
+- **Changed file:** `src/data/releaseSubmissionActionAvailabilityOwnerReviewReturnCompletionFinalStatusFinalSummaryCopy.ts`
+- **Summary:** Added a static terminal summary preserving the complete immutable final-status chain with no process or continuation.
 - **Boundary:** No controls, decisions, continuation, store action, upload, submission, deletion, authorization, or approval inference is exposed.
 
 ### H-181 Completion Notes (Codex)
