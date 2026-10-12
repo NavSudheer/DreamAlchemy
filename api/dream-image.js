@@ -1,4 +1,5 @@
 import { checkDreamImageRateLimit } from './dream-image-rate-limit';
+import { checkDreamImageModeration } from './dream-image-moderation';
 
 export const config = { runtime: 'edge' };
 
@@ -109,6 +110,20 @@ export default async function handler(request) {
         },
         rateLimit.status,
         rateLimit.retryAfterSeconds ? { 'Retry-After': String(rateLimit.retryAfterSeconds) } : {},
+      );
+    }
+
+    const moderation = await checkDreamImageModeration(
+      body.visualReflectionPrompt,
+      body.style,
+    );
+    if (!moderation.allowed) {
+      return errorJson(
+        moderation.status === 422
+          ? 'The curated scene was not accepted by the image safety service.'
+          : 'Dream Image safety controls are temporarily unavailable.',
+        moderation.code,
+        moderation.status,
       );
     }
 
