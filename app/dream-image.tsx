@@ -213,7 +213,12 @@ export default function DreamImageScreen() {
               {DREAM_IMAGE_CONSENT_COPY.consentCheckboxLabel}
             </Text>
           </View>
-          <Text variant="caption" color={muted} style={styles.noticeText}>
+          <Text
+            variant="caption"
+            color={muted}
+            style={styles.noticeText}
+            accessibilityLiveRegion="polite"
+          >
             {associationChecking
               ? 'Checking the saved-dream association on this device.'
               : validatedDreamId

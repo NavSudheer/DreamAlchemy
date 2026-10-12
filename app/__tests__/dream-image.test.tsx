@@ -90,6 +90,11 @@ describe('Dream Image preparation screen', () => {
     expect(screen.root.findByType('Button' as never).props.isDisabled).toBe(true);
   });
 
+  it('announces saved-dream association status changes politely', () => {
+    expect(screen.root.findAllByProps({ accessibilityLiveRegion: 'polite' })
+      .some(node => JSON.stringify(node.props.children).includes('Generation is available only'))).toBe(true);
+  });
+
   it('shows only regenerate and in-memory delete actions after a successful result', async () => {
     act(() => screen.unmount());
     mockDreamId = 'dream-1';
