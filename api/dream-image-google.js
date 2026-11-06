@@ -122,13 +122,19 @@ export async function generateGoogleDreamImage(visualReflectionPrompt, style, re
   const identity = loadWorkloadIdentityConfig(request);
   const projectId = process.env.GOOGLE_VERTEX_PROJECT_ID;
   const location = process.env.GOOGLE_VERTEX_LOCATION;
-  const model = process.env.GOOGLE_VERTEX_IMAGE_MODEL || 'imagen-4.0-fast-generate-001';
+  const configuredModel = process.env.GOOGLE_VERTEX_IMAGE_MODEL;
+  // Imagen's generation endpoints were discontinued in June 2026. Keep older
+  // Preview environment values working by moving them to Google's supported
+  // Gemini image-generation API until the variable is updated.
+  const model = !configuredModel || configuredModel.startsWith('imagen-')
+    ? 'gemini-2.5-flash-image'
+    : configuredModel;
   if (!projectId || !location || !STYLE_GUIDANCE[style]) {
     throw new Error('Google Vertex generation settings are incomplete.');
   }
 
   const token = await getAccessToken(identity);
-  const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/locations/${encodeURIComponent(location)}/publishers/google/models/${encodeURIComponent(model)}:predict`;
+  const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/locations/${encodeURIComponent(location)}/publishers/google/models/${encodeURIComponent(model)}:generateContent`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), GENERATION_TIMEOUT_MS);
 
@@ -140,14 +146,14 @@ export async function generateGoogleDreamImage(visualReflectionPrompt, style, re
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        instances: [{ prompt: `${visualReflectionPrompt} ${STYLE_GUIDANCE[style]}` }],
-        parameters: {
-          sampleCount: 1,
-          aspectRatio: '1:1',
-          safetySetting: 'block_low_and_above',
-          includeRaiReason: true,
-          personGeneration: 'dont_allow',
-          enhancePrompt: false,
+        contents: [{
+          role: 'user',
+          parts: [{ text: `${visualReflectionPrompt} ${STYLE_GUIDANCE[style]}` }],
+        }],
+        generationConfig: {
+          responseModalities: ['TEXT', 'IMAGE'],
+          candidateCount: 1,
+          imageConfig: { aspectRatio: '1:1' },
         },
       }),
       signal: controller.signal,
@@ -160,18 +166,18 @@ export async function generateGoogleDreamImage(visualReflectionPrompt, style, re
       throw error;
     }
 
-    const prediction = result?.predictions?.[0];
+    const candidate = result?.candidates?.[0];
+    const imagePart = candidate?.content?.parts?.find(part => part?.inlineData?.data);
     if (
-      !prediction?.bytesBase64Encoded
-      && Array.isArray(result?.predictions)
-      && result.predictions.some(item => item?.raiFilteredReason)
+      !imagePart
+      && (result?.promptFeedback?.blockReason || candidate?.finishReason === 'SAFETY')
     ) {
       const error = new Error('Google Vertex safety filters rejected the image.');
       error.code = 'moderation_rejected';
       throw error;
     }
-    const imageBase64 = prediction?.bytesBase64Encoded;
-    const mimeType = prediction?.mimeType;
+    const imageBase64 = imagePart?.inlineData?.data;
+    const mimeType = imagePart?.inlineData?.mimeType;
     if (
       typeof imageBase64 !== 'string'
       || imageBase64.length === 0

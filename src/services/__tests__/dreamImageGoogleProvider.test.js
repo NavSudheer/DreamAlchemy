@@ -17,7 +17,7 @@ const makeRequest = token => ({
   headers: { get: name => (name === 'x-vercel-oidc-token' ? token : null) },
 });
 
-describe('Google Vertex Imagen provider adapter', () => {
+describe('Google Vertex Gemini image provider adapter', () => {
   const originalEnvironment = process.env;
 
   beforeEach(() => {
@@ -33,20 +33,25 @@ describe('Google Vertex Imagen provider adapter', () => {
     process.env.GOOGLE_VERTEX_OIDC_ISSUER = 'https://oidc.vercel.com/example-team';
     process.env.GOOGLE_VERTEX_OIDC_AUDIENCE = 'https://vercel.com/example-team';
     process.env.GOOGLE_VERTEX_OIDC_SUBJECT = 'owner:example-team:project:dreamalchemy-preview:environment:preview';
-    process.env.GOOGLE_VERTEX_IMAGE_MODEL = '';
+    process.env.GOOGLE_VERTEX_IMAGE_MODEL = 'imagen-4.0-fast-generate-001';
   });
 
   afterAll(() => {
     process.env = originalEnvironment;
   });
 
-  it('exchanges a Vercel OIDC token, impersonates the service account, and requests one safe Imagen output', async () => {
+  it('exchanges a Vercel OIDC token, impersonates the service account, and requests one safe Gemini image output', async () => {
     const fetchMock = jest.spyOn(global, 'fetch')
       .mockResolvedValueOnce({ ok: true, json: async () => ({ access_token: 'federated-access-token' }) })
       .mockResolvedValueOnce({ ok: true, json: async () => ({ accessToken: 'test-access-token', expireTime: '2030-01-01T00:00:00Z' }) })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ predictions: [{ mimeType: 'image/png', bytesBase64Encoded: 'aGVsbG8=' }] }),
+        json: async () => ({
+          candidates: [{ content: { parts: [
+            { text: 'A quiet lake.' },
+            { inlineData: { mimeType: 'image/png', data: 'aGVsbG8=' } },
+          ] } }],
+        }),
       });
     const token = makeOidcToken();
     const { generateGoogleDreamImage } = makeModule();
@@ -67,17 +72,17 @@ describe('Google Vertex Imagen provider adapter', () => {
       scope: ['https://www.googleapis.com/auth/cloud-platform'],
       lifetime: '3600s',
     });
-    expect(imageCall[0]).toBe('https://us-central1-aiplatform.googleapis.com/v1/projects/dream-image-test-project/locations/us-central1/publishers/google/models/imagen-4.0-fast-generate-001:predict');
+    expect(imageCall[0]).toBe('https://us-central1-aiplatform.googleapis.com/v1/projects/dream-image-test-project/locations/us-central1/publishers/google/models/gemini-2.5-flash-image:generateContent');
     expect(imageCall[1].headers.Authorization).toBe('Bearer test-access-token');
     expect(JSON.parse(imageCall[1].body)).toEqual({
-      instances: [{ prompt: 'A curated moonlit lake. Render as watercolor artwork with fluid pigment washes, organic edges, and textured paper.' }],
-      parameters: {
-        sampleCount: 1,
-        aspectRatio: '1:1',
-        safetySetting: 'block_low_and_above',
-        includeRaiReason: true,
-        personGeneration: 'dont_allow',
-        enhancePrompt: false,
+      contents: [{
+        role: 'user',
+        parts: [{ text: 'A curated moonlit lake. Render as watercolor artwork with fluid pigment washes, organic edges, and textured paper.' }],
+      }],
+      generationConfig: {
+        responseModalities: ['TEXT', 'IMAGE'],
+        candidateCount: 1,
+        imageConfig: { aspectRatio: '1:1' },
       },
     });
   });
@@ -113,13 +118,13 @@ describe('Google Vertex Imagen provider adapter', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('maps Imagen safety-filtered responses to a stable moderation code', async () => {
+  it('maps Gemini safety-filtered responses to a stable moderation code', async () => {
     jest.spyOn(global, 'fetch')
       .mockResolvedValueOnce({ ok: true, json: async () => ({ access_token: 'federated-access-token' }) })
       .mockResolvedValueOnce({ ok: true, json: async () => ({ accessToken: 'test-access-token', expireTime: '2030-01-01T00:00:00Z' }) })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ predictions: [{ raiFilteredReason: 'provider detail' }] }),
+        json: async () => ({ promptFeedback: { blockReason: 'SAFETY' } }),
       });
 
     const { generateGoogleDreamImage } = makeModule();
@@ -133,7 +138,9 @@ describe('Google Vertex Imagen provider adapter', () => {
       .mockResolvedValueOnce({ ok: true, json: async () => ({ accessToken: 'test-access-token', expireTime: '2030-01-01T00:00:00Z' }) })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ predictions: [{ mimeType: 'image/svg+xml', bytesBase64Encoded: 'PHN2Zz4=' }] }),
+        json: async () => ({
+          candidates: [{ content: { parts: [{ inlineData: { mimeType: 'image/svg+xml', data: 'PHN2Zz4=' } }] } }],
+        }),
       });
 
     const { generateGoogleDreamImage } = makeModule();
