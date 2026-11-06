@@ -6,23 +6,28 @@ import {
 import { isDescriptiveAltText } from '../data/dreamImageSafetyGuidelines';
 
 /**
- * Production web builds share an origin with the Vercel function. Resolve the
- * API on that origin so Preview deployments cannot keep calling a stale or
- * cross-deployment URL from an old client environment variable. Native builds
- * continue using the explicitly configured absolute URL.
+ * Hosted web builds share an origin with the Vercel function. Resolve the API
+ * there so Preview deployments cannot call a stale or cross-deployment URL
+ * from an old client environment variable. Local web development and native
+ * builds continue using the explicitly configured URL.
  */
 export const resolveDreamImageApiUrl = (
   configuredUrl: string | undefined,
   webOrigin: string | undefined,
-  productionBuild: boolean,
-) => (webOrigin && productionBuild
-  ? new URL('/api/dream-image', webOrigin).toString()
-  : configuredUrl);
+): string | undefined => {
+  if (webOrigin) {
+    const hostname = new URL(webOrigin).hostname;
+    const isLocalDevelopment = hostname === 'localhost'
+      || hostname === '127.0.0.1'
+      || hostname === '::1';
+    if (!isLocalDevelopment) return new URL('/api/dream-image', webOrigin).toString();
+  }
+  return configuredUrl;
+};
 
 const DREAM_IMAGE_API_URL = resolveDreamImageApiUrl(
   process.env.EXPO_PUBLIC_DREAM_IMAGE_API_URL,
   typeof window !== 'undefined' ? window.location?.origin : undefined,
-  process.env.NODE_ENV === 'production',
 );
 const REQUEST_TIMEOUT_MS = 60_000;
 
