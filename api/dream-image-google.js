@@ -2,7 +2,10 @@ const GOOGLE_STS_URL = 'https://sts.googleapis.com/v1/token';
 const GOOGLE_IAM_CREDENTIALS_URL = 'https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts';
 const GOOGLE_SCOPE = 'https://www.googleapis.com/auth/cloud-platform';
 const TOKEN_TIMEOUT_MS = 6_000;
-const GENERATION_TIMEOUT_MS = 45_000;
+// Imagen rendering can exceed the default interactive API window on a cold
+// Preview function. Keep the provider call bounded below Vercel's 300s route
+// ceiling so the server can return a typed error instead of being terminated.
+const GENERATION_TIMEOUT_MS = 120_000;
 const MAX_BASE64_IMAGE_LENGTH = 4_000_000;
 
 const STYLE_GUIDANCE = {

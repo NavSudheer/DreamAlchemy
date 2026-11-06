@@ -29,7 +29,10 @@ const DREAM_IMAGE_API_URL = resolveDreamImageApiUrl(
   process.env.EXPO_PUBLIC_DREAM_IMAGE_API_URL,
   typeof window !== 'undefined' ? window.location?.origin : undefined,
 );
-const REQUEST_TIMEOUT_MS = 60_000;
+// Imagen can take longer than a typical JSON API call to render its output.
+// Keep a finite client deadline, but allow time for the backend provider's
+// bounded generation window to finish and return its typed response.
+const REQUEST_TIMEOUT_MS = 150_000;
 
 export type DreamImageErrorCode =
   | 'not_available'
