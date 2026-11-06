@@ -12,7 +12,7 @@ jest.mock('../../../api/dream-image-moderation', () => ({
   checkDreamImageModeration: jest.fn().mockResolvedValue({ allowed: true }),
 }));
 
-const { default: handler } = require('../../../api/dream-image');
+const { POST: handler } = require('../../../api/dream-image');
 const { generateGoogleDreamImage } = require('../../../api/dream-image-google');
 const { checkDreamImageRateLimit } = require('../../../api/dream-image-rate-limit');
 const { checkDreamImageModeration } = require('../../../api/dream-image-moderation');

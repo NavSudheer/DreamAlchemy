@@ -66,7 +66,7 @@ const readBoundedJson = async (request) => {
   return body;
 };
 
-export default async function handler(request) {
+async function handler(request) {
   if (request.method === 'OPTIONS') return json({}, 204);
   if (request.method !== 'POST') return errorJson('Method not allowed.', 'method_not_allowed', 405);
   if (process.env.DREAM_IMAGE_FEATURE_ENABLED !== 'true') {
@@ -187,3 +187,10 @@ export default async function handler(request) {
     return errorJson('Could not validate the Dream Image request.', 'internal_error', 500);
   }
 }
+
+// Vercel's Node.js runtime must use named HTTP method handlers when returning
+// Web Responses. A default `(req, res)` handler silently ignores returned
+// Responses and leaves the browser request pending until Vercel times out.
+export const GET = handler;
+export const POST = handler;
+export const OPTIONS = handler;
