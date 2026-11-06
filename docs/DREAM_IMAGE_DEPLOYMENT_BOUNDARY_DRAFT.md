@@ -6,6 +6,8 @@
 **Constraint:** Vendor-neutral specification; no vendor selection, no credentials added, and production disabled by default.  
 **Associated Task:** H-108 / H-109  
 
+> Historical architecture draft: Google Vertex AI Imagen was selected on 2026-11-04. See [`DREAM_IMAGE_GOOGLE_VERTEX_SETUP.md`](./DREAM_IMAGE_GOOGLE_VERTEX_SETUP.md) for the selected provider's server configuration and rollout gates. This draft still records the general privacy and deployment boundaries; its generic provider variable examples are not the selected adapter's configuration.
+
 ---
 
 ## 1. Executive Summary & Privacy Principles

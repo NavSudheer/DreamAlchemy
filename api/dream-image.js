@@ -1,7 +1,9 @@
 import { checkDreamImageRateLimit } from './dream-image-rate-limit';
 import { checkDreamImageModeration } from './dream-image-moderation';
-
-export const config = { runtime: 'edge' };
+import { generateGoogleDreamImage } from './dream-image-google';
+import { randomUUID } from 'node:crypto';
+import { DREAM_IMAGE_PROMPT_TEMPLATES } from '../src/data/dreamImagePromptTemplates';
+import { getAltTextForTemplate } from '../src/data/dreamImageAltTextTemplates';
 
 const MAX_REQUEST_BYTES = 16_000;
 const ALLOWED_FIELDS = new Set(['visualReflectionPrompt', 'style', 'consent']);
@@ -22,6 +24,7 @@ const json = (body, status = 200, extraHeaders = {}) => new Response(JSON.string
   status,
   headers: {
     'Content-Type': 'application/json',
+    'Cache-Control': 'no-store, max-age=0',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -127,8 +130,30 @@ export default async function handler(request) {
       );
     }
 
-    // Provider selection and invocation are intentionally outside this contract-only route.
-    return errorJson('The Dream Image provider is not configured.', 'provider_unavailable', 503);
+    if (process.env.DREAM_IMAGE_PROVIDER_ENABLED !== 'true') {
+      return errorJson('The Dream Image provider is not configured.', 'provider_unavailable', 503);
+    }
+
+    try {
+      const generated = await generateGoogleDreamImage(body.visualReflectionPrompt, body.style, request);
+      const template = DREAM_IMAGE_PROMPT_TEMPLATES.find(
+        item => item.promptText === body.visualReflectionPrompt,
+      );
+      if (!template) {
+        return errorJson('The Dream Image template is unavailable.', 'provider_error', 502);
+      }
+      return json({
+        id: randomUUID(),
+        imageUrl: generated.imageUrl,
+        altText: getAltTextForTemplate(template.id, body.style),
+        generatedAt: new Date().toISOString(),
+      }, 200, { 'Cache-Control': 'private, no-store, max-age=0' });
+    } catch (error) {
+      if (error?.code === 'moderation_rejected') {
+        return errorJson('The generated image did not pass the provider safety checks.', 'moderation_rejected', 422);
+      }
+      return errorJson('Could not create a Dream Image right now.', 'provider_error', 502);
+    }
   } catch (error) {
     if (error instanceof RequestValidationError) {
       return errorJson(error.message, error.code, error.status);

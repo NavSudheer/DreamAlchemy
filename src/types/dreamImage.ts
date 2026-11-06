@@ -17,7 +17,7 @@ export interface DreamImageRequest {
 
 export interface GeneratedDreamImage {
   id: string;
-  /** A provider response URL. Persisting/caching it is a separate concern. */
+  /** A transient data URI or URL. The app keeps generated art in memory unless a user saves it locally. */
   imageUrl: string;
   altText: string;
   generatedAt: string;

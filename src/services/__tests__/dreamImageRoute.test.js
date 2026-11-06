@@ -29,6 +29,7 @@ describe('Dream Image route request boundary', () => {
 
   beforeEach(() => {
     process.env = { ...originalEnvironment, DREAM_IMAGE_FEATURE_ENABLED: 'true' };
+    delete process.env.DREAM_IMAGE_PROVIDER_ENABLED;
   });
 
   afterAll(() => {
@@ -97,5 +98,16 @@ describe('Dream Image route request boundary', () => {
     const response = await handler(request());
     expect(response.status).toBe(503);
     await expect(response.json()).resolves.toMatchObject({ code: 'provider_unavailable' });
+  });
+
+  it('fails closed on a missing durable limiter when Google provider activation is requested', async () => {
+    process.env.DREAM_IMAGE_PROVIDER_ENABLED = 'true';
+    delete process.env.DREAM_IMAGE_RATE_LIMIT_URL;
+    delete process.env.DREAM_IMAGE_RATE_LIMIT_TOKEN;
+    delete process.env.DREAM_IMAGE_RATE_LIMIT_HASH_SECRET;
+
+    const response = await handler(request());
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toMatchObject({ code: 'rate_limit_not_configured' });
   });
 });

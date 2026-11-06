@@ -16,6 +16,7 @@ describe('Dream Image anonymous rate-limit boundary', () => {
     delete process.env.DREAM_IMAGE_RATE_LIMIT_TOKEN;
     delete process.env.DREAM_IMAGE_RATE_LIMIT_HASH_SECRET;
     delete process.env.DREAM_IMAGE_RATE_LIMIT_REQUIRED;
+    delete process.env.DREAM_IMAGE_RATE_LIMIT_MODE;
     delete process.env.VERCEL_ENV;
   });
 
@@ -34,6 +35,36 @@ describe('Dream Image anonymous rate-limit boundary', () => {
     process.env.VERCEL_ENV = 'production';
 
     await expect(checkDreamImageRateLimit(request())).resolves.toMatchObject({
+      allowed: false,
+      status: 503,
+      code: 'rate_limit_not_configured',
+    });
+  });
+
+  it('enforces a bounded per-instance memory limit in Preview only', async () => {
+    process.env.VERCEL_ENV = 'preview';
+    process.env.DREAM_IMAGE_PROVIDER_ENABLED = 'true';
+    process.env.DREAM_IMAGE_RATE_LIMIT_MODE = 'memory';
+    process.env.DREAM_IMAGE_RATE_LIMIT = '1';
+    const oneClient = request('203.0.113.91');
+
+    await expect(checkDreamImageRateLimit(oneClient)).resolves.toEqual({
+      allowed: true,
+      mode: 'memory',
+    });
+    await expect(checkDreamImageRateLimit(oneClient)).resolves.toMatchObject({
+      allowed: false,
+      status: 429,
+      code: 'rate_limited',
+    });
+  });
+
+  it('does not allow memory-only limiting in Production', async () => {
+    process.env.VERCEL_ENV = 'production';
+    process.env.DREAM_IMAGE_PROVIDER_ENABLED = 'true';
+    process.env.DREAM_IMAGE_RATE_LIMIT_MODE = 'memory';
+
+    await expect(checkDreamImageRateLimit(request('203.0.113.92'))).resolves.toMatchObject({
       allowed: false,
       status: 503,
       code: 'rate_limit_not_configured',
