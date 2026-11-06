@@ -19,6 +19,14 @@ describe('dream image failure recovery copy', () => {
     expect(resolveDreamImageFailure('prompt rejected by moderation').state).toBe('moderation-rejected');
   });
 
+  it('does not claim the device is offline when a service request fails', () => {
+    const copy = getDreamImageFailureCopy('offline');
+    expect(copy.title).toBe('Couldn’t Reach the Image Service');
+    expect(copy.message).toContain('internet connection is working');
+    expect(resolveDreamImageFailure(new DreamImageError('Timed out.', 'timeout', true)).state)
+      .toBe('retryable-failure');
+  });
+
   it('marks only immediately recoverable states as retryable', () => {
     expect(isRetryableFailure('offline')).toBe(true);
     expect(isRetryableFailure('retryable-failure')).toBe(true);

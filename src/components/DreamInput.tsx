@@ -8,6 +8,7 @@ import {
   ScrollView,
   PermissionsAndroid,
   TextInput,
+  Switch,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -34,7 +35,7 @@ const DREAM_PROMPTS = [
 ];
 
 interface DreamInputProps {
-  onSubmit: (text: string, mood: DreamMood, tags: string[]) => void;
+  onSubmit: (text: string, mood: DreamMood, tags: string[], createDreamImage?: boolean) => void;
   isLoading: boolean;
   initialText?: string;
   initialMood?: DreamMood;
@@ -45,6 +46,7 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading, initialTex
   const [dreamText, setDreamText] = useState(initialText);
   const [mood, setMood] = useState<DreamMood>(initialMood);
   const [tagsInput, setTagsInput] = useState(initialTags.join(', '));
+  const [createDreamImage, setCreateDreamImage] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [voiceState, setVoiceState] = useState<VoiceRecognitionState>(initialState);
   const [voiceAvailable, setVoiceAvailable] = useState(false);
@@ -157,7 +159,7 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading, initialTex
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const tags = [...new Set(tagsInput.split(',').map(tag => tag.trim().toLowerCase()).filter(Boolean))].slice(0, 8);
-    onSubmit(dreamText, mood, tags);
+    onSubmit(dreamText, mood, tags, createDreamImage);
   };
 
   const handleClear = () => {
@@ -415,6 +417,29 @@ const DreamInput: React.FC<DreamInputProps> = ({ onSubmit, isLoading, initialTex
           accessibilityLabel="Private dream tags, separated by commas"
         />
 
+        <TouchableOpacity
+          style={styles.imageOption}
+          onPress={() => setCreateDreamImage(value => !value)}
+          activeOpacity={0.8}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: createDreamImage }}
+          accessibilityLabel="Also create a dream image after analysis"
+        >
+          <View style={styles.imageOptionText}>
+            <Text variant="subtitle2" color={isDark ? Colors.neutral[200] : Colors.neutral[800]}>
+              Also create a dream image
+            </Text>
+            <Text variant="caption" color={isDark ? Colors.neutral[400] : Colors.neutral[600]}>
+              Saves your analysis, then creates an abstract image. Only a curated scene and art style are sent; your dream text stays private.
+            </Text>
+          </View>
+          <Switch
+            value={createDreamImage}
+            onValueChange={setCreateDreamImage}
+            accessibilityLabel="Also create a dream image after analysis"
+          />
+        </TouchableOpacity>
+
         <Button
           onPress={handleSubmit}
           disabled={dreamText.trim().length < MIN_DREAM_LENGTH || isLoading}
@@ -568,6 +593,17 @@ const getStyles = (isDark: boolean) => StyleSheet.create({
     fontSize: 14,
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[3],
+  },
+  imageOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[3],
+    paddingVertical: spacing[4],
+    marginTop: spacing[2],
+  },
+  imageOptionText: {
+    flex: 1,
+    gap: spacing[1],
   },
   analyzeButton: {
     marginTop: spacing[5],

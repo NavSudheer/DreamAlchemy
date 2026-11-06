@@ -44,10 +44,10 @@ export const DREAM_IMAGE_FAILURE_COPY: Record<
 > = {
   offline: {
     state: 'offline',
-    title: 'No Internet Connection',
+    title: 'Couldn’t Reach the Image Service',
     message:
-      'Dream image generation requires a network connection to reach the rendering service. Your device appears to be offline.',
-    recoveryAction: 'Check your Wi-Fi or mobile data connection and try again.',
+      'The request could not reach the image-generation service. This can happen while your internet connection is working, for example if the service or its endpoint is temporarily unavailable.',
+    recoveryAction: 'If other apps can connect, try again in a moment. If they cannot, check your Wi-Fi or mobile data.',
     retryable: true,
     privacyReassurance:
       'Your dream journal entries and reflection notes remain stored locally and are not included in this request.',
@@ -179,7 +179,8 @@ export function resolveDreamImageFailure(
   const code = typeof error === 'object' && error && 'code' in error
     ? String((error as { code?: unknown }).code ?? '')
     : '';
-  if (code === 'offline' || code === 'timeout') return DREAM_IMAGE_FAILURE_COPY.offline;
+  if (code === 'offline') return DREAM_IMAGE_FAILURE_COPY.offline;
+  if (code === 'timeout') return DREAM_IMAGE_FAILURE_COPY['retryable-failure'];
   if (code === 'not_available') return DREAM_IMAGE_FAILURE_COPY['provider-unavailable'];
   if (code === 'invalid_request') return DREAM_IMAGE_FAILURE_COPY['request-invalid'];
   if (code === 'moderation_rejected') return DREAM_IMAGE_FAILURE_COPY['moderation-rejected'];

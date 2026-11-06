@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useReducer, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Switch, TouchableOpacity, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Header from '@/components/ui/Header';
@@ -27,13 +27,15 @@ import { BorderRadius, Colors, spacing } from '@/utils/theme';
 
 export default function DreamImageScreen() {
   const router = useRouter();
-  const { dreamId } = useLocalSearchParams<{ dreamId?: string }>();
+  const { dreamId, autoGenerate } = useLocalSearchParams<{ dreamId?: string; autoGenerate?: string }>();
   const { isDark } = useTheme();
   const defaultTemplate = getDefaultPromptTemplate();
-  const [templateId, setTemplateId] = useState(defaultTemplate.id);
-  const [style, setStyle] = useState<DreamImageStyle>(defaultTemplate.recommendedStyle);
+  const [templateId, setTemplateId] = useState<string>();
+  const [style, setStyle] = useState<DreamImageStyle>();
   const [validatedDreamId, setValidatedDreamId] = useState<string>();
   const [associationChecking, setAssociationChecking] = useState(false);
+  const autoConsentApplied = useRef(false);
+  const autoGenerationStarted = useRef(false);
   const [generation, dispatchGeneration] = useReducer(
     reduceDreamImageGeneration,
     INITIAL_DREAM_IMAGE_GENERATION_STATE,
@@ -45,6 +47,7 @@ export default function DreamImageScreen() {
     () => DREAM_IMAGE_PROMPT_TEMPLATES.find(item => item.id === templateId) ?? defaultTemplate,
     [defaultTemplate, templateId],
   );
+  const effectiveStyle = style ?? (templateId ? template.recommendedStyle : defaultTemplate.recommendedStyle);
 
   useEffect(() => {
     let mounted = true;
@@ -75,19 +78,18 @@ export default function DreamImageScreen() {
       request: {
         dreamId: validatedDreamId ?? '',
         visualReflectionPrompt: template.promptText,
-        style,
+        style: effectiveStyle,
       },
     });
-  }, [style, template.promptText, validatedDreamId]);
+  }, [effectiveStyle, template.promptText, validatedDreamId]);
 
   const surface = isDark ? Colors.neutral[800] : Colors.neutral[50];
   const selectedSurface = isDark ? Colors.primary[900] : Colors.primary[50];
   const textColor = isDark ? Colors.neutral[100] : Colors.neutral[800];
   const muted = isDark ? Colors.neutral[300] : Colors.neutral[600];
 
-  const chooseTemplate = (id: string, recommendedStyle: DreamImageStyle) => {
+  const chooseTemplate = (id: string) => {
     setTemplateId(id);
-    setStyle(recommendedStyle);
   };
 
   const activeProgress = ['queued', 'moderating', 'rendering', 'finalizing'].includes(generation.phase);
@@ -101,7 +103,7 @@ export default function DreamImageScreen() {
     ? 'Turn on consent before sending the selected curated scene and art style.'
     : 'Sends only the selected curated scene and art style.';
 
-  const createImage = async () => {
+  const createImage = useCallback(async () => {
     if (!availability.available || !generation.request || !canStartDreamImageGeneration(generation)) return;
     dispatchGeneration({ type: 'start' });
     dispatchGeneration({ type: 'progress', phase: 'rendering' });
@@ -116,7 +118,29 @@ export default function DreamImageScreen() {
         code: error instanceof DreamImageError ? error.code : undefined,
       });
     }
-  };
+  }, [availability.available, generation]);
+
+  useEffect(() => {
+    if (autoGenerate === 'true' && validatedDreamId && availability.available && !autoConsentApplied.current) {
+      autoConsentApplied.current = true;
+      dispatchGeneration({ type: 'set-consent', consented: true });
+    }
+  }, [autoGenerate, availability.available, validatedDreamId]);
+
+  useEffect(() => {
+    if (
+      autoGenerate === 'true'
+      && validatedDreamId
+      && availability.available
+      && generation.consented
+      && generation.request?.dreamId === validatedDreamId
+      && generation.phase === 'idle'
+      && !autoGenerationStarted.current
+    ) {
+      autoGenerationStarted.current = true;
+      void createImage();
+    }
+  }, [autoGenerate, availability.available, createImage, generation.consented, generation.phase, generation.request, validatedDreamId]);
 
   return (
     <View style={[styles.container, { backgroundColor: isDark ? Colors.neutral[900] : Colors.neutral[50] }]}>
@@ -151,8 +175,20 @@ export default function DreamImageScreen() {
 
         <Text variant="h4" color={textColor} style={styles.heading}>Choose a curated scene</Text>
         <View accessibilityRole="radiogroup" accessibilityLabel="Curated dream image scenes">
+          <TouchableOpacity
+            accessibilityRole="radio"
+            accessibilityState={{ selected: !templateId, checked: !templateId }}
+            accessibilityLabel="No preference, choose a scene for me"
+            accessibilityHint="Use the app's suggested curated scene."
+            onPress={() => setTemplateId(undefined)}
+          >
+            <Card style={!templateId ? { ...styles.option, ...styles.selected } : styles.option} backgroundColor={!templateId ? selectedSurface : surface}>
+              <Text variant="subtitle1" color={textColor}>No preference</Text>
+              <Text variant="body2" color={muted} style={styles.optionText}>Choose a curated scene automatically.</Text>
+            </Card>
+          </TouchableOpacity>
           {DREAM_IMAGE_PROMPT_TEMPLATES.map(item => {
-            const selected = item.id === template.id;
+            const selected = item.id === templateId;
             return (
               <TouchableOpacity
                 key={item.id}
@@ -160,7 +196,7 @@ export default function DreamImageScreen() {
                 accessibilityState={{ selected, checked: selected }}
                 accessibilityLabel={item.title}
                 accessibilityHint={item.description}
-                onPress={() => chooseTemplate(item.id, item.recommendedStyle)}
+                onPress={() => chooseTemplate(item.id)}
               >
                 <Card style={selected ? { ...styles.option, ...styles.selected } : styles.option} backgroundColor={selected ? selectedSurface : surface}>
                   <Text variant="subtitle1" color={textColor}>{item.title}</Text>
@@ -178,8 +214,19 @@ export default function DreamImageScreen() {
           accessibilityLabel="Dream image art styles"
           style={styles.styleGrid}
         >
+          <TouchableOpacity
+            accessibilityRole="radio"
+            accessibilityState={{ selected: !style, checked: !style }}
+            accessibilityLabel="No preference, choose a style for me"
+            accessibilityHint="Use the app's suggested style for the selected scene."
+            onPress={() => setStyle(undefined)}
+            style={[styles.styleOption, { backgroundColor: !style ? selectedSurface : surface }, !style && styles.selected]}
+          >
+            <Text variant="subtitle2" color={textColor}>No preference</Text>
+            <Text variant="caption" color={muted} style={styles.optionText}>Choose a fitting style automatically.</Text>
+          </TouchableOpacity>
           {DREAM_IMAGE_STYLE_LIST.map(item => {
-            const selected = item.style === style;
+            const selected = item.style === effectiveStyle && !!style;
             return (
               <TouchableOpacity
                 key={item.style}
@@ -199,10 +246,12 @@ export default function DreamImageScreen() {
 
         <Card style={styles.preview} backgroundColor={surface}>
           <Text variant="h4" color={textColor}>Prepared reflection</Text>
-          <Text variant="subtitle2" color={textColor} style={styles.previewLabel}>{template.title} · {style}</Text>
+          <Text variant="subtitle2" color={textColor} style={styles.previewLabel}>
+            {template.title}{templateId ? '' : ' (suggested)'} · {effectiveStyle}{style ? '' : ' (suggested)'}
+          </Text>
           <Text variant="body2" color={muted} style={styles.prompt}>{template.promptText}</Text>
           <Text variant="subtitle2" color={textColor}>Accessible scene description</Text>
-          <Text variant="caption" color={muted} style={styles.optionText}>{getAltTextForTemplate(template.id, style)}</Text>
+          <Text variant="caption" color={muted} style={styles.optionText}>{getAltTextForTemplate(template.id, effectiveStyle)}</Text>
           <Text variant="caption" color={muted}>
             {DREAM_IMAGE_CONSENT_COPY.consentCheckboxLabel}
           </Text>

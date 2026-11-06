@@ -6,9 +6,11 @@ const mockAnalyzeDream = jest.fn();
 const mockRecordAnalysis = jest.fn();
 const mockCanPerformAnalysis = jest.fn();
 const mockGetDreams = jest.fn();
+const mockPush = jest.fn();
+const mockSaveDream = jest.fn();
 
 jest.mock('expo-router', () => ({
-  useRouter: () => ({ push: jest.fn() }),
+  useRouter: () => ({ push: mockPush }),
   useFocusEffect: () => {},
 }));
 jest.mock('react-native-safe-area-context', () => ({
@@ -26,7 +28,7 @@ jest.mock('@/providers/ThemeProvider', () => ({
 }));
 jest.mock('@/utils/storage', () => ({
   getDreams: (...args: unknown[]) => mockGetDreams(...args),
-  saveDream: jest.fn(),
+  saveDream: (...args: unknown[]) => mockSaveDream(...args),
 }));
 jest.mock('@/services/dreamAnalysis', () => ({
   DreamAnalysisError: class DreamAnalysisError extends Error {},
@@ -57,6 +59,8 @@ describe('core analysis failure recovery', () => {
     mockRecordAnalysis.mockReset();
     mockCanPerformAnalysis.mockReset().mockResolvedValue(true);
     mockGetDreams.mockReset().mockResolvedValue([]);
+    mockPush.mockReset();
+    mockSaveDream.mockReset().mockResolvedValue(undefined);
     await act(async () => { screen = create(<Index />); });
   });
 
@@ -120,5 +124,41 @@ describe('core analysis failure recovery', () => {
     const editedInput = screen.root.findByType('DreamInput' as never);
     expect(editedInput.props.initialText).toBe(fixture);
     expect(mockRecordAnalysis).not.toHaveBeenCalled();
+  });
+
+  it('saves a successful analysis immediately and opens Dream Image Studio only when requested', async () => {
+    const fixture = 'A non-personal fixture about a quiet silver lake.';
+    mockAnalyzeDream.mockResolvedValue({
+      symbols: [],
+      archetypes: [],
+      interpretation: 'A bounded fixture interpretation.',
+      timestamp: new Date().toISOString(),
+    });
+    mockRecordAnalysis.mockResolvedValue({
+      isSubscriptionActive: false,
+      hasTrialExpired: false,
+      analysesLeft: 2,
+    });
+
+    const input = screen.root.findByType('DreamInput' as never);
+    await act(async () => {
+      await input.props.onSubmit(fixture, 'neutral', ['fixture'], true);
+    });
+
+    expect(mockSaveDream).toHaveBeenCalledWith(expect.objectContaining({
+      content: fixture,
+      analysis: expect.objectContaining({ interpretation: 'A bounded fixture interpretation.' }),
+    }));
+    expect(mockPush).not.toHaveBeenCalled();
+    const analysis = screen.root.findByType('DreamAnalysis' as never);
+    expect(analysis.props.isAnalyzing).toBe(false);
+    expect(analysis.props.onCreateDreamImage).toEqual(expect.any(Function));
+    await act(async () => {
+      await analysis.props.onCreateDreamImage();
+    });
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: '/dream-image',
+      params: { dreamId: expect.any(String), autoGenerate: 'true' },
+    });
   });
 });

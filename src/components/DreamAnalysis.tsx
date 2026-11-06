@@ -875,6 +875,20 @@ const DreamAnalysis: React.FC<DreamAnalysisProps> = ({
               </>
             ) : (
               <>
+                {onCreateDreamImage && (
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    leftIcon="image-outline"
+                    onPress={onCreateDreamImage}
+                    style={styles.actionButton}
+                    accessibilityLabel="Continue to dream image generation"
+                    accessibilityHint="Your analysis is ready. Opens Dream Image Studio to create the image separately."
+                    hapticFeedback
+                  >
+                    Create Dream Image
+                  </Button>
+                )}
                 <Button
                   variant="secondary"
                   size="md"

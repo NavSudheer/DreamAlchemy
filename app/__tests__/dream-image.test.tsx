@@ -4,13 +4,14 @@ import DreamImageScreen from '../dream-image';
 import { DreamImageResultActions } from '@/components/dream-image/DreamImageResultActions';
 
 let mockDreamId: string | undefined;
+let mockAutoGenerate = false;
 let mockAvailable = false;
 const mockGenerateDreamImage = jest.fn();
 const mockGetDreams = jest.fn();
 
 jest.mock('expo-router', () => ({
   useRouter: () => ({ back: jest.fn() }),
-  useLocalSearchParams: () => ({ dreamId: mockDreamId }),
+  useLocalSearchParams: () => ({ dreamId: mockDreamId, autoGenerate: mockAutoGenerate ? 'true' : undefined }),
 }));
 jest.mock('@/components/ui/Header', () => 'Header');
 jest.mock('@/components/ui/Text', () => 'Text');
@@ -33,6 +34,7 @@ describe('Dream Image preparation screen', () => {
 
   beforeEach(() => {
     mockDreamId = undefined;
+    mockAutoGenerate = false;
     mockAvailable = false;
     mockGenerateDreamImage.mockReset();
     mockGetDreams.mockReset();
@@ -53,14 +55,18 @@ describe('Dream Image preparation screen', () => {
       'Curated dream image scenes',
       'Dream image art styles',
     ]);
-    expect(radios).toHaveLength(11);
+    expect(radios).toHaveLength(13);
+    expect(radios.find(node => node.props.accessibilityLabel === 'No preference, choose a scene for me')?.props.accessibilityState)
+      .toEqual({ selected: true, checked: true });
+    expect(radios.find(node => node.props.accessibilityLabel === 'No preference, choose a style for me')?.props.accessibilityState)
+      .toEqual({ selected: true, checked: true });
     expect(radios.find(node => node.props.accessibilityLabel === 'Luminous Threshold')?.props.accessibilityState)
-      .toEqual({ selected: true, checked: true });
+      .toEqual({ selected: false, checked: false });
     expect(radios.find(node => node.props.accessibilityLabel === 'Ethereal artistic style')?.props.accessibilityState)
-      .toEqual({ selected: true, checked: true });
+      .toEqual({ selected: false, checked: false });
   });
 
-  it('updates the selected scene and its recommended style together', () => {
+  it('allows a scene while leaving style selection on no preference', () => {
     const radios = () => screen.root.findAll(node => typeof node.type === 'string' && node.props.accessibilityRole === 'radio');
     const mirror = radios().find(node => node.props.accessibilityLabel === 'Mirror of Stillness');
     if (!mirror) throw new Error('Mirror of Stillness radio not found');
@@ -69,6 +75,8 @@ describe('Dream Image preparation screen', () => {
     expect(radios().find(node => node.props.accessibilityLabel === 'Mirror of Stillness')?.props.accessibilityState)
       .toEqual({ selected: true, checked: true });
     expect(radios().find(node => node.props.accessibilityLabel === 'Watercolor artistic style')?.props.accessibilityState)
+      .toEqual({ selected: false, checked: false });
+    expect(radios().find(node => node.props.accessibilityLabel === 'No preference, choose a style for me')?.props.accessibilityState)
       .toEqual({ selected: true, checked: true });
   });
 
@@ -214,5 +222,31 @@ describe('Dream Image preparation screen', () => {
     );
     act(() => generate?.props.onPress());
     expect(mockGenerateDreamImage).not.toHaveBeenCalled();
+  });
+
+  it('starts generation after analysis explicitly requested an image', async () => {
+    act(() => screen.unmount());
+    mockDreamId = 'dream-auto';
+    mockAutoGenerate = true;
+    mockAvailable = true;
+    mockGetDreams.mockResolvedValue([{
+      id: 'dream-auto',
+      content: 'PRIVATE_AUTO_DREAM',
+      analysis: { interpretation: 'PRIVATE_AUTO_ANALYSIS' },
+    }]);
+    mockGenerateDreamImage.mockResolvedValue({
+      id: 'image-auto', imageUrl: 'https://images.example/auto.png', altText: 'An abstract dream scene.',
+      generatedAt: '2026-10-09T00:00:00.000Z', style: 'ethereal',
+    });
+
+    await act(async () => { screen = create(<DreamImageScreen />); });
+
+    expect(mockGenerateDreamImage).toHaveBeenCalledWith({
+      dreamId: 'dream-auto',
+      visualReflectionPrompt: expect.any(String),
+      style: 'ethereal',
+    }, true);
+    expect(JSON.stringify(mockGenerateDreamImage.mock.calls)).not.toContain('PRIVATE_AUTO_DREAM');
+    expect(JSON.stringify(mockGenerateDreamImage.mock.calls)).not.toContain('PRIVATE_AUTO_ANALYSIS');
   });
 });

@@ -21,6 +21,8 @@ function Index() {
   const [dreamText, setDreamText] = useState('');
   const [dreamMood, setDreamMood] = useState<DreamMood>('neutral');
   const [dreamTags, setDreamTags] = useState<string[]>([]);
+  const [createDreamImageAfterAnalysis, setCreateDreamImageAfterAnalysis] = useState(false);
+  const [savedDreamImageId, setSavedDreamImageId] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<DreamAnalysisType | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -65,7 +67,28 @@ function Index() {
     }
   };
 
-  const runAnalysis = async (text: string) => {
+  const makeDreamRecord = (text: string, mood: DreamMood, tags: string[], result: DreamAnalysisType): Dream => ({
+    id: generateId(),
+    content: text,
+    timestamp: Date.now(),
+    tags,
+    analysis: {
+      interpretation: result.interpretation,
+      symbols: result.symbols.map(s => ({ symbol: s.name, meaning: s.meaning })),
+      archetypes: result.archetypes.map(a => ({ type: a.type, description: a.description, significance: a.significance })),
+      mood,
+      theme: result.theme?.primary || 'general',
+      secondaryThemes: result.theme?.secondary || [],
+      themeConfidence: result.theme?.confidence || 0,
+    },
+  });
+
+  const runAnalysis = async (
+    text: string,
+    createDreamImage = false,
+    saveMood: DreamMood = dreamMood,
+    saveTags: string[] = dreamTags,
+  ) => {
     setIsAnalyzing(true);
     setAnalysisError(null);
     setActiveView('analysis');
@@ -90,6 +113,17 @@ function Index() {
       } catch (error) {
         console.warn('Could not update analysis usage:', error);
       }
+
+      if (createDreamImage && dreamAnalysis.interpretation) {
+        try {
+          const dream = makeDreamRecord(text, saveMood, saveTags, dreamAnalysis);
+          await saveDream(dream);
+          setSavedDreamImageId(dream.id);
+        } catch (error) {
+          console.error('Could not save the analyzed dream before image generation:', error);
+          setAnalysisError('Your dream was analyzed, but could not be saved for image creation. You can still save the analysis and try again.');
+        }
+      }
     } catch (error) {
       if (!(error instanceof DreamAnalysisError)) console.error('Error analyzing dream:', error);
       setAnalysis(null);
@@ -103,7 +137,7 @@ function Index() {
     }
   };
 
-  const handleDreamSubmit = async (text: string, mood: DreamMood, tags: string[]) => {
+  const handleDreamSubmit = async (text: string, mood: DreamMood, tags: string[], createDreamImage = false) => {
     // Check if user can perform analysis
     const canAnalyze = await trialTrackingService.canPerformAnalysis();
 
@@ -115,39 +149,19 @@ function Index() {
     setDreamText(text);
     setDreamMood(mood);
     setDreamTags(tags);
-    runAnalysis(text);
+    setCreateDreamImageAfterAnalysis(createDreamImage);
+    runAnalysis(text, createDreamImage, mood, tags);
   };
 
   const handleRetry = () => {
-    if (dreamText) runAnalysis(dreamText);
+    if (dreamText) runAnalysis(dreamText, createDreamImageAfterAnalysis);
   };
 
   const handleSaveAnalysis = async () => {
     if (!analysis || !analysis.interpretation) return;
 
     try {
-      const dream: Dream = {
-        id: generateId(),
-        content: dreamText,
-        timestamp: Date.now(),
-        tags: dreamTags,
-        analysis: {
-          interpretation: analysis.interpretation,
-          symbols: analysis.symbols.map(s => ({
-            symbol: s.name,
-            meaning: s.meaning
-          })),
-          archetypes: analysis.archetypes.map(a => ({
-            type: a.type,
-            description: a.description,
-            significance: a.significance
-          })),
-          mood: dreamMood,
-          theme: analysis.theme?.primary || 'general',
-          secondaryThemes: analysis.theme?.secondary || [],
-          themeConfidence: analysis.theme?.confidence || 0
-        },
-      };
+      const dream = makeDreamRecord(dreamText, dreamMood, dreamTags, analysis);
 
       await saveDream(dream);
       handleNewDream();
@@ -157,10 +171,28 @@ function Index() {
     }
   };
 
+  const handleCreateDreamImage = async () => {
+    if (!analysis?.interpretation) return;
+    try {
+      let dreamId = savedDreamImageId;
+      if (!dreamId) {
+        const dream = makeDreamRecord(dreamText, dreamMood, dreamTags, analysis);
+        await saveDream(dream);
+        dreamId = dream.id;
+        setSavedDreamImageId(dreamId);
+      }
+      router.push({ pathname: '/dream-image', params: { dreamId, autoGenerate: 'true' } });
+    } catch (error) {
+      console.error('Could not save the analyzed dream before image generation:', error);
+      setAnalysisError('Your analysis is ready, but could not be saved for image creation. Please try again.');
+    }
+  };
+
   const handleNewDream = () => {
     setDreamText('');
     setDreamMood('neutral');
     setDreamTags([]);
+    setCreateDreamImageAfterAnalysis(false);
     setAnalysis(null);
     setAnalysisError(null);
     setActiveView('input');
@@ -306,6 +338,7 @@ function Index() {
             onRetry={handleRetry}
             onEdit={handleEditDream}
             onSave={handleSaveAnalysis}
+          onCreateDreamImage={createDreamImageAfterAnalysis ? handleCreateDreamImage : undefined}
             onNewDream={handleNewDream}
           />
         )}
