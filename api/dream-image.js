@@ -73,8 +73,19 @@ export default async function handler(request) {
     return errorJson('Dream images are not enabled.', 'feature_disabled', 503);
   }
 
+  const requestId = randomUUID();
+  const startedAt = Date.now();
+  const logStage = (stage, extra = {}) => console.info('[dream-image]', JSON.stringify({
+    requestId,
+    stage,
+    elapsedMs: Date.now() - startedAt,
+    ...extra,
+  }));
+
   try {
+    logStage('request_received');
     const body = await readBoundedJson(request);
+    logStage('request_validated');
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
       return errorJson('Request body must be a JSON object.', 'invalid_request', 400);
     }
@@ -102,7 +113,9 @@ export default async function handler(request) {
       return errorJson('Choose an approved Dream Image style.', 'style_not_allowed', 400);
     }
 
+    logStage('rate_limit_started');
     const rateLimit = await checkDreamImageRateLimit(request);
+    logStage('rate_limit_finished', { outcome: rateLimit.code || (rateLimit.allowed ? 'allowed' : 'denied') });
     if (!rateLimit.allowed) {
       return json(
         {
@@ -116,10 +129,12 @@ export default async function handler(request) {
       );
     }
 
+    logStage('moderation_started');
     const moderation = await checkDreamImageModeration(
       body.visualReflectionPrompt,
       body.style,
     );
+    logStage('moderation_finished', { outcome: moderation.code || (moderation.allowed ? 'allowed' : 'denied') });
     if (!moderation.allowed) {
       return errorJson(
         moderation.status === 422
@@ -135,7 +150,9 @@ export default async function handler(request) {
     }
 
     try {
+      logStage('provider_started');
       const generated = await generateGoogleDreamImage(body.visualReflectionPrompt, body.style, request);
+      logStage('provider_finished');
       const template = DREAM_IMAGE_PROMPT_TEMPLATES.find(
         item => item.promptText === body.visualReflectionPrompt,
       );
@@ -149,12 +166,21 @@ export default async function handler(request) {
         generatedAt: new Date().toISOString(),
       }, 200, { 'Cache-Control': 'private, no-store, max-age=0' });
     } catch (error) {
+      logStage('provider_failed', {
+        errorName: error?.name || 'Error',
+        code: error?.code || 'provider_error',
+        providerStatus: Number.isInteger(error?.providerStatus) ? error.providerStatus : undefined,
+      });
       if (error?.code === 'moderation_rejected') {
         return errorJson('The generated image did not pass the provider safety checks.', 'moderation_rejected', 422);
       }
       return errorJson('Could not create a Dream Image right now.', 'provider_error', 502);
     }
   } catch (error) {
+    logStage('request_failed', {
+      errorName: error?.name || 'Error',
+      code: error?.code || 'internal_error',
+    });
     if (error instanceof RequestValidationError) {
       return errorJson(error.message, error.code, error.status);
     }
