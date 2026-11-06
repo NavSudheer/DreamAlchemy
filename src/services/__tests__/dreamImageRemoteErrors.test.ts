@@ -22,6 +22,21 @@ describe('Dream Image typed remote errors', () => {
     process.env = originalEnvironment;
   });
 
+  it('uses the current deployment origin for production web builds', () => {
+    const { resolveDreamImageApiUrl } = require('../dreamImage');
+
+    expect(resolveDreamImageApiUrl(
+      'https://an-old-preview.example/api/dream-image',
+      'https://current-preview.example',
+      true,
+    )).toBe('https://current-preview.example/api/dream-image');
+    expect(resolveDreamImageApiUrl(
+      'https://configured.example/api/dream-image',
+      'http://localhost:8081',
+      false,
+    )).toBe('https://configured.example/api/dream-image');
+  });
+
   it.each([
     [400, 'consent_required', 'invalid_request'],
     [400, 'prompt_not_allowed', 'invalid_request'],

@@ -5,7 +5,25 @@ import {
 } from '../types/dreamImage';
 import { isDescriptiveAltText } from '../data/dreamImageSafetyGuidelines';
 
-const DREAM_IMAGE_API_URL = process.env.EXPO_PUBLIC_DREAM_IMAGE_API_URL;
+/**
+ * Production web builds share an origin with the Vercel function. Resolve the
+ * API on that origin so Preview deployments cannot keep calling a stale or
+ * cross-deployment URL from an old client environment variable. Native builds
+ * continue using the explicitly configured absolute URL.
+ */
+export const resolveDreamImageApiUrl = (
+  configuredUrl: string | undefined,
+  webOrigin: string | undefined,
+  productionBuild: boolean,
+) => (webOrigin && productionBuild
+  ? new URL('/api/dream-image', webOrigin).toString()
+  : configuredUrl);
+
+const DREAM_IMAGE_API_URL = resolveDreamImageApiUrl(
+  process.env.EXPO_PUBLIC_DREAM_IMAGE_API_URL,
+  typeof window !== 'undefined' ? window.location?.origin : undefined,
+  process.env.NODE_ENV === 'production',
+);
 const REQUEST_TIMEOUT_MS = 60_000;
 
 export type DreamImageErrorCode =
